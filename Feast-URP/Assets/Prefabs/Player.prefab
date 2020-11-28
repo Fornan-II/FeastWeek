@@ -113,8 +113,19 @@ MonoBehaviour:
         m_CallState: 2
   lookTransform: {fileID: 1715510753135863543}
   rb: {fileID: 1715510752619392746}
-  lookSpeed: 30
-  moveSpeed: 2
+  col: {fileID: 1715510752619392750}
+  moveGroundAccelLerp: 0.2
+  moveAerialAccelLerp: 0.07
+  lookSpeed: 0.3
+  moveSpeed: 2.5
+  sprintMultiplier: 1.6
+  jumpForce: 3
+  maxGroundAngle: 50
+  groundCheckDistance: 0.01
+  groundCheckSensitivity: 0.95
+  groundCheckMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &1715510752619392744
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -58,8 +58,15 @@ public class FPSChar : Pawn
             }
         }
 
-        // Planar Movement
+        // High friction when standing still - useful for not sliding down stairs
+        // Low friction when moving - useful for not sticking to walls
+        if(_isGrounded && _moveInput == Vector2.zero)
+            col.sharedMaterial.dynamicFriction = col.sharedMaterial.staticFriction = 1f;
+        else
+            col.sharedMaterial.dynamicFriction = col.sharedMaterial.staticFriction = 0f;
+
         if (!IsBeingControlled) return;
+        // Planar Movement
         Vector3 moveCalc = (transform.forward * _moveInput.y + transform.right * _moveInput.x).normalized * moveSpeed * (_sprintInput && _isGrounded && _moveInput.y > 0 ? sprintMultiplier : 1f);
         moveCalc = Vector3.ProjectOnPlane(moveCalc, _groundNormal);
         Debug.DrawRay(transform.position - Vector3.up * col.height * 0.5f, moveCalc, Color.yellow, 0.05f);
@@ -80,7 +87,9 @@ public class FPSChar : Pawn
     // Update is called once per frame
     void Update()
     {
-        Vector2 lookCalc = _lookInput * lookSpeed * Time.deltaTime;
+        if (!IsBeingControlled) return;
+
+        Vector2 lookCalc = _lookInput * lookSpeed;// * Time.deltaTime;
         rb.transform.rotation *= Quaternion.Euler(0, lookCalc.x, 0);
         lookTransform.rotation *= Quaternion.Euler(-lookCalc.y, 0, 0);
         if (Quaternion.Angle(Quaternion.Euler(Vector3.forward), lookTransform.localRotation) > 90f)

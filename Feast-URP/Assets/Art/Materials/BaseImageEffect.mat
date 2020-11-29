@@ -28,5 +28,5 @@ Material:
     - _FogFar: 50
     - _FogNear: 5
     m_Colors:
-    - _FogColor: {r: 3.9999995, g: 3.9999995, b: 3.9999995, a: 0}
+    - _FogColor: {r: 7.999999, g: 7.999999, b: 7.999999, a: 1}
   m_BuildTextureStacks: []

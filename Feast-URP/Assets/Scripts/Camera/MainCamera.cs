@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Rendering;
 
@@ -14,6 +15,8 @@ public class MainCamera : MonoBehaviour
     [SerializeField] private new Camera camera;
     [SerializeField] private UniversalAdditionalCameraData cameraData;
     [SerializeField] private VolumeProfile basePostProcessing;
+
+    private Coroutine _activeFadeRoutine;
 
     public static void RequestView(Transform parent, Vector3 localPosition, Quaternion localRotation)
     {
@@ -37,6 +40,17 @@ public class MainCamera : MonoBehaviour
         Instance.transform.parent = null;
     }
 
+    public static void FadeScreen(float fadeDuration, bool fadeToWhite = false)
+    {
+        if(fadeDuration <= 0f)
+            Shader.SetGlobalFloat("_ScreenFade", fadeToWhite ? 1f : 0f);
+        else
+        {
+            if (Instance._activeFadeRoutine != null) Instance.StopCoroutine(Instance._activeFadeRoutine);
+            Instance._activeFadeRoutine = Instance.StartCoroutine(Instance.FadeScreen(fadeToWhite ? 0f : 1f, fadeToWhite ? 1f : 0f, fadeDuration));
+        }
+    }
+
     private void Awake()
     {
         if(Instance)
@@ -54,6 +68,18 @@ public class MainCamera : MonoBehaviour
     {
         if (Instance == this)
             Instance = null;
+    }
+
+    private IEnumerator FadeScreen(float from, float to, float duration)
+    {
+        for(float timer = 0.0f; timer < duration; timer += Time.deltaTime)
+        {
+            float tValue = Mathf.Lerp(from, to, timer / duration);
+            Shader.SetGlobalFloat("_ScreenFade", tValue * tValue);
+            yield return null;
+        }
+        Shader.SetGlobalFloat("_ScreenFade", to);
+        _activeFadeRoutine = null;
     }
 
 #if UNITY_EDITOR

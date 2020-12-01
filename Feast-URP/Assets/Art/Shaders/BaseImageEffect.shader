@@ -3,10 +3,7 @@
     Properties
     {
 		[HideInInspector]_MainTex("Texture", 2D) = "white" {}
-		[HDR]_FogColor("Fog Color", color) = (1,1,1,1)
-		_FogNear("Fog Start Distance", float) = 1
-		_FogFar("Fog End Distance", float) = 10
-		_FogExp("Fog Exponent", float) = 2
+		[HDR]_FadeColor("Fade Color", color) = (1,1,1,1)
     }
     SubShader
     {
@@ -43,18 +40,13 @@
 
 			sampler2D _MainTex;
 			sampler2D _CameraDepthTexture;
-			fixed4 _FogColor;
-			float _FogNear;
-			float _FogFar;
-			float _FogExp;
+			fixed4 _FadeColor;
+			float _ScreenFade;
 
             fixed4 frag (v2f i) : SV_Target
             {
 				fixed4 col = tex2D(_MainTex, i.uv);
-
-				float t = LinearEyeDepth(tex2D(_CameraDepthTexture, i.uv));
-				t = saturate((t - _FogNear) / (_FogFar - _FogNear));
-				col = lerp(col, _FogColor, pow(t, _FogExp));
+				col = lerp(col, _FadeColor, _ScreenFade);
                 return col;
             }
             ENDCG

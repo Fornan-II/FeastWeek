@@ -39,6 +39,25 @@ MonoBehaviour:
       restoreCamera: 1
       offset: {x: 0, y: 0, z: 0, w: 0}
       cameraFieldOfView: 60
+--- !u!114 &-507171612372203267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c08ff65b9107c149b2ff1d4b4dfe2a2, type: 3}
+  m_Name: Blit
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    Event: 550
+    blitMaterial: {fileID: 2100000, guid: c54dd53afc23da14586f6578f326cf43, type: 2}
+    blitMaterialPassIndex: -1
+    destination: 0
+    textureId: _BlitPassTexture
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54,7 +73,8 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: -4252032856786205891}
   - {fileID: 1596816931071706264}
-  m_RendererFeatureMap: 3d03f81da5befdc498c4dbdb89082916
+  - {fileID: -507171612372203267}
+  m_RendererFeatureMap: 3d03f81da5befdc498c4dbdb89082916fd88640c1b2af6f8
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   shaders:
     blitPS: {fileID: 4800000, guid: c17132b1f77d20942aa75f8429c0f8bc, type: 3}

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1715510752619392746}
   - component: {fileID: 1715510752619392747}
   - component: {fileID: 1715510752619392744}
+  - component: {fileID: 5871181978129609124}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -111,14 +112,15 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  interacter: {fileID: 6961860451848926185}
   lookTransform: {fileID: 1715510753135863543}
   rb: {fileID: 1715510752619392746}
   col: {fileID: 1715510752619392750}
   moveGroundAccelLerp: 0.2
   moveAerialAccelLerp: 0.07
-  lookSpeed: 0.3
+  lookSpeed: 0.15
   moveSpeed: 2.5
-  sprintMultiplier: 1.6
+  sprintMultiplier: 1.5
   jumpForce: 3
   maxGroundAngle: 50
   groundCheckDistance: 0.01
@@ -164,6 +166,18 @@ MonoBehaviour:
   m_DefaultActionMap: FSPCharacter
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &5871181978129609124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1715510752619392751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb300a936af63ce41b15d9f5004809c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1715510753135863540
 GameObject:
   m_ObjectHideFlags: 0
@@ -174,6 +188,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1715510753135863543}
   - component: {fileID: 2095297677567145979}
+  - component: {fileID: 6961860451848926185}
   m_Layer: 0
   m_Name: CameraPivot
   m_TagString: Untagged
@@ -207,3 +222,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3554c629b7ffe8d41b06478ec353b570, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6961860451848926185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1715510753135863540}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91fdf056e20688242bb482ee7cc5d348, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  interactRange: 1.5

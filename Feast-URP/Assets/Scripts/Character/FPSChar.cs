@@ -1,19 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class FPSChar : Pawn
 {
 #pragma warning disable 0649
     [Header("Components")]
+    [SerializeField] private RaycastInteracter interacter;
     [SerializeField] private Transform lookTransform;
     [SerializeField] private Rigidbody rb;
     [SerializeField] private CapsuleCollider col;
     [Header("Movement")]
     [SerializeField] private float moveGroundAccelLerp = 0.2f;
     [SerializeField] private float moveAerialAccelLerp = 0.07f;
-    [SerializeField] private float lookSpeed = 45f;
+    [SerializeField] private float lookSpeed = 0.25f;
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float sprintMultiplier = 1.5f;
     [SerializeField] private float jumpForce = 5f;
@@ -35,6 +34,7 @@ public class FPSChar : Pawn
     private void OnLook(InputValue input) => _lookInput = input.Get<Vector2>();
     private void OnJump(InputValue input) => _jumpInput = true;
     private void OnSprint(InputValue input) => _sprintInput = input.isPressed;
+    private void OnInteract(InputValue input) => interacter.TryInteract(this);
 
     private void FixedUpdate()
     {
@@ -87,7 +87,7 @@ public class FPSChar : Pawn
     // Update is called once per frame
     void Update()
     {
-        if (!IsBeingControlled) return;
+        if (!IsBeingControlled || Time.timeScale <= 0f) return;
 
         Vector2 lookCalc = _lookInput * lookSpeed;// * Time.deltaTime;
         rb.transform.rotation *= Quaternion.Euler(0, lookCalc.x, 0);

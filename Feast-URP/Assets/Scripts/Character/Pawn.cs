@@ -14,7 +14,7 @@ public class Pawn : MonoBehaviour
     [SerializeField] protected UnityEvent OnBecomeControlled;
     [SerializeField] protected UnityEvent OnStopBeingControlled;
 
-    public UnityAction BecomeControlledBy(Controller controller)
+    public virtual UnityAction BecomeControlledBy(Controller controller)
     {
         MyController = controller;
         playerInput.enabled = true;
@@ -23,7 +23,7 @@ public class Pawn : MonoBehaviour
         return StopBeingControlled;
     }
 
-    private void StopBeingControlled()
+    protected virtual void StopBeingControlled()
     {
         MyController = null;
         playerInput.enabled = false;

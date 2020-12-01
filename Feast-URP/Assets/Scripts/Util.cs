@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public static class Util
 {
@@ -10,6 +11,12 @@ public static class Util
     public static float RandomInRange(Vector2 range) => Random.Range(range.x, range.y);
 
     public static float AnimationCurveLengthTime(AnimationCurve curve) => curve[curve.length - 1].time;
+
+    public static float RoundToPlaces(float value, int decimalPlaces = 0)
+    {
+        float scaleValue = Mathf.Pow(10, decimalPlaces);
+        return Mathf.Round(value * scaleValue) / scaleValue;
+    }
 
     [System.Serializable]
     public struct CursorMode
@@ -30,5 +37,10 @@ public static class Util
         }
 
         public static CursorMode Default => new CursorMode(true, CursorLockMode.None);
+
+        public static CursorMode GetCurrent() => new CursorMode(Cursor.visible, Cursor.lockState);
     }
+
+    [System.Serializable]
+    public class PawnEvent : UnityEvent<Pawn> { }
 }

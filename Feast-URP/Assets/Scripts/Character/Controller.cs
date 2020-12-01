@@ -8,17 +8,20 @@ public class Controller : MonoBehaviour
     [SerializeField] protected Pawn controlledPawn;
     private UnityAction _pawnReleaseMethod;
 
-    private void Start() => controlledPawn?.BecomeControlledBy(this);
+    private void Start() => TakeControlOf(controlledPawn);
 
     public void TakeControlOf(Pawn pawn)
     {
-        if (controlledPawn)
+        if (controlledPawn && _pawnReleaseMethod != null)
         {
             _pawnReleaseMethod();
             _pawnReleaseMethod = null;
         }
 
         controlledPawn = pawn;
+#if UNITY_EDITOR
+        _cachedControlledPawn = pawn;
+#endif
         if(controlledPawn)
         {
             _pawnReleaseMethod = controlledPawn.BecomeControlledBy(this);
@@ -26,11 +29,18 @@ public class Controller : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+    private Pawn _cachedControlledPawn;
     private void OnValidate()
     {
-        if(UnityEditor.EditorApplication.isPlaying && controlledPawn && controlledPawn.MyController != this)
+        if(UnityEditor.EditorApplication.isPlaying)
         {
-            controlledPawn.BecomeControlledBy(this);
+            if (controlledPawn && controlledPawn.MyController != this)
+                controlledPawn.BecomeControlledBy(this);
+            else if (!controlledPawn && _cachedControlledPawn && _cachedControlledPawn.MyController == this)
+            {
+                controlledPawn = _cachedControlledPawn;
+                TakeControlOf(null);
+            }
         }
     }
 #endif

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class LampPawn : VehiclePawn
@@ -13,6 +14,12 @@ public class LampPawn : VehiclePawn
     private void OnWalk(InputValue input) => ReturnControl();
     private void OnJump(InputValue input) => ReturnControl();
     private void OnInteract(InputValue input) => ReturnControl();
+
+    public override UnityAction BecomeControlledBy(Controller controller)
+    {
+        MsgBox.ShowMessage("Mouse to control", 3f);
+        return base.BecomeControlledBy(controller);
+    }
 
     private void Update()
     {

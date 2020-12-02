@@ -15,10 +15,26 @@ public class RaycastInteracter : MonoBehaviour
 
     private void FixedUpdate()
     {
+        bool _hadInteractable = _targetedInteractable;
+
         _targetedInteractable = null;
         if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hitInfo, interactRange, interactMask, QueryTriggerInteraction.Ignore))
         {
             hitInfo.transform.TryGetComponent(out _targetedInteractable);
+        }
+
+        if (_hadInteractable && !_targetedInteractable)
+            MsgBox.HideMessage();
+        else if (!_hadInteractable && _targetedInteractable)
+            MsgBox.ShowMessage("Left Mouse to Interact", -1f);
+    }
+
+    private void OnDisable()
+    {
+        if(_targetedInteractable)
+        {
+            MsgBox.HideMessage();
+            _targetedInteractable = null;
         }
     }
 

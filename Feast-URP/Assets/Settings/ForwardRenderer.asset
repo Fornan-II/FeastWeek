@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
   m_Name: Fog Override Opaques
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   settings:
     passTag: Fog Override Opaques
     Event: 300
@@ -20,7 +20,7 @@ MonoBehaviour:
       RenderQueueType: 0
       LayerMask:
         serializedVersion: 2
-        m_Bits: 1
+        m_Bits: 513
       PassNames: []
     overrideMaterial: {fileID: 2100000, guid: ad843cbb37dfd29438f3f44e40afc036, type: 2}
     overrideMaterialPassIndex: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c08ff65b9107c149b2ff1d4b4dfe2a2, type: 3}
   m_Name: Blit
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   settings:
     Event: 550
     blitMaterial: {fileID: 2100000, guid: c54dd53afc23da14586f6578f326cf43, type: 2}
@@ -108,7 +108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
   m_Name: Fog Override Transparents
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   settings:
     passTag: Fog Override Transparents
     Event: 500
@@ -116,7 +116,7 @@ MonoBehaviour:
       RenderQueueType: 1
       LayerMask:
         serializedVersion: 2
-        m_Bits: 1
+        m_Bits: 513
       PassNames: []
     overrideMaterial: {fileID: 2100000, guid: ad843cbb37dfd29438f3f44e40afc036, type: 2}
     overrideMaterialPassIndex: 0

@@ -61,5 +61,14 @@ public class IntroHelper : MonoBehaviour
     {
         playerController.TakeControlOf(playerPawn);
         PauseManager.PausingAllowed = true;
+        StartCoroutine(FPS_Tutorial());
+    }
+
+    private IEnumerator FPS_Tutorial()
+    {
+        yield return new WaitForSeconds(1f);
+        MsgBox.ShowMessage("WASD to move", 3f);
+        yield return new WaitForSeconds(4f);
+        MsgBox.ShowMessage("Mouse to look", 3f);
     }
 }

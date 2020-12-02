@@ -47,7 +47,7 @@ public class PauseManager : MonoBehaviour
 
     public void PauseGame()
     {
-        if (_isPaused) return;
+        if (_isPaused || !PausingAllowed) return;
 
         _cachedTimeScale = Time.timeScale;
         Time.timeScale = 0f;

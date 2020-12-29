@@ -5,6 +5,8 @@ using UnityEngine.Events;
 
 public class Controller : MonoBehaviour
 {
+    public Pawn ControlledPawn => controlledPawn;
+
     [SerializeField] protected Pawn controlledPawn;
     private UnityAction _pawnReleaseMethod;
 
@@ -12,6 +14,14 @@ public class Controller : MonoBehaviour
 
     public void TakeControlOf(Pawn pawn)
     {
+#if UNITY_EDITOR
+        if(!UnityEditor.EditorApplication.isPlaying)
+        {
+            controlledPawn = pawn;
+            return;
+        }
+#endif
+
         if (controlledPawn && _pawnReleaseMethod != null)
         {
             _pawnReleaseMethod();
@@ -28,6 +38,8 @@ public class Controller : MonoBehaviour
         }
     }
 
+    public void ReleaseControl() => TakeControlOf(null);
+
 #if UNITY_EDITOR
     private Pawn _cachedControlledPawn;
     private void OnValidate()
@@ -39,7 +51,7 @@ public class Controller : MonoBehaviour
             else if (!controlledPawn && _cachedControlledPawn && _cachedControlledPawn.MyController == this)
             {
                 controlledPawn = _cachedControlledPawn;
-                TakeControlOf(null);
+                ReleaseControl();
             }
         }
     }

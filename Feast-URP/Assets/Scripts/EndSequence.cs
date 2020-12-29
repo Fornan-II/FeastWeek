@@ -26,7 +26,7 @@ public class EndSequence : MonoBehaviour
 
     public void Activate()
     {
-        PauseManager.PausingAllowed = false;
+        PauseManager.Instance.PausingAllowed = false;
 
         playerController.TakeControlOf(null);
         

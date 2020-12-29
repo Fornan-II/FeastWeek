@@ -45,4 +45,6 @@ public static class Util
 
     [System.Serializable]
     public class PawnEvent : UnityEvent<Pawn> { }
+
+    public static void MoveTransformToTarget(Transform transform, Transform target) => transform.SetPositionAndRotation(target.position, target.rotation);
 }

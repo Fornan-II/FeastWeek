@@ -60,7 +60,7 @@ public class IntroHelper : MonoBehaviour
     private void FinishFlying()
     {
         playerController.TakeControlOf(playerPawn);
-        PauseManager.PausingAllowed = true;
+        PauseManager.Instance.PausingAllowed = true;
         StartCoroutine(FPS_Tutorial());
     }
 

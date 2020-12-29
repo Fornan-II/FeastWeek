@@ -589,7 +589,9 @@ PlayerSettings:
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    1: BAKERY_INCLUDED
+    13: BAKERY_INCLUDED
   platformArchitecture: {}
   scriptingBackend:
     Standalone: 0

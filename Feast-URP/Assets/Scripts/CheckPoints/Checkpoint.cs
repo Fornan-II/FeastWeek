@@ -4,6 +4,27 @@ using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
+    public static Checkpoint LastCheckpoint => _lastCheckpoint;
+#if UNITY_EDITOR
+    public static Checkpoint DefaultCheckPoint
+    {
+        get
+        {
+            if (!UnityEditor.EditorApplication.isPlaying)
+            {
+                foreach (var cp in FindObjectsOfType<Checkpoint>())
+                {
+                    if (cp.isDefaultCheckpoint)
+                        return cp;
+                }
+            }
+            return _defaultCheckpoint;
+        }
+    }
+#else
+    public static Checkpoint DefaultCheckPoint => _defaultCheckpoint;
+#endif
+
     private static Checkpoint _lastCheckpoint;
     private static Checkpoint _defaultCheckpoint;
 
@@ -30,6 +51,12 @@ public class Checkpoint : MonoBehaviour
             _defaultCheckpoint = this;
     }
 
+    private void OnDestroy()
+    {
+        if (_defaultCheckpoint == this)
+            _defaultCheckpoint = null;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if(other.TryGetComponent(out CheckpointUser cpu))
@@ -43,8 +70,7 @@ public class Checkpoint : MonoBehaviour
     {
         if(isDefaultCheckpoint)
         {
-            var allCP = FindObjectsOfType<Checkpoint>();
-            foreach(var cp in allCP)
+            foreach(var cp in FindObjectsOfType<Checkpoint>())
             {
                 if (cp != this && cp.isDefaultCheckpoint)
                     cp.isDefaultCheckpoint = false;

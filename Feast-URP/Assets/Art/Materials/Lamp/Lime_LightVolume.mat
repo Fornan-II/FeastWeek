@@ -91,7 +91,7 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - Color_250FA0D: {r: 12.648256, g: 16.948381, b: 0, a: 1}
+    - Color_250FA0D: {r: 1.1535546, g: 10.204521, b: 7.2762675, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

@@ -6,8 +6,8 @@ using UnityEngine.InputSystem;
 public class PauseManager : MonoBehaviour
 {
     public static PauseManager Instance { get; private set; }
-    public static bool PausingAllowed = false;
 
+    public bool PausingAllowed = false;
     [SerializeField] private FadeUI PauseMenu;
 
     private float _cachedTimeScale = 1f;

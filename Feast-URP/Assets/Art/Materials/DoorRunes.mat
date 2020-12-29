@@ -33,7 +33,7 @@ Material:
     - _LimeContribution: 0
     - _MagentaContribution: 0
     m_Colors:
-    - Color_5250406D: {r: 16.94838, g: 0, b: 14.73001, a: 1}
-    - Color_9D5DC64: {r: 0.21288724, g: 1.2853017, b: 3.471698, a: 1}
-    - Color_FF70E09E: {r: 12.64826, g: 16.94838, b: 0, a: 1}
+    - Color_5250406D: {r: 20.320307, g: 12.067956, b: 2.750784, a: 1}
+    - Color_9D5DC64: {r: 2.3142083, g: 1.6434602, b: 4.4102983, a: 1}
+    - Color_FF70E09E: {r: 1.1535546, g: 10.204521, b: 7.2762675, a: 1}
   m_BuildTextureStacks: []

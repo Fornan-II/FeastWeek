@@ -18,6 +18,8 @@ public static class Util
         return Mathf.Round(value * scaleValue) / scaleValue;
     }
 
+    public static float Remap(float value, float inMin, float inMax, float outMin, float outMax) => outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);
+
     public static T RandomFromCollection<T>(IList<T> collection) => collection[Random.Range(0, collection.Count)];
 
     [System.Serializable]

@@ -35,7 +35,7 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties:
-    - '#BAKERY{"meshName":["Plank_ZPosCap"],"padding":[188],"unwrapper":[0]}'
+    - '#BAKERY{"meshName":["Plank_ZPosCap"],"padding":[256],"unwrapper":[0]}'
     clipAnimations: []
     isReadable: 0
   meshes:

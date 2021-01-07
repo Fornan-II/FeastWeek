@@ -9,6 +9,8 @@ public static class EditorUtil
     private static void OpenScene_Level() => EditorSceneManager.OpenScene("Assets/Scenes/Level.unity", OpenSceneMode.Single);
     [MenuItem("Tools/Open Scene/SampleScene")]
     public static void OpenScene_SampleScene() => EditorSceneManager.OpenScene("Assets/Scenes/SampleScene.unity", OpenSceneMode.Single);
+    [MenuItem("Tools/Open Scene/Main Menu")]
+    public static void OpenScene_MainMenu() => EditorSceneManager.OpenScene("Assets/Scenes/MainMenu.unity", OpenSceneMode.Single);
 
     [MenuItem("Tools/Toggle Render Features")]
     private static void ToggleFog()

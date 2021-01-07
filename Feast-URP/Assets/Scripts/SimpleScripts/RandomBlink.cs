@@ -8,10 +8,19 @@ public class RandomBlink : MonoBehaviour
     [SerializeField] private Vector2 BlinkIntervalRange = new Vector2(1f, 30f);
     [SerializeField] private AnimationCurve blinkAnim;
 
+    private Vector3 _eyeDefaultScale;
     private float _blinkIntervalTimer;
     private bool _isBlinking = false;
+    private bool _initialized = false;
 
-    private void Start() => _blinkIntervalTimer = Util.RandomInRange(BlinkIntervalRange);
+    private void Awake() => Initialize();
+    private void OnEnable() => _blinkIntervalTimer = Util.RandomInRange(BlinkIntervalRange);
+
+    private void OnDisable()
+    {
+        _isBlinking = false;
+        eyeTransform.localScale = _eyeDefaultScale;
+    }
 
     void Update()
     {
@@ -26,22 +35,39 @@ public class RandomBlink : MonoBehaviour
         }
     }
 
+    public void SetOpenness(float openness01)
+    {
+        Initialize();
+        openness01 = Mathf.Clamp01(openness01);
+
+        eyeTransform.localScale = new Vector3(_eyeDefaultScale.x, openness01 * _eyeDefaultScale.y, _eyeDefaultScale.z);
+
+        if (openness01 <= 0.0f)
+            eyeTransform.gameObject.SetActive(false);
+        else if (!eyeTransform.gameObject.activeSelf)
+            eyeTransform.gameObject.SetActive(true);
+    }
+
+    private void Initialize()
+    {
+        if (!_initialized)
+        {
+            _eyeDefaultScale = eyeTransform.localScale;
+            _initialized = true;
+        }
+    }
+
     private IEnumerator Blink()
     {
         _isBlinking = true;
         float animLength = Util.AnimationCurveLengthTime(blinkAnim);
-        Vector3 originalScale = eyeTransform.localScale;
         for(float timer = 0.0f; timer < animLength; timer += Time.deltaTime)
         {
-            float yScale = originalScale.y * blinkAnim.Evaluate(timer);
-            eyeTransform.localScale = new Vector3(originalScale.x, yScale, originalScale.z);
-            if(yScale <= 0.0f)
-                eyeTransform.gameObject.SetActive(false);
-            else if(!eyeTransform.gameObject.activeSelf)
-                eyeTransform.gameObject.SetActive(true);
+            float yScale = _eyeDefaultScale.y * blinkAnim.Evaluate(timer);
+            SetOpenness(yScale);
             yield return null;
         }
-        eyeTransform.localScale = originalScale;
+        eyeTransform.localScale = _eyeDefaultScale;
         _isBlinking = false;
     }
 }

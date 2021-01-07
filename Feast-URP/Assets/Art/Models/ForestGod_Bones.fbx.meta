@@ -35,7 +35,7 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties:
-    - '#BAKERY{"meshName":["brush_MatteHull_g0_b0"],"padding":[38],"unwrapper":[0]}'
+    - '#BAKERY{"meshName":["brush_MatteHull_g0_b0"],"padding":[57],"unwrapper":[0]}'
     clipAnimations: []
     isReadable: 0
   meshes:

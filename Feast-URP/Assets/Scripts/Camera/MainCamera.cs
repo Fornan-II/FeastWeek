@@ -68,8 +68,6 @@ public class MainCamera : MonoBehaviour
     {
         if (Instance == this)
             Instance = null;
-
-        Shader.SetGlobalFloat("_ScreenFade", 0f);
     }
 
     private IEnumerator FadeScreen(float from, float to, float duration)

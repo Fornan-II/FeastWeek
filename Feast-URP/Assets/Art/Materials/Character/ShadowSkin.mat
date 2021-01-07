@@ -27,10 +27,13 @@ Material:
     - Vector1_69F56F8F: -2
     - Vector1_8ADFD9D7: 1
     - Vector1_9872169B: 1
-    - Vector1_C42E8D55: 0.26
+    - Vector1_99C46304: 0.2
+    - Vector1_C42E8D55: 0.25
     - Vector1_D58157EA: 0
+    - Vector1_DB62F40F: 2
     - Vector1_EDC93E92: -2
     - Vector1_EF049754: 3
+    - _AlphaMultiplier: 1
     m_Colors:
     - Color_C7601F6D: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

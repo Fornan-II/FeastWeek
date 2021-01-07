@@ -7,6 +7,8 @@ using TMPro;
 
 public class FadeUI : MonoBehaviour
 {
+    public bool IsFading => _fadeRoutine != null;
+
     [SerializeField] private Image[] imageFields;
     [SerializeField] private TextMeshProUGUI[] textFields;
     [SerializeField] private float fadeDuration = 1f;

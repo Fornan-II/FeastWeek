@@ -5,6 +5,7 @@ using UnityEngine;
 // Based on Unity Standard Assets ThirdPersonCharacter class
 public class AnimatedCharacter : MonoBehaviour
 {
+    [Header("Movement")]
     [SerializeField] float m_MovingTurnSpeed = 360;
 	[SerializeField] float m_StationaryTurnSpeed = 180;
 	[SerializeField] float m_JumpPower = 12f;
@@ -13,6 +14,9 @@ public class AnimatedCharacter : MonoBehaviour
 	[SerializeField] float m_MoveSpeedMultiplier = 1f;
 	[SerializeField] float m_AnimSpeedMultiplier = 1f;
 	[SerializeField] float m_GroundCheckDistance = 0.1f;
+    [Header("Anim Variation")]
+    [SerializeField] private Vector2 randomOffsetRange = new Vector2(-.1f, .1f);
+    [SerializeField] private Vector2 randomSpeedRange = new Vector2(.9f, 1.1f);
 
 	//Rigidbody m_Rigidbody;
 	Animator m_Animator;
@@ -34,6 +38,9 @@ public class AnimatedCharacter : MonoBehaviour
     void Start()
 	{
 		m_Animator = GetComponent<Animator>();
+        m_Animator.SetFloat("RandomOffset", Util.RandomInRange(randomOffsetRange));
+        m_Animator.SetFloat("RandomSpeed", Util.RandomInRange(randomSpeedRange));
+
 		//m_Rigidbody = GetComponent<Rigidbody>();
 		//m_Capsule = GetComponent<CapsuleCollider>();
 		//m_CapsuleHeight = m_Capsule.height;

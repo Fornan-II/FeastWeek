@@ -48,6 +48,7 @@ public class MsgBox : MonoBehaviour
         if (_instance)
             Destroy(_instance.gameObject);
         _instance = this;
+        if (!IsShowingMessage) text.text = "";
     }
 
     private void OnDestroy()

@@ -320,6 +320,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 303e44514d45018448bf925c1ea9e42d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PausingAllowed: 0
   PauseMenu: {fileID: 8611950180764996216}
 --- !u!114 &544773665466138663
 MonoBehaviour:
@@ -523,6 +524,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 600500307}
     m_Modifications:
+    - target: {fileID: 1217138277534183585, guid: 970c4cefda5ba9343a091f93942edc8f, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 1217138278878171832, guid: 970c4cefda5ba9343a091f93942edc8f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

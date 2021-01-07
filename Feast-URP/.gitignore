@@ -58,3 +58,7 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+# Bakery Editor Files (too large for git + unnecessary)
+/[Aa]ssets/Editor/x64/Bakery/
+/[Aa]ssets/Editor/x64/Bakery.meta
+/[Aa]ssets/Editor/x64/Bakery/

@@ -15,6 +15,8 @@ public class DoorParticles : MonoBehaviour
 
     public void Activate()
     {
+        MainCamera.Effects.ApplyImpulse(transform.position, 0.125f);
+        MainCamera.Effects.ApplyScreenShake(0.125f);
         foreach (var p in particles)
             p.Play();
         isPlaying = true;

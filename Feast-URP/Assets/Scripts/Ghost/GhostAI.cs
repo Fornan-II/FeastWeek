@@ -38,7 +38,7 @@ public class GhostAI : StateMachine
 
     #region Unity Methods
     private void Awake() => agent.updateRotation = false;
-    private void Start() => lookAt.Target = MainCamera.Instance.transform;
+    private void Start() => lookAt.Target = MainCamera.RootTransform;
 
     protected override void OnDisable()
     {

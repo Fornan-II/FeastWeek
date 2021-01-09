@@ -30,9 +30,9 @@ public class EndSequence : MonoBehaviour
 
         playerController.TakeControlOf(null);
         
-        MainCamera.Instance.CameraData.cameraStack.Add(boneCamera);
+        MainCamera.CameraData.cameraStack.Add(boneCamera);
 
-        boneCamera.transform.parent = MainCamera.Instance.transform;
+        boneCamera.transform.parent = MainCamera.Camera.transform;
         boneCamera.transform.localPosition = Vector3.zero;
         boneCamera.transform.localRotation = Quaternion.identity;
 
@@ -44,21 +44,21 @@ public class EndSequence : MonoBehaviour
     private IEnumerator Anim()
     {
         blitMat.SetColor("_FadeColor", Color.black);
-        MainCamera.FadeScreen(fadeTime, true);
+        MainCamera.Effects.CrossFade(fadeTime, true);
 
-        Vector3 startPos = MainCamera.Instance.transform.position;
-        Quaternion startRot = MainCamera.Instance.transform.rotation;
+        Vector3 startPos = MainCamera.RootTransform.position;
+        Quaternion startRot = MainCamera.RootTransform.rotation;
         for(float timer = 0.0f; timer < animTime; timer += Time.deltaTime)
         {
             float tValue = timer / animTime;
             tValue *= tValue;
-            MainCamera.Instance.transform.SetPositionAndRotation(
+            MainCamera.RootTransform.SetPositionAndRotation(
                 Vector3.Lerp(startPos, camHolder.position, tValue),
                 Quaternion.Slerp(startRot, camHolder.rotation, tValue)
                 );
             yield return null;
         }
-        MainCamera.Instance.transform.SetPositionAndRotation(
+        MainCamera.RootTransform.SetPositionAndRotation(
                 camHolder.position,
                 camHolder.rotation
                 );

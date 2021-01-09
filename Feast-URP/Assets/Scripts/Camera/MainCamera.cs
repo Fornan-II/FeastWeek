@@ -6,81 +6,60 @@ using UnityEngine.Rendering;
 [RequireComponent(typeof(Camera))]
 public class MainCamera : MonoBehaviour
 {
-    public static MainCamera Instance { get; private set; }
-    public static Transform InstanceParent => Instance ? Instance.transform.parent : null;
+    public static Transform RootTransform => _instance ? _instance._cameraRoot : null;
+    public static Camera Camera => _instance ? _instance.camera : null;
+    public static UniversalAdditionalCameraData CameraData => _instance ? _instance.cameraData : null;
+    public static CameraFX Effects => _instance ? _instance.cameraEffects : null;
 
-    public Camera Camera => camera;
-    public UniversalAdditionalCameraData CameraData => cameraData;
+    private static MainCamera _instance;
 
     [SerializeField] private new Camera camera;
     [SerializeField] private UniversalAdditionalCameraData cameraData;
     [SerializeField] private VolumeProfile basePostProcessing;
+    [SerializeField] private CameraFX cameraEffects;
 
-    private Coroutine _activeFadeRoutine;
+    private Transform _cameraRoot;
 
     public static void RequestView(Transform parent, Vector3 localPosition, Quaternion localRotation)
     {
-        if (!Instance) return;
-        Instance.transform.SetParent(parent);
-        Instance.transform.localPosition = localPosition;
-        Instance.transform.localRotation = localRotation;
+        if (!_instance) return;
+        _instance._cameraRoot.SetParent(parent);
+        _instance._cameraRoot.localPosition = localPosition;
+        _instance._cameraRoot.localRotation = localRotation;
     }
 
     public static void RequestView(Transform parent) => RequestView(parent, Vector3.zero, Quaternion.identity);
 
     public static void RequestView(Vector3 position, Quaternion rotation)
     {
-        if (!Instance) return;
-        Instance.transform.SetPositionAndRotation(position, rotation);
+        if (!_instance) return;
+        _instance._cameraRoot.SetPositionAndRotation(position, rotation);
     }
 
-    public static void Unparent()
-    {
-        if (!Instance) return;
-        Instance.transform.parent = null;
-    }
-
-    public static void FadeScreen(float fadeDuration, bool fadeToWhite = false)
-    {
-        if(fadeDuration <= 0f)
-            Shader.SetGlobalFloat("_ScreenFade", fadeToWhite ? 1f : 0f);
-        else
-        {
-            if (Instance._activeFadeRoutine != null) Instance.StopCoroutine(Instance._activeFadeRoutine);
-            Instance._activeFadeRoutine = Instance.StartCoroutine(Instance.FadeScreen(fadeToWhite ? 0f : 1f, fadeToWhite ? 1f : 0f, fadeDuration));
-        }
-    }
-
+    #region Unity Methods
     private void Awake()
     {
-        if(Instance)
+        if(_instance)
         {
             Debug.LogWarning("Existing MainCamera Instance present! Destroying Original.");
-            Destroy(Instance.gameObject);
+            Destroy(_instance.gameObject);
         }
         else
         {
-            Instance = this;
+            _instance = this;
+            _cameraRoot = new GameObject("MainCameraRoot").transform;
+            Util.MoveTransformToTarget(_cameraRoot, transform);
+            transform.SetParent(_cameraRoot);
+            cameraEffects.Init(this);
         }
     }
 
     private void OnDestroy()
     {
-        if (Instance == this)
-            Instance = null;
+        if (_instance == this)
+            _instance = null;
     }
-
-    private IEnumerator FadeScreen(float from, float to, float duration)
-    {
-        for(float timer = 0.0f; timer < duration; timer += Time.deltaTime)
-        {
-            float tValue = Mathf.Lerp(from, to, timer / duration);
-            Shader.SetGlobalFloat("_ScreenFade", tValue * tValue);
-            yield return null;
-        }
-        Shader.SetGlobalFloat("_ScreenFade", to);
-        _activeFadeRoutine = null;
-    }
+    #endregion
 
 #if UNITY_EDITOR
     private void OnValidate()

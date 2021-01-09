@@ -11,7 +11,7 @@ public class ViewRequester : MonoBehaviour
 
     public void ReleaseView()
     {
-        if (MainCamera.InstanceParent == transform)
-            MainCamera.Unparent();
+        if (MainCamera.RootTransform.parent == transform)
+            MainCamera.RootTransform.SetParent(null);
     }
 }

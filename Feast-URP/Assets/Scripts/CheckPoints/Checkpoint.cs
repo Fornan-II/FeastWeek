@@ -32,12 +32,12 @@ public class Checkpoint : MonoBehaviour
 
     public static void ResetToCheckPoint(CheckpointUser target)
     {
-        MainCamera.FadeScreen(0f, true);
+        MainCamera.Effects.CrossFade(0f, true);
         if (_lastCheckpoint)
             _lastCheckpoint.ResetAt(target);
         else
             _defaultCheckpoint.ResetAt(target);
-        MainCamera.FadeScreen(3f);
+        MainCamera.Effects.CrossFade(3f, false);
     }
 
     public void ResetAt(CheckpointUser target)

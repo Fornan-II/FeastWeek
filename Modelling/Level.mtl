@@ -1,0 +1,70 @@
+newmtl StoneCarved
+Kd 1.0 1.0 1.0
+d 1.0
+
+newmtl Lamp_Body
+Kd 1.0 1.0 1.0
+d 1.0
+
+newmtl Lime_LightVolume
+Kd 1.0 1.0 1.0
+d 1.0
+
+newmtl Lime_Lamp_Lens
+map_Pm Rock022_2K_Roughness.jpg
+Kd 0.05098037 0.4509804 0.3215686
+d 0.1647059
+
+newmtl Lime_Lamp_Bulb
+map_Pm Rock022_2K_Roughness.jpg
+Kd 0 0 0
+d 1
+
+newmtl Magenta_Lamp_Lens
+map_Pm Rock022_2K_Roughness.jpg
+Kd 0.8980392 0.5333333 0.1215686
+d 0.1647059
+
+newmtl Magenta_Lamp_Bulb
+map_Pm Rock022_2K_Roughness.jpg
+Kd 0 0 0
+d 1
+
+newmtl Magenta_LightVolume
+Kd 1.0 1.0 1.0
+d 1.0
+
+newmtl StoneWall
+Kd 1.0 1.0 1.0
+d 1.0
+
+newmtl DoorRunes
+Kd 1.0 1.0 1.0
+d 1.0
+
+newmtl WoodenPlanks
+Kd 1.0 1.0 1.0
+d 1.0
+
+newmtl Collider
+map_Kd GridBox_Collider.png
+Kd 1.0 1.0 1.0
+d 1.0
+
+newmtl plate
+map_Pm Ground021_2K_Color.jpg
+Kd 0.6698113 0.6165717 0.5592293
+d 1
+
+newmtl RustedMetal
+Kd 1.0 1.0 1.0
+d 1.0
+
+newmtl TerrainMat
+Kd 1.0 1.0 1.0
+d 1.0
+
+newmtl Water
+Kd 1.0 1.0 1.0
+d 1.0
+

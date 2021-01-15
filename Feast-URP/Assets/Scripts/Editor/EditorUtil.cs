@@ -2,6 +2,7 @@
 using UnityEngine.Rendering.Universal;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine.ProBuilder;
 
 public static class EditorUtil
 {
@@ -121,5 +122,17 @@ public static class EditorUtil
         var bakeryLights = GameObject.FindObjectsOfType<BakeryLightMesh>();
         foreach (var light in bakeryLights)
             light.gameObject.SetActive(false);
+    }
+
+    [MenuItem("Tools/Misc/Select all probuilder meshes.")]
+    private static void SelectAllProbuilderMeshes()
+    {
+        ProBuilderMesh[] proBuilderMeshes = GameObject.FindObjectsOfType<ProBuilderMesh>();
+        GameObject[] selection = new GameObject[proBuilderMeshes.Length];
+        for(int i = 0; i < proBuilderMeshes.Length; ++i)
+        {
+            selection[i] = proBuilderMeshes[i].gameObject;
+        }
+        Selection.objects = selection;
     }
 }

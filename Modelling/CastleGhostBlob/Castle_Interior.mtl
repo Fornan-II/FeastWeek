@@ -1,0 +1,13 @@
+newmtl StoneWall
+Kd 1.0 1.0 1.0
+d 1.0
+
+newmtl StoneCarved
+Kd 1.0 1.0 1.0
+d 1.0
+
+newmtl plate
+map_Pm Ground021_2K_Color.jpg
+Kd 0.6698113 0.6165717 0.5592293
+d 1
+

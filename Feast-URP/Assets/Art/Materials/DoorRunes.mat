@@ -30,7 +30,7 @@ Material:
     - Vector1_F27EAB2C: 100
     - Vector1_FB15DDDB: 0.02
     - _Dissolve: 0
-    - _LimeContribution: 0.4797344
+    - _LimeContribution: 0
     - _MagentaContribution: 0
     m_Colors:
     - Color_5250406D: {r: 20.320307, g: 12.067956, b: 2.750784, a: 1}

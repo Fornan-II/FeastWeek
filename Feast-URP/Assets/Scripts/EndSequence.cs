@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EndSequence : MonoBehaviour
 {
+    [SerializeField] private UnityEngine.Playables.PlayableDirector director;
     [SerializeField] private Controller playerController;
     [SerializeField] private GameObject bones;
     [SerializeField] private Camera boneCamera;
@@ -26,6 +27,8 @@ public class EndSequence : MonoBehaviour
 
     public void Activate()
     {
+        director.Play();
+        return;
         PauseManager.Instance.PausingAllowed = false;
 
         playerController.TakeControlOf(null);

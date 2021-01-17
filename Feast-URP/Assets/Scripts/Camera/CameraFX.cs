@@ -54,7 +54,7 @@ public class CameraFX
     #endregion
 
     #region Transform Effects
-    private void StartTransformEffect(Func<Transform, IEnumerator> effect)
+    private Coroutine StartTransformEffect(Func<Transform, IEnumerator> effect)
     {
         // Create new transform
         Transform effectTransform = new GameObject("~TransformEffect").transform;
@@ -65,7 +65,7 @@ public class CameraFX
         MainCamera.Camera.transform.SetParent(effectTransform);
 
         // Start transform effect
-        _mainCameraRef.StartCoroutine(effect.Invoke(effectTransform));
+        return _mainCameraRef.StartCoroutine(effect.Invoke(effectTransform));
     }
 
     private void CleanUpTransformEffect(Transform effectTransform)
@@ -100,7 +100,7 @@ public class CameraFX
 
     public void ApplyScreenShake(float strength, float duration = 0.5f)
     {
-        IEnumerator ImpulseCoroutine(Transform t)
+        IEnumerator ScreenShakeCoroutine(Transform t)
         {
             for (float timer = 0.0f; timer < duration; timer += Time.deltaTime)
             {
@@ -112,7 +112,27 @@ public class CameraFX
             CleanUpTransformEffect(t);
         };
 
-        StartTransformEffect(ImpulseCoroutine);
+        StartTransformEffect(ScreenShakeCoroutine);
+    }
+
+    public Action<float> ContinuousScreenShake(float initialStrength)
+    {
+        float strength = initialStrength;
+
+        IEnumerator ScreenShakeCoroutine(Transform t)
+        {
+            while(strength > 0f)
+            {
+                Vector3 newPosition = UnityEngine.Random.insideUnitSphere * strength;
+                t.localPosition = Vector3.Lerp(newPosition, t.localPosition, screenShakeSmoothing);
+                yield return null;
+            }
+
+            CleanUpTransformEffect(t);
+        };
+
+        StartTransformEffect(ScreenShakeCoroutine);
+        return (float value) => strength = value;
     }
     #endregion
 }

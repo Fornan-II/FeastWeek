@@ -21,6 +21,12 @@ public class LampPawn : VehiclePawn
         return base.BecomeControlledBy(controller);
     }
 
+    protected override void StopBeingControlled()
+    {
+        base.StopBeingControlled();
+        _lookInput = Vector2.zero;
+    }
+
     private void Update()
     {
         if (!IsBeingControlled || Time.timeScale <= 0f) return;

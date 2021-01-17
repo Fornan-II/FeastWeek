@@ -5,10 +5,9 @@ public class FPSChar : Pawn
 {
 #pragma warning disable 0649
     [Header("Components")]
+    [SerializeField] private CharacterController movementController;
     [SerializeField] private RaycastInteracter interacter;
     [SerializeField] private Transform lookTransform;
-    [SerializeField] private Rigidbody rb;
-    [SerializeField] private CapsuleCollider col;
     [Header("Movement")]
     [SerializeField] private float moveGroundAccelLerp = 0.2f;
     [SerializeField] private float moveAerialAccelLerp = 0.07f;
@@ -17,10 +16,7 @@ public class FPSChar : Pawn
     [SerializeField] private float sprintMultiplier = 1.5f;
     [SerializeField] private float jumpForce = 5f;
     [Header("Ground Check")]
-    [SerializeField, Range(0, 180)] private float maxGroundAngle = 50f;
-    [SerializeField] private float groundCheckDistance = .01f;
-    [SerializeField,Range(0,1)] private float groundCheckSensitivity = 0.95f;
-    [SerializeField] private LayerMask groundCheckMask = Physics.AllLayers;
+    [SerializeField] private float coyoteTime = 0.01f;
 
     private Vector2 _moveInput;
     private Vector2 _lookInput;
@@ -28,7 +24,7 @@ public class FPSChar : Pawn
     private bool _sprintInput;
 
     private bool _isGrounded;
-    private Vector3 _groundNormal;
+    private float _timeSinceCharacterControllerGrounded;
 
     private void OnWalk(InputValue input) => _moveInput = input.Get<Vector2>();
     private void OnLook(InputValue input) => _lookInput = input.Get<Vector2>();
@@ -36,61 +32,41 @@ public class FPSChar : Pawn
     private void OnSprint(InputValue input) => _sprintInput = input.isPressed;
     private void OnInteract(InputValue input) => interacter.TryInteract(this);
 
-    private void FixedUpdate()
+    [SerializeField] private Vector3 cachedMoveCalc;
+
+    protected override void StopBeingControlled()
     {
-        // Ground check
-        _isGrounded = false;
-        _groundNormal = Vector3.up;
-        if (Physics.SphereCast(
-            transform.TransformPoint(col.center + Vector3.down * (col.height * 0.5f - col.radius)),
-            col.radius * groundCheckSensitivity,
-            -transform.up,
-            out RaycastHit hitInfo,
-            1f - groundCheckSensitivity + groundCheckDistance,
-            groundCheckMask,
-            QueryTriggerInteraction.Ignore
-            ))
-        {
-            if (Vector3.Angle(hitInfo.normal, Vector3.up) <= maxGroundAngle)
-            {
-                _isGrounded = true;
-                _groundNormal = hitInfo.normal;
-            }
-        }
+        base.StopBeingControlled();
+        _moveInput = Vector2.zero;
+        _lookInput = Vector2.zero;
+        _sprintInput = false;
+    }
 
-        // High friction when standing still - useful for not sliding down stairs
-        // Low friction when moving - useful for not sticking to walls
-        if(_isGrounded && _moveInput == Vector2.zero)
-            col.sharedMaterial.dynamicFriction = col.sharedMaterial.staticFriction = 1f;
-        else
-            col.sharedMaterial.dynamicFriction = col.sharedMaterial.staticFriction = 0f;
-
+    private void PlayerMovement()
+    {
         if (!IsBeingControlled) return;
         // Planar Movement
         Vector3 moveCalc = (transform.forward * _moveInput.y + transform.right * _moveInput.x).normalized * moveSpeed * (_sprintInput && _isGrounded && _moveInput.y > 0 ? sprintMultiplier : 1f);
-        moveCalc = Vector3.ProjectOnPlane(moveCalc, _groundNormal);
-        Debug.DrawRay(transform.position - Vector3.up * col.height * 0.5f, moveCalc, Color.yellow, 0.05f);
-        moveCalc = Vector3.Lerp(new Vector3(rb.velocity.x, 0f, rb.velocity.z), moveCalc, _isGrounded ? 1 : moveAerialAccelLerp);
-        Debug.DrawRay(transform.position - Vector3.up * col.height * 0.5f, moveCalc, Color.red, 0.05f);
+        Debug.DrawRay(transform.position - Vector3.up * movementController.height * 0.5f, moveCalc, Color.yellow, 0.05f);
+        moveCalc = Vector3.Lerp(new Vector3(movementController.velocity.x, 0f, movementController.velocity.z), moveCalc, _isGrounded ? 1 : moveAerialAccelLerp);
+        Debug.DrawRay(transform.position - Vector3.up * movementController.height * 0.5f, moveCalc, Color.red, 0.05f);
 
         // Vertical Movement
         if (_isGrounded && _jumpInput)
             moveCalc.y = jumpForce;
-        else if (!_isGrounded)
-            moveCalc.y = rb.velocity.y;
+        else if(!_isGrounded)
+            moveCalc.y = movementController.velocity.y;
 
         _jumpInput = false;
-
-        rb.velocity = moveCalc;
+        moveCalc += Physics.gravity * Time.deltaTime;
+        movementController.Move(moveCalc * Time.deltaTime);
+        cachedMoveCalc = moveCalc;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void PlayerLook()
     {
-        if (!IsBeingControlled || Time.timeScale <= 0f) return;
-
         Vector2 lookCalc = _lookInput * lookSpeed;// * Time.deltaTime;
-        rb.transform.rotation *= Quaternion.Euler(0, lookCalc.x, 0);
+        transform.rotation *= Quaternion.Euler(0, lookCalc.x, 0);
         lookTransform.rotation *= Quaternion.Euler(-lookCalc.y, 0, 0);
         if (Quaternion.Angle(Quaternion.Euler(Vector3.forward), lookTransform.localRotation) > 90f)
         {
@@ -98,25 +74,37 @@ public class FPSChar : Pawn
         }
     }
 
+    // Update is called once per frame
+    void Update()
+    {
+        if (!IsBeingControlled || Time.timeScale <= 0f) return;
+
+        _isGrounded = movementController.isGrounded;
+
+        PlayerMovement();
+        PlayerLook();
+    }
+
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        if (!rb) rb = GetComponent<Rigidbody>();
-        if (!col) col = GetComponent<CapsuleCollider>();
+        movementController = movementController ?? GetComponent<CharacterController>();
     }
 
     private void OnDrawGizmos()
     {
-        if(col)
+        if(movementController)
         {
             Gizmos.color = Color.green;
             Gizmos.matrix = transform.localToWorldMatrix;
-            Gizmos.DrawSphere(Vector3.up * (col.height * 0.5f - col.radius), col.radius);
-            Gizmos.DrawSphere(Vector3.zero, col.radius);
-            Gizmos.DrawSphere(Vector3.down * (col.height * 0.5f - col.radius), col.radius);
+            Gizmos.DrawSphere(Vector3.up * (movementController.height * 0.5f - movementController.radius), movementController.radius);
+            Gizmos.DrawSphere(Vector3.zero, movementController.radius);
+            Gizmos.DrawSphere(Vector3.down * (movementController.height * 0.5f - movementController.radius), movementController.radius);
 
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(col.center + Vector3.down * (col.height * 0.5f - col.radius), col.radius);
+            Gizmos.color = _isGrounded ? Color.blue : Color.red;
+            Gizmos.matrix = Matrix4x4.identity;
+
+            Gizmos.DrawWireSphere(transform.TransformPoint(movementController.center + Vector3.down * (movementController.height * 0.5f - movementController.radius)), movementController.radius);
         }
     }
 #endif

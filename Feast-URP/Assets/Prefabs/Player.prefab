@@ -9,12 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1715510752619392745}
-  - component: {fileID: 1715510752619392750}
-  - component: {fileID: 1715510752619392746}
   - component: {fileID: 1715510752619392747}
   - component: {fileID: 1715510752619392744}
   - component: {fileID: 5871181978129609124}
   - component: {fileID: 7507402167451724083}
+  - component: {fileID: 118242237}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -37,36 +36,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &1715510752619392750
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1715510752619392751}
-  m_Material: {fileID: 13400000, guid: 80bae904a6c6ebb43af13cd6f1129af5, type: 2}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.25
-  m_Height: 1.75
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &1715510752619392746
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1715510752619392751}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 1
-  m_Constraints: 112
-  m_CollisionDetection: 0
 --- !u!114 &1715510752619392747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137,22 +106,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  movementController: {fileID: 118242237}
   interacter: {fileID: 6961860451848926185}
   lookTransform: {fileID: 1715510753135863543}
-  rb: {fileID: 1715510752619392746}
-  col: {fileID: 1715510752619392750}
   moveGroundAccelLerp: 0.2
   moveAerialAccelLerp: 0.07
   lookSpeed: 0.15
   moveSpeed: 2.5
   sprintMultiplier: 1.5
   jumpForce: 3
-  maxGroundAngle: 50
-  groundCheckDistance: 0.01
-  groundCheckSensitivity: 0.95
-  groundCheckMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
+  coyoteTime: 0.01
+  cachedMoveCalc: {x: 0, y: 0, z: 0}
 --- !u!114 &1715510752619392744
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -215,6 +179,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 223ce0118a6c79e47a53b2911e9f954c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!143 &118242237
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1715510752619392751}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 1.75
+  m_Radius: 0.25
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1715510753135863540
 GameObject:
   m_ObjectHideFlags: 0

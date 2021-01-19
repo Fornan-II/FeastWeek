@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 
 public static class Util
@@ -21,6 +22,8 @@ public static class Util
     public static float Remap(float value, float inMin, float inMax, float outMin, float outMax) => outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);
 
     public static T RandomFromCollection<T>(IList<T> collection) => collection[Random.Range(0, collection.Count)];
+
+    public static void UndoDontDestroyOnLoad(GameObject gameObject) => SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetActiveScene());
 
     [System.Serializable]
     public struct CursorMode

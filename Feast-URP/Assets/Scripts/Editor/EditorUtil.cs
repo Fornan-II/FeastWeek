@@ -135,4 +135,15 @@ public static class EditorUtil
         }
         Selection.objects = selection;
     }
+
+    [MenuItem("Tools/Misc/Make meshRenderers not use reflection.")]
+    private static void MakeMeshRenderersNotUseReflection()
+    {
+        MeshRenderer[] allMR = GameObject.FindObjectsOfType<MeshRenderer>();
+        foreach(var mr in allMR)
+        {
+            if(mr.gameObject.isStatic)
+                mr.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+        }
+    }
 }

@@ -27,6 +27,13 @@ public class PauseManager : MonoBehaviour
             transform.SetParent(null);
             DontDestroyOnLoad(gameObject);
         }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if(!DebugMenu.Instance)
+        {
+            GameObject debugMenu = new GameObject("~DebugMenu");
+            debugMenu.AddComponent<DebugMenu>();
+        }
+#endif
     }
 
     private void OnDestroy()

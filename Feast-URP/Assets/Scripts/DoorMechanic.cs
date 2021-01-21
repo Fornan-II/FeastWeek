@@ -55,6 +55,11 @@ public class DoorMechanic : MonoBehaviour
 
         if (anyLampFailed) return;
 
+        OpenDoor();
+    }
+
+    public void OpenDoor()
+    {
         animator.SetTrigger("OpenDoor");
         _doorHasOpened = true;
     }

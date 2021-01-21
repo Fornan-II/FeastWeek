@@ -46,8 +46,10 @@ public class MsgBox : MonoBehaviour
     private void Awake()
     {
         if (_instance)
-            Destroy(_instance.gameObject);
-        _instance = this;
+            Destroy(gameObject);
+        else
+            _instance = this;
+        // Already DontDestroyOnLoad because this is attached to PauseManager
         if (!IsShowingMessage) text.text = "";
     }
 

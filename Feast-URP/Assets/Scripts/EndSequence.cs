@@ -5,73 +5,66 @@ using UnityEngine;
 public class EndSequence : MonoBehaviour
 {
     [SerializeField] private UnityEngine.Playables.PlayableDirector director;
+    [SerializeField] private MeshRenderer ghostBones;
+    [SerializeField] private GameObject alembicBlob;
+    [SerializeField] private AnimationCurve ghostBonesAnimation = AnimationCurve.Linear(0f, -1f, 3f, 4f);
+    [SerializeField] private float alembicBlobStartTime = 2.75f;
     [SerializeField] private Controller playerController;
-    [SerializeField] private GameObject bones;
-    [SerializeField] private Camera boneCamera;
-    [SerializeField] private Material blitMat;
-    [SerializeField] private Transform camHolder;
-    [SerializeField] private float animTime = 4f;
-    [SerializeField] private float fadeTime = 5f;
 
-    private Color defaultBlitCol;
+    private bool _hasBeenActivated = false;
 
     private void Start()
     {
-        defaultBlitCol = blitMat.GetColor("_FadeColor");
-    }
-
-    private void OnDestroy()
-    {
-        blitMat.SetColor("_FadeColor", defaultBlitCol);
+        alembicBlob.SetActive(false);
+        ghostBones.material.SetFloat("_Extrusion", -1f);
     }
 
     public void Activate()
     {
-        director.Play();
-        return;
-        PauseManager.Instance.PausingAllowed = false;
+        if (_hasBeenActivated) return;
 
-        playerController.TakeControlOf(null);
-        
-        MainCamera.CameraData.cameraStack.Add(boneCamera);
-
-        boneCamera.transform.parent = MainCamera.Camera.transform;
-        boneCamera.transform.localPosition = Vector3.zero;
-        boneCamera.transform.localRotation = Quaternion.identity;
-
-        bones.layer = LayerMask.NameToLayer("Special");
-
+        _hasBeenActivated = true;
         StartCoroutine(Anim());
     }
 
     private IEnumerator Anim()
     {
-        blitMat.SetColor("_FadeColor", Color.black);
-        MainCamera.Effects.CrossFade(fadeTime, true);
-
-        Vector3 startPos = MainCamera.RootTransform.position;
-        Quaternion startRot = MainCamera.RootTransform.rotation;
-        for(float timer = 0.0f; timer < animTime; timer += Time.deltaTime)
+        bool directorStarted = false;
+        float animLength = Util.AnimationCurveLengthTime(ghostBonesAnimation);
+        for (float timer = 0.0f; timer < animLength; timer += Time.deltaTime)
         {
-            float tValue = timer / animTime;
-            tValue *= tValue;
-            MainCamera.RootTransform.SetPositionAndRotation(
-                Vector3.Lerp(startPos, camHolder.position, tValue),
-                Quaternion.Slerp(startRot, camHolder.rotation, tValue)
-                );
+            ghostBones.material.SetFloat("_Extrusion", ghostBonesAnimation.Evaluate(timer));
+            if(timer >= alembicBlobStartTime && !directorStarted)
+            {
+                alembicBlob.SetActive(true);
+                director.Play();
+            }
             yield return null;
         }
-        MainCamera.RootTransform.SetPositionAndRotation(
-                camHolder.position,
-                camHolder.rotation
-                );
+        
+        
+        //blitMat.SetColor("_FadeColor", Color.black);
+        //MainCamera.Effects.CrossFade(fadeTime, true);
 
-        yield return new WaitForSeconds(Mathf.Max(2f, fadeTime - animTime));
+        //Vector3 startPos = MainCamera.RootTransform.position;
+        //Quaternion startRot = MainCamera.RootTransform.rotation;
+        //for(float timer = 0.0f; timer < animTime; timer += Time.deltaTime)
+        //{
+        //    float tValue = timer / animTime;
+        //    tValue *= tValue;
+        //    MainCamera.RootTransform.SetPositionAndRotation(
+        //        Vector3.Lerp(startPos, camHolder.position, tValue),
+        //        Quaternion.Slerp(startRot, camHolder.rotation, tValue)
+        //        );
+        //    yield return null;
+        //}
+        //MainCamera.RootTransform.SetPositionAndRotation(
+        //        camHolder.position,
+        //        camHolder.rotation
+        //        );
 
-        boneCamera.enabled = false;
+        //yield return new WaitForSeconds(Mathf.Max(2f, fadeTime - animTime));
 
-        yield return new WaitForSeconds(5f);
-        Application.Quit();
-        Debug.Log("quit");
+        //boneCamera.enabled = false;
     }
 }

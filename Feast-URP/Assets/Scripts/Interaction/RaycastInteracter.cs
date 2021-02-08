@@ -20,7 +20,10 @@ public class RaycastInteracter : MonoBehaviour
         _targetedInteractable = null;
         if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hitInfo, interactRange, interactMask, QueryTriggerInteraction.Ignore))
         {
-            hitInfo.transform.TryGetComponent(out _targetedInteractable);
+            if(hitInfo.transform.TryGetComponent(out _targetedInteractable))
+            {
+                _targetedInteractable = _targetedInteractable.IsInteractable ? _targetedInteractable : null;
+            }
         }
 
         if (_hadInteractable && !_targetedInteractable)

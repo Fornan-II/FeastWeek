@@ -13,6 +13,9 @@ public static class EditorUtil
     [MenuItem("Tools/Open Scene/Main Menu")]
     public static void OpenScene_MainMenu() => EditorSceneManager.OpenScene("Assets/Scenes/MainMenu.unity", OpenSceneMode.Single);
 
+    [MenuItem("Toggle/Fix lingering screen fade")]
+    public static void FixLingeringScreenFade() => Shader.SetGlobalFloat("_ScreenFade", 0f);
+
     [MenuItem("Tools/Toggle Render Features")]
     private static void ToggleFog()
     {
@@ -23,9 +26,9 @@ public static class EditorUtil
         }
     }
 
-    [MenuItem("Tools/Invisible Colliders/Enable")]
+    [MenuItem("Tools/Bakery Helpers/Invisible Colliders/Enable")]
     private static void EnableInvisibleColliders() => InvisibleColliders(true);
-    [MenuItem("Tools/Invisible Colliders/Disable")]
+    [MenuItem("Tools/Bakery Helpers/Invisible Colliders/Disable")]
     private static void DisableInvisibleColliders() => InvisibleColliders(false);
 
     private static void InvisibleColliders(bool enabled)
@@ -108,7 +111,7 @@ public static class EditorUtil
     }
     #endregion
 
-    [MenuItem("Tools/Bakery/Area Light/On")]
+    [MenuItem("Tools/Bakery Helpers/Area Light/On")]
     private static void BakeryAreaLightOn()
     {
         var bakeryLights = Resources.FindObjectsOfTypeAll<BakeryLightMesh>();
@@ -116,7 +119,7 @@ public static class EditorUtil
             light.gameObject.SetActive(true);
     }
 
-    [MenuItem("Tools/Bakery/Area Light/Off")]
+    [MenuItem("Tools/Bakery Helpers/Area Light/Off")]
     private static void BakeryAreaLightOff()
     {
         var bakeryLights = GameObject.FindObjectsOfType<BakeryLightMesh>();

@@ -51,17 +51,34 @@ public class MainCamera : MonoBehaviour
             Util.MoveTransformToTarget(_cameraRoot, transform);
             transform.SetParent(_cameraRoot);
             cameraEffects.Init(this);
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.playModeStateChanged += PlaymodeCleanup;
+#endif
         }
     }
 
     private void OnDestroy()
     {
         if (_instance == this)
+        {
             _instance = null;
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.playModeStateChanged -= PlaymodeCleanup;
+#endif
+        }
     }
     #endregion
 
 #if UNITY_EDITOR
+    private void PlaymodeCleanup(UnityEditor.PlayModeStateChange playModeStateChange)
+    {
+        if (playModeStateChange != UnityEditor.PlayModeStateChange.ExitingPlayMode) return;
+
+        // Clean up screen fade
+        Effects.ResetFadeColorToDefault();
+        Effects.CrossFade(0f, false);
+    }
+
     private void OnValidate()
     {
         if (!camera) camera = GetComponent<Camera>();

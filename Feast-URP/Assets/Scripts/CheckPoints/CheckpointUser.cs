@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CheckpointUser : MonoBehaviour
+public interface ICheckpointUser
 {
-    
+    void Teleport(Vector3 position, Quaternion rotation);
 }

@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1715510752619392745}
   - component: {fileID: 1715510752619392747}
   - component: {fileID: 1715510752619392744}
-  - component: {fileID: 5871181978129609124}
   - component: {fileID: 7507402167451724083}
   - component: {fileID: 118242237}
   m_Layer: 0
@@ -115,8 +114,12 @@ MonoBehaviour:
   moveSpeed: 2.5
   sprintMultiplier: 1.5
   jumpForce: 3
-  coyoteTime: 0.01
-  cachedMoveCalc: {x: 0, y: 0, z: 0}
+  maxGroundAngle: 45
+  groundCheckDistance: 0.01
+  groundCheckSensitivity: 0.95
+  groundCheckMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &1715510752619392744
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,18 +158,6 @@ MonoBehaviour:
   m_DefaultActionMap: FSPCharacter
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &5871181978129609124
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1715510752619392751}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb300a936af63ce41b15d9f5004809c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7507402167451724083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,8 +181,8 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 1.75
-  m_Radius: 0.25
+  m_Height: 1.59
+  m_Radius: 0.17
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08

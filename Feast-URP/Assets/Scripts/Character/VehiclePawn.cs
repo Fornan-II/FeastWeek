@@ -5,6 +5,8 @@ using UnityEngine.Events;
 
 public class VehiclePawn : Pawn
 {
+    public Pawn OwnerPawn => _ownerPawn;
+
     protected Pawn _ownerPawn;
 
     public void TakeControlFrom(Pawn owner)

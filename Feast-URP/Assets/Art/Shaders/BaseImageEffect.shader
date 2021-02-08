@@ -3,7 +3,6 @@
     Properties
     {
 		[HideInInspector]_MainTex("Texture", 2D) = "white" {}
-		[HDR]_FadeColor("Fade Color", color) = (1,1,1,1)
     }
     SubShader
     {

@@ -30,7 +30,7 @@ public class Checkpoint : MonoBehaviour
 
     [SerializeField] private bool isDefaultCheckpoint = false;
 
-    public static void ResetToCheckPoint(CheckpointUser target)
+    public static void ResetToCheckPoint(ICheckpointUser target)
     {
         MainCamera.Effects.CrossFade(0f, true);
         if (_lastCheckpoint)
@@ -40,10 +40,7 @@ public class Checkpoint : MonoBehaviour
         MainCamera.Effects.CrossFade(3f, false);
     }
 
-    public void ResetAt(CheckpointUser target)
-    {
-        target.transform.SetPositionAndRotation(transform.position, transform.rotation);
-    }
+    public void ResetAt(ICheckpointUser target) => target.Teleport(transform.position, transform.rotation);
 
     private void Awake()
     {
@@ -59,7 +56,7 @@ public class Checkpoint : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.TryGetComponent(out CheckpointUser cpu))
+        if(other.TryGetComponent(out ICheckpointUser cpu))
         {
             _lastCheckpoint = this;
         }

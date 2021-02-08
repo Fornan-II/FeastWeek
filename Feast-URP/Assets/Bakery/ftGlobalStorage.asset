@@ -432,7 +432,9 @@ MonoBehaviour:
   - Packages/com.unity.animation.rigging/Tests/Runtime/Resources/Dude_low.fbx
   - Assets/Art/Animations/Character/Sad Walk.fbx
   - Assets/Art/Models/ForestGod_Ghost.fbx
-  uvOverlapAssetList: 00000000ffffffff000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  - Assets/Art/Animations/EndCinematic/DeathBlobCollider.fbx
+  - Assets/Art/Animations/EndCinematic/BlobCollider.fbx
+  uvOverlapAssetList: 00000000ffffffff0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   xatlasWarningShown: 0
   foundCompatibleSetup: 1
   gpuName: NVIDIA GeForce GTX 1650

@@ -5,7 +5,13 @@ using UnityEngine.Events;
 
 public class Interactable : MonoBehaviour
 {
+    public bool IsInteractable = true;
+
     [SerializeField] protected Util.PawnEvent OnInteract;
 
-    public virtual void Interact(Pawn interacter) => OnInteract?.Invoke(interacter);
+    public virtual void Interact(Pawn interacter)
+    {
+        if(IsInteractable)
+            OnInteract?.Invoke(interacter);
+    }
 }

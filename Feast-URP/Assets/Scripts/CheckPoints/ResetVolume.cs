@@ -6,7 +6,7 @@ public class ResetVolume : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent(out CheckpointUser cpu))
+        if (other.TryGetComponent(out ICheckpointUser cpu))
         {
             Checkpoint.ResetToCheckPoint(cpu);
         }

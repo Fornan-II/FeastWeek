@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EndSequence : MonoBehaviour
 {
+    [SerializeField] private Interactable myInteractable;
     [SerializeField] private UnityEngine.Playables.PlayableDirector director;
     [SerializeField] private MeshRenderer ghostBones;
     [SerializeField] private GameObject alembicBlob;
@@ -23,8 +24,17 @@ public class EndSequence : MonoBehaviour
     {
         if (_hasBeenActivated) return;
 
+        myInteractable.IsInteractable = false;
         _hasBeenActivated = true;
         StartCoroutine(Anim());
+    }
+
+    public void OnBlobCollision()
+    {
+        MainCamera.Effects.SetFadeColor(Color.black);
+        MainCamera.Effects.CrossFade(0f, true);
+        playerController.ReleaseControl();
+        Debug.Log("OnBlobCollision");
     }
 
     private IEnumerator Anim()

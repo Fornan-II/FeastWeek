@@ -12,6 +12,15 @@ public class CameraShakeSphereTriggerVolume : SphereTriggerVolume
 
     private float BlendedStrength() => Mathf.Max(Mathf.Epsilon, screenShakeStrength * Mathf.Pow(blendValue, screenShakeBlendExponent));
 
+    private void OnDisable()
+    {
+        if (_screenShakeEffect != null)
+        {
+            _screenShakeEffect(0f);
+            _screenShakeEffect = null;
+        }
+    }
+
     protected override void OnOverlapStart()
     {
         _screenShakeEffect = MainCamera.Effects.ContinuousScreenShake(BlendedStrength());

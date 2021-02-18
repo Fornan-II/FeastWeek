@@ -15,14 +15,10 @@ public class IntroHelper : MonoBehaviour
     private bool _readyForNextPanel = false;
     private bool _inPanelSequence = true;
 
-    public void StartButton(FadeUI button)
+    private void Start()
     {
-        button.FadeOut(() =>
-        {
-            button.gameObject.SetActive(false);
-            _currentPanel = 0;
-            ShowPanel();
-        });
+        _currentPanel = 0;
+        ShowPanel();
     }
 
     private void ShowPanel()
@@ -57,7 +53,7 @@ public class IntroHelper : MonoBehaviour
         }
     }
 
-    private void FinishFlying()
+    public void FinishFlying()
     {
         playerController.TakeControlOf(playerPawn);
         PauseManager.Instance.PausingAllowed = true;

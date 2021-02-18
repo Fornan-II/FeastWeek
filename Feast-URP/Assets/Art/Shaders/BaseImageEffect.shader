@@ -39,12 +39,16 @@
 
 			sampler2D _MainTex;
 			sampler2D _CameraDepthTexture;
+			fixed _InvertValue;
 			fixed4 _FadeColor;
 			float _ScreenFade;
 
             fixed4 frag (v2f i) : SV_Target
             {
 				fixed4 col = tex2D(_MainTex, i.uv);
+				//Invert value
+				col = (1 - _InvertValue) * col + (_InvertValue) * (1 - col);
+				//Fade
 				col = lerp(col, _FadeColor, _ScreenFade);
                 return col;
             }

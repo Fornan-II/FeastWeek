@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PauseManager : MonoBehaviour
 {
@@ -14,8 +15,9 @@ public class PauseManager : MonoBehaviour
     private Util.CursorMode _cachedCursorMode;
 
     private bool _isPaused = false;
+    private bool _isExitingToMainMenu = false;
 
-    private void Start()
+    private void Awake()
     {
         if(Instance)
         {
@@ -78,5 +80,21 @@ public class PauseManager : MonoBehaviour
         _isPaused = false;
     }
 
-    public void QuitGame() => Application.Quit();
+    public void ExitToMainMenu()
+    {
+        if (_isExitingToMainMenu) return;
+
+        _isExitingToMainMenu = true;
+        StartCoroutine(ExitToMainMenuCoroutine());
+    }
+
+    private IEnumerator ExitToMainMenuCoroutine()
+    {
+        PausingAllowed = false;
+        ResumeGame();
+        MainCamera.Effects.CrossFade(2f, true);
+        yield return new WaitForSeconds(2f);
+        SceneManager.LoadScene(0);
+        _isExitingToMainMenu = false;
+    }
 }

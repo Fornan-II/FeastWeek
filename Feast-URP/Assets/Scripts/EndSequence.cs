@@ -7,16 +7,21 @@ public class EndSequence : MonoBehaviour
     [SerializeField] private Interactable myInteractable;
     [SerializeField] private UnityEngine.Playables.PlayableDirector director;
     [SerializeField] private MeshRenderer ghostBones;
-    [SerializeField] private GameObject alembicBlob;
+    [SerializeField] private GameObject deathBlob;
     [SerializeField] private AnimationCurve ghostBonesAnimation = AnimationCurve.Linear(0f, -1f, 3f, 4f);
     [SerializeField] private float alembicBlobStartTime = 2.75f;
     [SerializeField] private Controller playerController;
+    [SerializeField] private BlobDetection blobDetection;
+    [SerializeField] private ViewRequester deathView;
+    [SerializeField] private Animator deathAnimation;
+    [SerializeField] private DoorMechanic castleDoor;
 
     private bool _hasBeenActivated = false;
+    private bool _deathBlobCollided = false;
 
     private void Start()
     {
-        alembicBlob.SetActive(false);
+        deathBlob.SetActive(false);
         ghostBones.material.SetFloat("_Extrusion", -1f);
     }
 
@@ -29,52 +34,51 @@ public class EndSequence : MonoBehaviour
         StartCoroutine(Anim());
     }
 
-    public void OnBlobCollision()
-    {
-        MainCamera.Effects.SetFadeColor(Color.black);
-        MainCamera.Effects.CrossFade(0f, true);
-        playerController.ReleaseControl();
-        Debug.Log("OnBlobCollision");
-    }
+    public void OnBlobCollision() => _deathBlobCollided = true;
 
     private IEnumerator Anim()
     {
         bool directorStarted = false;
         float animLength = Util.AnimationCurveLengthTime(ghostBonesAnimation);
-        for (float timer = 0.0f; timer < animLength; timer += Time.deltaTime)
+        for (float timer = 0.0f; timer < animLength && !(_deathBlobCollided); timer += Time.deltaTime)
         {
             ghostBones.material.SetFloat("_Extrusion", ghostBonesAnimation.Evaluate(timer));
             if(timer >= alembicBlobStartTime && !directorStarted)
             {
-                alembicBlob.SetActive(true);
+                deathBlob.SetActive(true);
                 director.Play();
+                blobDetection.gameObject.SetActive(true);
+                blobDetection.StartDetection();
             }
             yield return null;
         }
-        
-        
-        //blitMat.SetColor("_FadeColor", Color.black);
-        //MainCamera.Effects.CrossFade(fadeTime, true);
 
-        //Vector3 startPos = MainCamera.RootTransform.position;
-        //Quaternion startRot = MainCamera.RootTransform.rotation;
-        //for(float timer = 0.0f; timer < animTime; timer += Time.deltaTime)
-        //{
-        //    float tValue = timer / animTime;
-        //    tValue *= tValue;
-        //    MainCamera.RootTransform.SetPositionAndRotation(
-        //        Vector3.Lerp(startPos, camHolder.position, tValue),
-        //        Quaternion.Slerp(startRot, camHolder.rotation, tValue)
-        //        );
-        //    yield return null;
-        //}
-        //MainCamera.RootTransform.SetPositionAndRotation(
-        //        camHolder.position,
-        //        camHolder.rotation
-        //        );
+        // OR together any other bools for waiting
+        while (!_deathBlobCollided) yield return null;
 
-        //yield return new WaitForSeconds(Mathf.Max(2f, fadeTime - animTime));
+        // Check which of the changed bools triggered and what ending to show.
+        if(_deathBlobCollided)
+        {
+            PauseManager.Instance.PausingAllowed = false;
+            MainCamera.Effects.SetFadeColor(Color.black);
+            MainCamera.Effects.CrossFade(0f, true);
+            playerController.ReleaseControl();
+            director.Stop();
+            deathBlob.SetActive(false);
+            castleDoor.CloseDoor();
 
-        //boneCamera.enabled = false;
+            yield return new WaitForSeconds(2f);
+            deathAnimation.SetTrigger("PlayAnimation");
+            deathView.RequestView();
+            MainCamera.Effects.SetColorInvert(true);
+            MainCamera.Effects.CrossFade(5f, false);
+
+            yield return new WaitForSeconds(12f);
+            MainCamera.Effects.CrossFade(5f, true);
+
+            yield return new WaitForSeconds(6f);
+            MainCamera.Effects.SetColorInvert(false);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        }
     }
 }

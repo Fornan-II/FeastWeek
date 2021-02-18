@@ -58,7 +58,8 @@ public class DebugMenu : MonoBehaviour
             }
             else
             {
-                _cachedCursorMode.Apply();
+                if(Util.CursorMode.GetCurrent() == Util.CursorMode.Default)
+                    _cachedCursorMode.Apply();
             }
         }
 
@@ -211,8 +212,8 @@ public class DebugMenu : MonoBehaviour
         }
         if (skipIntroFailed) return;
 
+        intro.FinishFlying();
         intro.gameObject.SetActive(false);
-        playerController.TakeControlOf(playerPawn);
     }
 }
 #endif

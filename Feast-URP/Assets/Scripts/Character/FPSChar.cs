@@ -8,6 +8,7 @@ public class FPSChar : Pawn, ICheckpointUser
     [SerializeField] private CharacterController movementController;
     [SerializeField] private RaycastInteracter interacter;
     [SerializeField] private Transform lookTransform;
+    [SerializeField] private FootstepPlayer footstepPlayer;
     [Header("Movement")]
     [SerializeField] private float moveGroundAccelLerp = 0.2f;
     [SerializeField] private float moveAerialAccelLerp = 0.07f;
@@ -20,6 +21,9 @@ public class FPSChar : Pawn, ICheckpointUser
     [SerializeField] private float groundCheckDistance = 0.01f;
     [SerializeField, Range(0, 1)] private float groundCheckSensitivity = 0.95f;
     [SerializeField] private LayerMask groundCheckMask = Physics.AllLayers;
+    [Header("Sound")]
+    [SerializeField] private Vector2 walkingFootstepInterval = new Vector2(0.0203f, 0.0392f);
+    [SerializeField] private Vector2 sprintingFootstepInterval = new Vector2(0.0135f, 0.0261f);
 
     private Vector2 _moveInput;
     private Vector2 _lookInput;
@@ -28,6 +32,11 @@ public class FPSChar : Pawn, ICheckpointUser
 
     private bool _isGrounded;
     private Vector3 _groundNormal;
+    private Transform _groundTransform;
+    private FootstepSurface.SurfaceType _groundSurfaceType;
+
+    private float _currentYVelocityMax = 0.0f;
+    private float _footStepCooldown = 0f;
 
     private void OnWalk(InputValue input) => _moveInput = input.Get<Vector2>();
     private void OnLook(InputValue input) => _lookInput = input.Get<Vector2>();
@@ -50,16 +59,25 @@ public class FPSChar : Pawn, ICheckpointUser
         movementController.enabled = true;
     }
 
+    public void ApplyExternalForce(Vector3 externalForce)
+    {
+        _currentYVelocityMax = externalForce.y;
+        movementController.Move(externalForce * Time.deltaTime);
+    }
+
     // Update is called once per frame
     void Update()
     {
+        if(_footStepCooldown > 0f)
+            _footStepCooldown -= Time.deltaTime;
+
         if (!IsBeingControlled || Time.timeScale <= 0f) return;
 
         GroundCheck();
         PlayerMovement();
         PlayerLook();
     }
-
+    
     private void PlayerMovement()
     {
         if (!IsBeingControlled) return;
@@ -72,13 +90,33 @@ public class FPSChar : Pawn, ICheckpointUser
 
         // Vertical Movement
         if (_isGrounded && _jumpInput)
+        {
+            // If can jump and trying to jump, jump! Applies no gravity this frame.
             moveCalc.y = jumpForce;
-        else if(!_isGrounded)
-            moveCalc.y = movementController.velocity.y;
+            _currentYVelocityMax = jumpForce;
+        }
+        else
+        {
+            // Keep the player moving at their current vertical speed.
+            // Apply gravity, unless grounded (prevents slowly sliding down slopes)
+            // Adding to preserve yVelocity from moveCalc being projected on ground plane.
+            // using Min() to avoid issue where movementController y velocity spikes to go up steps.
+            _currentYVelocityMax = Mathf.Max(0, Mathf.Min(movementController.velocity.y, _currentYVelocityMax));
+            moveCalc.y += Mathf.Min(movementController.velocity.y, _currentYVelocityMax);
+            if (!_isGrounded)
+                moveCalc += Physics.gravity * Time.deltaTime;
+        }
 
         _jumpInput = false;
-        moveCalc += Physics.gravity * Time.deltaTime;
+        
         movementController.Move(moveCalc * Time.deltaTime);
+
+        //Footstep audio
+        if((Mathf.Abs(moveCalc.x) > Mathf.Epsilon || Mathf.Abs(moveCalc.z) > Mathf.Epsilon) && _footStepCooldown <= 0f && _isGrounded)
+        {
+            _footStepCooldown = _sprintInput ? Util.RandomInRange(sprintingFootstepInterval) : Util.RandomInRange(walkingFootstepInterval);
+            footstepPlayer.PlayFootstep(_groundSurfaceType);
+        }
     }
 
     private void PlayerLook()
@@ -96,6 +134,7 @@ public class FPSChar : Pawn, ICheckpointUser
     {
         _isGrounded = false;
         _groundNormal = Vector3.up;
+
         if (Physics.SphereCast(
             transform.TransformPoint(movementController.center + Vector3.down * (movementController.height * 0.5f - movementController.radius)),
             movementController.radius * groundCheckSensitivity,
@@ -110,6 +149,20 @@ public class FPSChar : Pawn, ICheckpointUser
             {
                 _isGrounded = true;
                 _groundNormal = hitInfo.normal;
+
+                if(hitInfo.transform != _groundTransform)
+                {
+                    _groundTransform = hitInfo.transform;
+                    if(_groundTransform.TryGetComponent(out FootstepSurface surface))
+                    {
+                        _groundSurfaceType = surface.Type;
+                    }
+                    else
+                    {
+                        _groundSurfaceType = FootstepSurface.SurfaceType.UNKNOWN;
+                    }
+                }
+                
             }
         }
     }
@@ -118,6 +171,7 @@ public class FPSChar : Pawn, ICheckpointUser
     private void OnValidate()
     {
         movementController = movementController ?? GetComponent<CharacterController>();
+        footstepPlayer = footstepPlayer ?? GetComponent<FootstepPlayer>();
     }
 
     private void OnDrawGizmos()

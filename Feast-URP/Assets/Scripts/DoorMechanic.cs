@@ -60,8 +60,13 @@ public class DoorMechanic : MonoBehaviour
 
     public void OpenDoor()
     {
-        animator.SetTrigger("OpenDoor");
+        animator.SetBool("IsOpen", true);
         _doorHasOpened = true;
+    }
+
+    public void CloseDoor()
+    {
+        animator.SetBool("IsOpen", false);
     }
 
     private void PlayDoorExplosion()
@@ -95,7 +100,7 @@ public class DoorMechanic : MonoBehaviour
         Gizmos.DrawSphere(transform.position + doorCenterOffset, 0.25f);
     }
 
-    private void OnGUI()
+    /*private void OnGUI()
     {
         int lightSuccesses = 0;
         foreach(LampData lamp in lamps)
@@ -108,6 +113,6 @@ public class DoorMechanic : MonoBehaviour
                 ++lightSuccesses;
             }
         }
-    }
+    }*/
 #endif
 }

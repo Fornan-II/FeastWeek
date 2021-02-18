@@ -36,6 +36,12 @@ public class MainCamera : MonoBehaviour
         _instance._cameraRoot.SetPositionAndRotation(position, rotation);
     }
 
+    public static void SetFOV(float value)
+    {
+        if (!_instance) return;
+        _instance.camera.fieldOfView = value;
+    }
+
     #region Unity Methods
     private void Awake()
     {
@@ -77,6 +83,7 @@ public class MainCamera : MonoBehaviour
         // Clean up screen fade
         Effects.ResetFadeColorToDefault();
         Effects.CrossFade(0f, false);
+        Effects.SetColorInvert(false);
     }
 
     private void OnValidate()

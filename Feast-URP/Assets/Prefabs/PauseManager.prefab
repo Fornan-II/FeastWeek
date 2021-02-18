@@ -792,11 +792,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 267727725944803389, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_text
-      value: Quit to Desktop
+      value: Quit to Main Menu
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040617, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_Name
-      value: Button_Quit
+      value: Button_MainMenu
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_LocalPosition.x
@@ -848,7 +848,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -60
+      value: -80
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_SizeDelta.x
@@ -904,7 +904,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040623, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: QuitGame
+      value: ExitToMainMenu
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040623, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName

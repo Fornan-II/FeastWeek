@@ -53,6 +53,13 @@ public class CameraFX
     }
     #endregion
 
+    #region Color Invert
+    public void SetColorInvert(bool inverted)
+    {
+        Shader.SetGlobalFloat("_InvertValue", inverted ? 1 : 0);
+    }
+    #endregion
+
     #region Transform Effects
     private Coroutine StartTransformEffect(Func<Transform, IEnumerator> effect)
     {

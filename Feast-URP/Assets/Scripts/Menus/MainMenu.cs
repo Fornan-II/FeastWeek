@@ -15,6 +15,16 @@ public class MainMenu : StateMachine
     bool _menuIsMain = true;
     bool _loadGameStarted = false;
 
+    private IEnumerator Start()
+    {
+        Util.CursorMode.Default.Apply();
+        PauseManager.Instance.PausingAllowed = false;
+        MainCamera.Effects.CrossFade(1f, false);
+
+        yield return new WaitForSeconds(1f);
+        MainCamera.Effects.ResetFadeColorToDefault();
+    }
+
     protected override void RecalculateState() => _activeState = StartCoroutine(_menuIsMain ? Main() : Options());
 
     private IEnumerator Main()

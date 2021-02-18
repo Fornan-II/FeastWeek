@@ -43,6 +43,7 @@ public class BlobDetection : MonoBehaviour
 
     private void BlobDetected()
     {
+        Debug.Log("Blob detected!");
         OnBlobDetected.Invoke();
         _detectionActive = false;
 

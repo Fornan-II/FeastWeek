@@ -13,14 +13,14 @@ public static class EditorUtil
     [MenuItem("Tools/Open Scene/Main Menu")]
     public static void OpenScene_MainMenu() => EditorSceneManager.OpenScene("Assets/Scenes/MainMenu.unity", OpenSceneMode.Single);
 
-    [MenuItem("Toggle/Fix lingering screen fade")]
+    [MenuItem("Tools/Misc/Fix lingering screen fade")]
     public static void FixLingeringScreenFade() => Shader.SetGlobalFloat("_ScreenFade", 0f);
 
     [MenuItem("Tools/Toggle Render Features")]
     private static void ToggleFog()
     {
         var renderPipeline = AssetDatabase.LoadAssetAtPath<ForwardRendererData>("Assets/Settings/ForwardRenderer.asset");
-        foreach(var feature in renderPipeline.rendererFeatures)
+        foreach (var feature in renderPipeline.rendererFeatures)
         {
             feature.SetActive(!feature.isActive);
         }
@@ -33,7 +33,7 @@ public static class EditorUtil
 
     private static void InvisibleColliders(bool enabled)
     {
-        
+
         MeshRenderer[] renderers = Resources.FindObjectsOfTypeAll<MeshRenderer>();
         Material probuilderInvisMaterial = AssetDatabase.LoadAssetAtPath<Material>("Packages/com.unity.probuilder/Content/Resources/Materials/Collider.mat");
         foreach (var r in renderers)
@@ -73,7 +73,7 @@ public static class EditorUtil
     [MenuItem("Tools/Player Control/Prep Player for Game")]
     private static void PrepPlayerForGame()
     {
-        if(UnityEditor.EditorApplication.isPlaying)
+        if (UnityEditor.EditorApplication.isPlaying)
         {
             Debug.LogError("Can not prep player for game while game is already playing!");
             return;
@@ -100,7 +100,7 @@ public static class EditorUtil
         }
 
         Checkpoint defaultCheckpoint = Checkpoint.DefaultCheckPoint;
-        if(!defaultCheckpoint)
+        if (!defaultCheckpoint)
         {
             Debug.LogError("Could not find Default Checkpoint in scene.");
             return;
@@ -115,7 +115,7 @@ public static class EditorUtil
     private static void BakeryAreaLightOn()
     {
         var bakeryLights = Resources.FindObjectsOfTypeAll<BakeryLightMesh>();
-        foreach(var light in bakeryLights)
+        foreach (var light in bakeryLights)
             light.gameObject.SetActive(true);
     }
 
@@ -132,7 +132,7 @@ public static class EditorUtil
     {
         ProBuilderMesh[] proBuilderMeshes = GameObject.FindObjectsOfType<ProBuilderMesh>();
         GameObject[] selection = new GameObject[proBuilderMeshes.Length];
-        for(int i = 0; i < proBuilderMeshes.Length; ++i)
+        for (int i = 0; i < proBuilderMeshes.Length; ++i)
         {
             selection[i] = proBuilderMeshes[i].gameObject;
         }
@@ -143,10 +143,16 @@ public static class EditorUtil
     private static void MakeMeshRenderersNotUseReflection()
     {
         MeshRenderer[] allMR = GameObject.FindObjectsOfType<MeshRenderer>();
-        foreach(var mr in allMR)
+        foreach (var mr in allMR)
         {
-            if(mr.gameObject.isStatic)
+            if (mr.gameObject.isStatic)
                 mr.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
         }
+    }
+
+    [MenuItem("Tools/Misc/Toggle Screen Invert Color Value")]
+    private static void ToggleInvertColorValue()
+    {
+        Shader.SetGlobalFloat("_InvertValue", 1 - Shader.GetGlobalFloat("_InvertValue"));
     }
 }

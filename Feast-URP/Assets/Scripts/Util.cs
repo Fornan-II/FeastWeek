@@ -46,6 +46,20 @@ public static class Util
         public static CursorMode Default => new CursorMode(true, CursorLockMode.None);
 
         public static CursorMode GetCurrent() => new CursorMode(Cursor.visible, Cursor.lockState);
+
+        public override bool Equals(object obj)
+        {
+            CursorMode other = (CursorMode)obj;
+            return Visible == other.Visible && LockMode == other.LockMode;
+        }
+
+        public static bool operator ==(CursorMode c1, CursorMode c2) => c1.Equals(c2);
+        public static bool operator !=(CursorMode c1, CursorMode c2) => !c1.Equals(c2);
+
+        public override int GetHashCode()
+        {
+            return Visible.GetHashCode() ^ LockMode.GetHashCode();
+        }
     }
 
     [System.Serializable]

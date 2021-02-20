@@ -5,11 +5,12 @@ using TMPro;
 
 public class MsgBox : MonoBehaviour
 {
+#pragma warning disable 0649
     private static MsgBox _instance;
 
     public bool IsShowingMessage { get; private set; }
 
-    [SerializeField] private FadeUI fader;
+    [SerializeField] private FadeUI fader = null;
     [SerializeField] private TextMeshProUGUI text;
     
     private float _timeLeftUntilFadeOut = -1f;

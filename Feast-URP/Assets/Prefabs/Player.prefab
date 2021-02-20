@@ -110,7 +110,7 @@ MonoBehaviour:
   interacter: {fileID: 6961860451848926185}
   lookTransform: {fileID: 1715510753135863543}
   footstepPlayer: {fileID: 364364818648234555}
-  moveGroundAccelLerp: 0.2
+  moveGroundAccelLerp: 1
   moveAerialAccelLerp: 0.07
   lookSpeed: 0.15
   moveSpeed: 2.5
@@ -236,6 +236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3554c629b7ffe8d41b06478ec353b570, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SetFOVEveryFrame: 0
   setFOV: 1
   fieldOfView: 100
 --- !u!114 &6961860451848926185

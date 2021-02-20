@@ -5,6 +5,7 @@ using UnityEngine.AI;
 
 public class GhostAI : StateMachine
 {
+#pragma warning disable 0649
     public enum GhostState
     {
         NONE,

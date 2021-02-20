@@ -6,6 +6,7 @@ using UnityEngine.Rendering;
 [RequireComponent(typeof(Camera))]
 public class MainCamera : MonoBehaviour
 {
+#pragma warning disable 0649
     public static Transform RootTransform => _instance ? _instance._cameraRoot : null;
     public static Camera Camera => _instance ? _instance.camera : null;
     public static UniversalAdditionalCameraData CameraData => _instance ? _instance.cameraData : null;

@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   surfaceTypeAudioClips:
   - SurfaceType: 0
-    FootstepSound: {fileID: 8300000, guid: c635498e2e82932438f727ca53754d98, type: 3}
+    FootstepSound:
+    - {fileID: 8300000, guid: c635498e2e82932438f727ca53754d98, type: 3}
   - SurfaceType: 1
-    FootstepSound: {fileID: 8300000, guid: 9bb09b04dd6472f408d67612c96ea8fe, type: 3}
+    FootstepSound:
+    - {fileID: 8300000, guid: 9bb09b04dd6472f408d67612c96ea8fe, type: 3}
   - SurfaceType: 2
-    FootstepSound: {fileID: 8300000, guid: 03fa1d8e50edc954dabfe7af229dd594, type: 3}
+    FootstepSound:
+    - {fileID: 8300000, guid: 03fa1d8e50edc954dabfe7af229dd594, type: 3}

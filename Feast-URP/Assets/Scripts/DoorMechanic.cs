@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DoorMechanic : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField] private Animator animator;
     [SerializeField] private MeshRenderer runeDoor;
     [SerializeField] private LampData[] lamps;

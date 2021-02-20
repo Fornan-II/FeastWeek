@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GhostManager : MonoBehaviour
 {
+#pragma warning disable 0649
     public static GhostManager Instance { get; private set; }
 
     public bool GhostsAggroToPlayer;

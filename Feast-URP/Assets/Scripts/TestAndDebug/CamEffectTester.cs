@@ -11,7 +11,7 @@ public class CamEffectTester : MonoBehaviour
 
     [Header("Impulse settings")]
     [SerializeField] private float ImpulseStrength = 1f;
-    [SerializeField] private Transform ImpulseSource;
+    [SerializeField] private Transform ImpulseSource = null;
     [SerializeField] private float ImpulseDuration = 0.5f;
     [Header("Screen Shake settings")]
     [SerializeField] private float ScreenShakeStrength = 1f;

@@ -9,7 +9,7 @@ public class PauseManager : MonoBehaviour
     public static PauseManager Instance { get; private set; }
 
     public bool PausingAllowed = false;
-    [SerializeField] private FadeUI PauseMenu;
+    [SerializeField] private FadeUI PauseMenu = null;
 
     private float _cachedTimeScale = 1f;
     private Util.CursorMode _cachedCursorMode;

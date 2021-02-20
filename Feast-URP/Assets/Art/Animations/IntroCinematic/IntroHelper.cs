@@ -5,8 +5,9 @@ using UnityEngine.InputSystem;
 
 public class IntroHelper : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField] private FadeUI[] introPanels;
-    [SerializeField] private ViewRequester cameraView;
+    [SerializeField] private ViewRequester cameraView = null;
     [SerializeField] private Animator anim;
     [SerializeField] private Pawn playerPawn;
     [SerializeField] private Controller playerController;

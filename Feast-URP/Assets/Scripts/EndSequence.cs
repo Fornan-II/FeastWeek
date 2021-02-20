@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EndSequence : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField] private Interactable myInteractable;
     [SerializeField] private UnityEngine.Playables.PlayableDirector director;
     [SerializeField] private MeshRenderer ghostBones;

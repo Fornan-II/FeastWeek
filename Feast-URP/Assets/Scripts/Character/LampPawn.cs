@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 
 public class LampPawn : VehiclePawn
 {
+#pragma warning disable 0649
     [SerializeField] private Transform lookTransform;
     [SerializeField] private float lookSpeed = 0.25f;
     [SerializeField] private float clampAngle = 60f;

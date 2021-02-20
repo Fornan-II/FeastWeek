@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MusicManager : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField] private AudioClip[] songs;
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private Vector2 timeBetweenSongs = new Vector2(10f, 60f);

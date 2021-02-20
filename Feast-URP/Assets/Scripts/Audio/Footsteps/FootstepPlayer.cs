@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class FootstepPlayer : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField] private AudioClip defaultFootstepSound;
     [SerializeField] private FootstepData footstepData;
     [SerializeField] private AudioCue.CueSettings footstepSoundSettings = AudioCue.CueSettings.Default;
 
-    private Dictionary<FootstepSurface.SurfaceType, AudioClip> _footstepAudioDictionary;
+    private Dictionary<FootstepSurface.SurfaceType, AudioClip[]> _footstepAudioDictionary;
     
     private void Awake() => _footstepAudioDictionary = footstepData.GetSurfaceTypeAudioClips();
 
@@ -29,7 +30,13 @@ public class FootstepPlayer : MonoBehaviour
         }
         else
         {
-            AudioManager.PlaySound(_footstepAudioDictionary[surfaceType], transform.position, footstepSoundSettings);
+            AudioManager.PlaySound(
+                _footstepAudioDictionary[surfaceType].Length == 1
+                ? _footstepAudioDictionary[surfaceType][0]
+                : Util.RandomFromCollection(_footstepAudioDictionary[surfaceType]),
+                transform.position,
+                footstepSoundSettings
+                );
         }
     }
 }

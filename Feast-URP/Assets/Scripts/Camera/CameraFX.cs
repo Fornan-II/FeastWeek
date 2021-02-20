@@ -8,7 +8,7 @@ public class CameraFX
 {
     // Properties
     [Header("Fade")]
-    [SerializeField, ColorUsage(false, true)] private Color defaultFadeColor;
+    [SerializeField, ColorUsage(false, true)] private Color defaultFadeColor = Color.magenta;
     [Header("Impulse")]
     [SerializeField] private AnimationCurve impulseCurve = AnimationCurve.EaseInOut(0, 1, 1, 0);
     [Header("Screenshake")]

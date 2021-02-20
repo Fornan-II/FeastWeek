@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class MainMenu : StateMachine
 {
+#pragma warning disable 0649
     [Header("Menus")]
     [SerializeField] private FadeUI main;
     [SerializeField] private FadeUI options;
     [Header("Game Start")]
     [SerializeField] private float fadeOutTime = 1f;
     [SerializeField] private float fadeInTime = 2f;
-    [SerializeField] private int levelBuildIndex;
+    [SerializeField] private int levelBuildIndex = 1;
 
     bool _menuIsMain = true;
     bool _loadGameStarted = false;

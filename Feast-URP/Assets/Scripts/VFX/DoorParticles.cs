@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DoorParticles : MonoBehaviour
 {
-    [SerializeField] private ParticleSystem[] particles;
+    [SerializeField] private ParticleSystem[] particles = null;
     [SerializeField] private bool isPlaying;
 
     private void Start()

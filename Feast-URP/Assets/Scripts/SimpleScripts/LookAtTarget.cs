@@ -5,6 +5,7 @@ using UnityEngine.Animations.Rigging;
 
 public class LookAtTarget : MonoBehaviour
 {
+#pragma warning disable 0649
     public Transform Target;
     public MultiAimConstraint Constraint => _constraint;
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GhostVFX : MonoBehaviour
 {
+#pragma warning disable 0649
     private const string k_GhostAlpha = "_AlphaMultiplier";
 
     public bool IsVisible => _isVisible || particles.isPlaying;

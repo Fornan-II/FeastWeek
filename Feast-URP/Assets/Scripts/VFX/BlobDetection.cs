@@ -11,8 +11,8 @@ public class BlobDetection : MonoBehaviour
     [SerializeField] private bool deactiveGameObjectOnDetection = true;
     [SerializeField] private Camera renderCam;
     [SerializeField] private UniversalAdditionalCameraData renderCamData;
-    [SerializeField] private LayerMask cullingMask;
-    [SerializeField] private UnityEvent OnBlobDetected;
+    [SerializeField] private LayerMask cullingMask = Physics.AllLayers;
+    [SerializeField] private UnityEvent OnBlobDetected = null;
     [SerializeField,Range(0,1)] private float renderTextureScalar = 1f;
 
     private RenderTexture _renderTexture;

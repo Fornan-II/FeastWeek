@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class ViewRequester : MonoBehaviour
 {
+    public bool SetFOVEveryFrame = false;
+
     [SerializeField] private bool setFOV = false;
     [SerializeField] private float fieldOfView = 100;
+
+    public bool HasView() => MainCamera.RootTransform.parent == transform;
 
     public void RequestView()
     {
@@ -16,7 +20,15 @@ public class ViewRequester : MonoBehaviour
 
     public void ReleaseView()
     {
-        if (MainCamera.RootTransform.parent == transform)
+        if(HasView())
             MainCamera.RootTransform.SetParent(null);
+    }
+
+    private void Update()
+    {
+        if(SetFOVEveryFrame && HasView())
+        {
+            MainCamera.SetFOV(fieldOfView);
+        }
     }
 }

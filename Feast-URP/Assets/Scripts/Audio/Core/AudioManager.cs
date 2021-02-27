@@ -4,14 +4,15 @@ using UnityEngine.Audio;
 
 public static class AudioManager
 {
-    private const string MixerFilePath = "AudioManager Data";
+    private const string k_MixerFilePath = "AudioManager Data";
 
     public enum MixerGroup
     {
         Master = 0,
         SFX = 1,
         Ambient = 2,
-        Music = 3
+        Music = 3,
+        UI = 4
     }
     public static AudioManagerData Data { private set; get; }
     private static Dictionary<MixerGroup, AudioMixerGroup> _mixerGroups;
@@ -23,7 +24,7 @@ public static class AudioManager
         if (!UnityEditor.EditorApplication.isPlaying) return;
         #endif
         
-        Data = Resources.Load<AudioManagerData>(MixerFilePath);
+        Data = Resources.Load<AudioManagerData>(k_MixerFilePath);
         //Debug.Log($"Hey it's init time, and we loaded {Data.Mixer}.");
         
         _mixerGroups = new Dictionary<MixerGroup, AudioMixerGroup>()

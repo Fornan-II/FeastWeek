@@ -22,6 +22,12 @@ public class IntroHelper : MonoBehaviour
         ShowPanel();
     }
 
+    #region Input
+    private void OnInteract(InputValue value) => AdvancePanel();
+    private void OnJump(InputValue value) => AdvancePanel();
+    private void OnSprint(InputValue value) => AdvancePanel();
+    #endregion
+
     private void ShowPanel()
     {
         if (_currentPanel >= introPanels.Length)
@@ -40,9 +46,9 @@ public class IntroHelper : MonoBehaviour
         }
     }
 
-    private void OnInteract(InputValue value)
+    private void AdvancePanel()
     {
-        if(_readyForNextPanel && _inPanelSequence)
+        if (_readyForNextPanel && _inPanelSequence)
         {
             _readyForNextPanel = false;
             introPanels[_currentPanel].FadeOut(() =>

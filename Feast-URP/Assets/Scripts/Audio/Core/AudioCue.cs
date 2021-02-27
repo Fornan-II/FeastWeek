@@ -5,7 +5,7 @@ using UnityEngine.Events;
 public class AudioCue : MonoBehaviour
 {
     #region  Static Pool Management
-    private const int MaxPooledCues = 100;
+    private const int k_MaxPooledCues = 100;
 
     private static List<AudioCue> _activeAudioCues = new List<AudioCue>();
     private static List<AudioCue> _inactiveAudioCues = new List<AudioCue>();
@@ -146,7 +146,7 @@ public class AudioCue : MonoBehaviour
 
     public void SetInactive()
     {
-        if (_inactiveAudioCues.Count + _activeAudioCues.Count < MaxPooledCues)
+        if (_inactiveAudioCues.Count + _activeAudioCues.Count < k_MaxPooledCues)
         {
             _activeAudioCues.Remove(this);
             _inactiveAudioCues.Add(this);

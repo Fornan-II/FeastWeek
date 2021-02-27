@@ -15,8 +15,8 @@ public class MsgBox : MonoBehaviour
     
     private float _timeLeftUntilFadeOut = -1f;
 
-    public static void ShowMessage(string message, float displayTime) => _instance.Internal_ShowMessage(message, displayTime);
-    public static void HideMessage() => _instance.Internal_HideMessage();
+    public static void ShowMessage(string message, float displayTime) => _instance?.Internal_ShowMessage(message, displayTime);
+    public static void HideMessage() => _instance?.Internal_HideMessage();
 
     private void Internal_ShowMessage(string message, float displayTime)
     {

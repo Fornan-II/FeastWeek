@@ -9,73 +9,55 @@ public class FadeUI : MonoBehaviour
 {
     public bool IsFading => _fadeRoutine != null;
 
-    [SerializeField] private Image[] imageFields;
-    [SerializeField] private TextMeshProUGUI[] textFields;
+    [SerializeField] private CanvasGroup uiGroup;
     [SerializeField] private float fadeDuration = 1f;
 
     private Coroutine _fadeRoutine;
 
     public void FadeIn(UnityAction OnFadeComplete = null)
     {
-        if (_fadeRoutine != null) PauseManager.Instance.StopCoroutine(_fadeRoutine);
-        _fadeRoutine = PauseManager.Instance.StartCoroutine(Fade(0, 1, OnFadeComplete));
+        float startAlpha = 0f;
+        float duration = fadeDuration;
+        if (_fadeRoutine != null)
+        {
+            PauseManager.Instance.StopCoroutine(_fadeRoutine);
+            startAlpha = uiGroup.alpha;
+            duration = fadeDuration * (1 - startAlpha);
+        }
+        _fadeRoutine = PauseManager.Instance.StartCoroutine(Fade(startAlpha, 1f, duration, OnFadeComplete));
     }
 
     public void FadeOut(UnityAction OnFadeComplete = null)
     {
-        if (_fadeRoutine != null) PauseManager.Instance.StopCoroutine(_fadeRoutine);
-        _fadeRoutine = PauseManager.Instance.StartCoroutine(Fade(1, 0, OnFadeComplete));
+        float startAlpha = 1f;
+        float duration = fadeDuration;
+        if (_fadeRoutine != null)
+        {
+            PauseManager.Instance.StopCoroutine(_fadeRoutine);
+            startAlpha = uiGroup.alpha;
+            duration = fadeDuration * startAlpha;
+        }
+        _fadeRoutine = PauseManager.Instance.StartCoroutine(Fade(startAlpha, 0f, duration, OnFadeComplete));
     }
 
-    private IEnumerator Fade(float startAlpha, float targetAlpha, UnityAction OnFadeComplete)
+    private IEnumerator Fade(float startAlpha, float targetAlpha, float duration, UnityAction OnFadeComplete)
     {
-        float fadeEndTime = Time.realtimeSinceStartup + fadeDuration;
-        while (Time.realtimeSinceStartup < fadeEndTime)
+        for (float timer  = 0.0f; timer < duration; timer += Time.unscaledDeltaTime)
         {
-            float alpha = Mathf.Lerp(targetAlpha, startAlpha, (fadeEndTime - Time.realtimeSinceStartup) / fadeDuration);
-
-            foreach (var img in imageFields)
-            {
-                Color col = img.color;
-                col.a = alpha;
-                img.color = col;
-            }
-
-            foreach (var txt in textFields)
-            {
-                Color col = txt.color;
-                col.a = alpha;
-                txt.color = col;
-            }
-
+            uiGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, timer / duration);
             yield return null;
-
         }
 
-        foreach (var img in imageFields)
-        {
-            Color col = img.color;
-            col.a = targetAlpha;
-            img.color = col;
-        }
-
-        foreach (var txt in textFields)
-        {
-            Color col = txt.color;
-            col.a = targetAlpha;
-            txt.color = col;
-        }
+        uiGroup.alpha = targetAlpha;
 
         _fadeRoutine = null;
         OnFadeComplete?.Invoke();
     }
 
 #if UNITY_EDITOR
-    [ContextMenu("Get Fields in children")]
-    private void GetFieldsInChildren()
+    private void OnValidate()
     {
-        imageFields = GetComponentsInChildren<Image>();
-        textFields = GetComponentsInChildren<TextMeshProUGUI>();
+        if (!uiGroup) uiGroup = GetComponent<CanvasGroup>();
     }
 #endif
 }

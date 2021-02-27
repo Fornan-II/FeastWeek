@@ -64,8 +64,8 @@ public class PauseManager : MonoBehaviour
         Util.CursorMode.Default.Apply();
         if (PauseMenu)
         {
-            PauseMenu.FadeIn();
             PauseMenu.gameObject.SetActive(true);
+            PauseMenu.FadeIn();
         }
         _isPaused = true;
     }

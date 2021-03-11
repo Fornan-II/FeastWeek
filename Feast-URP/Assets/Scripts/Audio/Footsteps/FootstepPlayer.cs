@@ -10,8 +10,8 @@ public class FootstepPlayer : MonoBehaviour
     [SerializeField] private AudioCue.CueSettings footstepSoundSettings = AudioCue.CueSettings.Default;
 
     private Dictionary<FootstepSurface.SurfaceType, AudioClip[]> _footstepAudioDictionary;
-    private FootstepSurface.SurfaceType _previousSurfaceType = FootstepSurface.SurfaceType.UNKNOWN;
-    private int _previousAudioClipIndex = -1;
+    private FootstepSurface.SurfaceType previousSurfaceType = FootstepSurface.SurfaceType.UNKNOWN;
+    private IndexShuffler _indexShuffler;
     
     private void Awake() => _footstepAudioDictionary = footstepData.GetSurfaceTypeAudioClips();
 
@@ -32,17 +32,8 @@ public class FootstepPlayer : MonoBehaviour
         }
         else
         {
-            int audioClipIndex = 0;
-            if(_footstepAudioDictionary[surfaceType].Length > 1)
-            {
-                // Don't repeat thes same sound twice if there are multiple sound options
-                do
-                {
-                    audioClipIndex = Random.Range(0, _footstepAudioDictionary[surfaceType].Length);
-                } while (surfaceType == _previousSurfaceType && audioClipIndex == _previousAudioClipIndex);
-            }
-            _previousSurfaceType = surfaceType;
-            _previousAudioClipIndex = audioClipIndex;
+            int audioClipIndex = Random.Range(0, _footstepAudioDictionary[surfaceType].Length);
+            // use shufflers, one per surface type
 
             AudioManager.PlaySound(
                 _footstepAudioDictionary[surfaceType][audioClipIndex],

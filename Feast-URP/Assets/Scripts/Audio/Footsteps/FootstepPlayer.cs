@@ -9,11 +9,17 @@ public class FootstepPlayer : MonoBehaviour
     [SerializeField] private FootstepData footstepData;
     [SerializeField] private AudioCue.CueSettings footstepSoundSettings = AudioCue.CueSettings.Default;
 
-    private Dictionary<FootstepSurface.SurfaceType, AudioClip[]> _footstepAudioDictionary;
-    private FootstepSurface.SurfaceType previousSurfaceType = FootstepSurface.SurfaceType.UNKNOWN;
-    private IndexShuffler _indexShuffler;
-    
-    private void Awake() => _footstepAudioDictionary = footstepData.GetSurfaceTypeAudioClips();
+    private Dictionary<FootstepSurface.SurfaceType, ShuffledCollection<AudioClip>> _footstepAudioDictionary;
+
+    private void Awake()
+    {
+        // Using a ShuffledCollection instead of raw dictionary to minimize number of repeated footstep sounds
+        _footstepAudioDictionary = new Dictionary<FootstepSurface.SurfaceType, ShuffledCollection<AudioClip>>();
+        foreach(var item in footstepData.GetSurfaceTypeAudioClips())
+        {
+            _footstepAudioDictionary.Add(item.Key, new ShuffledCollection<AudioClip>(item.Value));
+        }
+    }
 
     public void PlayFootstep(FootstepSurface.SurfaceType surfaceType)
     {
@@ -32,11 +38,8 @@ public class FootstepPlayer : MonoBehaviour
         }
         else
         {
-            int audioClipIndex = Random.Range(0, _footstepAudioDictionary[surfaceType].Length);
-            // use shufflers, one per surface type
-
             AudioManager.PlaySound(
-                _footstepAudioDictionary[surfaceType][audioClipIndex],
+                _footstepAudioDictionary[surfaceType].GetNext(),
                 transform.position,
                 footstepSoundSettings
                 );

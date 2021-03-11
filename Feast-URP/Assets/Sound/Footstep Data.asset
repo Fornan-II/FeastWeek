@@ -21,16 +21,9 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 9bb09b04dd6472f408d67612c96ea8fe, type: 3}
   - SurfaceType: 2
     FootstepSound:
-    - {fileID: 8300000, guid: e16b2887ab9670649a5ea571eb076aa7, type: 3}
-    - {fileID: 8300000, guid: 77818872440443040864180c5ef17be3, type: 3}
-    - {fileID: 8300000, guid: 97b829f218c813040b087ab532226da3, type: 3}
-    - {fileID: 8300000, guid: 1ed150b59bf3bf147b8f32f34642f3de, type: 3}
-    - {fileID: 8300000, guid: 514e921eba7d1d14cb833232f6767300, type: 3}
-    - {fileID: 8300000, guid: 9892530f503c90b4c97c80530b0d075c, type: 3}
-    - {fileID: 8300000, guid: 9f82e1f373b7cd74db01471a7976c017, type: 3}
-    - {fileID: 8300000, guid: 20e4bde7fd4e5f44f86f77131032017a, type: 3}
-    - {fileID: 8300000, guid: 06fca659ddaba134780713b456cbaba5, type: 3}
-    - {fileID: 8300000, guid: 8f412ff49a5d66c439db04db6f963820, type: 3}
-    - {fileID: 8300000, guid: e8c65b8c7ed31c6428414bd032c3401a, type: 3}
-    - {fileID: 8300000, guid: 582d2a30178914e48ad7b73274941a02, type: 3}
-    - {fileID: 8300000, guid: 0a9a6efa494051441b29a48c392b461b, type: 3}
+    - {fileID: 8300000, guid: 657d5e292cd6eb64ea27b1d8030c0642, type: 3}
+    - {fileID: 8300000, guid: 51443be442358864f801f7d243377845, type: 3}
+    - {fileID: 8300000, guid: c88fe84bff373a4408ab831a5bc2eab4, type: 3}
+    - {fileID: 8300000, guid: fb2d6e5a670392547a40308c70c464a0, type: 3}
+    - {fileID: 8300000, guid: c99ddfe0c4ebbe14d8a003dd42fdf51c, type: 3}
+    - {fileID: 8300000, guid: 46f323bdef15184488f36483a7512811, type: 3}

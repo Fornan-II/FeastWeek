@@ -122,8 +122,8 @@ MonoBehaviour:
   groundCheckMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  walkingFootstepInterval: {x: 0.203, y: 0.392}
-  sprintingFootstepInterval: {x: 0.135, y: 0.261}
+  walkingFootstepInterval: {x: 0.3045, y: 0.588}
+  sprintingFootstepInterval: {x: 0.2025, y: 0.3915}
 --- !u!114 &1715510752619392744
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -11,6 +11,7 @@ public class IntroHelper : MonoBehaviour
     [SerializeField] private Animator anim;
     [SerializeField] private Pawn playerPawn;
     [SerializeField] private Controller playerController;
+    [SerializeField] private MusicManager musicManager;
 
     private int _currentPanel = 0;
     private bool _readyForNextPanel = false;
@@ -35,6 +36,8 @@ public class IntroHelper : MonoBehaviour
             _inPanelSequence = false;
             cameraView.RequestView();
             anim.SetTrigger("StartFlying");
+            musicManager.enabled = true;
+            musicManager.PlayImmediately(1);
         }
         else
         {
@@ -62,6 +65,14 @@ public class IntroHelper : MonoBehaviour
 
     public void FinishFlying()
     {
+        if (!musicManager.enabled)
+        {
+            // This is handled in ShowPanel(),
+            // but in Debug mode this method is called directly skipping ShowPanel()
+            musicManager.enabled = true;
+            musicManager.PlayImmediately(1);
+        }
+
         playerController.TakeControlOf(playerPawn);
         PauseManager.Instance.PausingAllowed = true;
         StartCoroutine(FPS_Tutorial());

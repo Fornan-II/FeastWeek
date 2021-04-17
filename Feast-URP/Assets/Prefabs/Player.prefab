@@ -122,8 +122,8 @@ MonoBehaviour:
   groundCheckMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  walkingFootstepInterval: {x: 0.3045, y: 0.588}
-  sprintingFootstepInterval: {x: 0.2025, y: 0.3915}
+  walkingFootstepInterval: {x: 0.5, y: 0.53}
+  sprintingFootstepInterval: {x: 0.3, y: 0.4}
 --- !u!114 &1715510752619392744
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -298,12 +298,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28c4219cd6d0e644db9a66de29df96b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultFootstepSound: {fileID: 8300000, guid: e9d49460005c99f4184d2c1a7a17908f, type: 3}
+  defaultFootstepSound: {fileID: 0}
   footstepData: {fileID: 11400000, guid: 5827a607574e29241b61a3c25ff76f3a, type: 2}
   footstepSoundSettings:
     Group: 1
     Loop: 0
-    Volume: 0.25
+    Volume: 0.3
     PitchRange: {x: 0.9, y: 1.1}
     MinDistance: 1
     MaxDistance: 15

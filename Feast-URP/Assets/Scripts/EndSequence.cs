@@ -7,8 +7,10 @@ public class EndSequence : MonoBehaviour
 #pragma warning disable 0649
     [SerializeField] private Interactable myInteractable;
     [SerializeField] private UnityEngine.Playables.PlayableDirector director;
+    [SerializeField] private MusicManager musicManager;
     [SerializeField] private MeshRenderer ghostBones;
     [SerializeField] private GameObject deathBlob;
+    [SerializeField] private AudioClip deathBlobMusic;
     [SerializeField] private AnimationCurve ghostBonesAnimation = AnimationCurve.Linear(0f, -1f, 3f, 4f);
     [SerializeField] private float alembicBlobStartTime = 2.75f;
     [SerializeField] private Controller playerController;
@@ -39,6 +41,10 @@ public class EndSequence : MonoBehaviour
 
     private IEnumerator Anim()
     {
+        musicManager.enabled = false;
+        musicManager.musicSource.clip = deathBlobMusic;
+        musicManager.musicSource.Play();
+
         bool directorStarted = false;
         float animLength = Util.AnimationCurveLengthTime(ghostBonesAnimation);
         for (float timer = 0.0f; timer < animLength && !(_deathBlobCollided); timer += Time.deltaTime)
@@ -67,6 +73,7 @@ public class EndSequence : MonoBehaviour
             director.Stop();
             deathBlob.SetActive(false);
             castleDoor.CloseDoor();
+            musicManager.FadeOut(7f);
 
             yield return new WaitForSeconds(2f);
             deathAnimation.SetTrigger("PlayAnimation");

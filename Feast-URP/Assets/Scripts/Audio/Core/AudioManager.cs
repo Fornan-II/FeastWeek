@@ -33,6 +33,7 @@ public static class AudioManager
             {MixerGroup.SFX, Data.Mixer.FindMatchingGroups("SFX")[0]},
             {MixerGroup.Ambient, Data.Mixer.FindMatchingGroups("Ambient")[0]},
             {MixerGroup.Music, Data.Mixer.FindMatchingGroups("Music")[0]},
+            {MixerGroup.UI, Data.Mixer.FindMatchingGroups("UI")[0]}
         };
     }
     

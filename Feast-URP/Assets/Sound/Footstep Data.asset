@@ -15,10 +15,11 @@ MonoBehaviour:
   surfaceTypeAudioClips:
   - SurfaceType: 0
     FootstepSound:
-    - {fileID: 8300000, guid: c635498e2e82932438f727ca53754d98, type: 3}
+    - {fileID: 8300000, guid: 565bb644cfc4f1347968d000cb90ff5a, type: 3}
   - SurfaceType: 1
     FootstepSound:
-    - {fileID: 8300000, guid: 9bb09b04dd6472f408d67612c96ea8fe, type: 3}
+    - {fileID: 8300000, guid: a952ab9590e7e7043b86c2540cf0bb95, type: 3}
+    - {fileID: 8300000, guid: dc29b41eb42c8ab49b582d4b1845f903, type: 3}
   - SurfaceType: 2
     FootstepSound:
     - {fileID: 8300000, guid: 657d5e292cd6eb64ea27b1d8030c0642, type: 3}

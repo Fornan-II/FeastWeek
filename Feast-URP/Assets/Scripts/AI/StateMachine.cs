@@ -5,14 +5,16 @@ using UnityEngine;
 public class StateMachine : MonoBehaviour
 {
     public bool recalculateIfNoState = true;
+    protected bool recalculateWhenReady = false;
     protected Coroutine _activeState;
     protected Coroutine _activeInterruptWatcher;
 
     #region Unity Methods
     protected virtual void Update()
     {
-        if(recalculateIfNoState && _activeState == null)
+        if((recalculateIfNoState && _activeState == null) || recalculateWhenReady)
         {
+            recalculateWhenReady = false;
             RecalculateState();
         }
     }

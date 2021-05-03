@@ -4,13 +4,23 @@ using UnityEngine;
 
 public class GhostSpawnTrigger : LimitedTrigger
 {
-    [SerializeField] private Transform[] spawnPoints;
+    [SerializeField] private Transform spawnPoint;
+    [SerializeField] private GhostQuest quest;
     [SerializeField] private float maxSpawnDelay = 0.3f;
 
-    protected override void OnTrigger() => GhostManager.Instance.SpawnCollection(spawnPoints, maxSpawnDelay);
+    private GhostAI _spawnedGhost;
 
-#if UNITY_EDITOR
-    [ContextMenu("Get spawnpoints from children")]
-    private void Editor_GetGhostsFromChildren() => spawnPoints = GetComponentsInChildren<Transform>();
-#endif
+    protected override void OnTrigger()
+    {
+        _spawnedGhost = GhostManager.Instance.SpawnGhost(spawnPoint.position, spawnPoint.rotation, spawnPoint);
+        _spawnedGhost.SetQuest(quest);
+    }
+
+    public void DespawnSpawnedGhost()
+    {
+        if(_spawnedGhost)
+        {
+            GhostManager.Instance.DespawnGhost(_spawnedGhost);
+        }
+    }
 }

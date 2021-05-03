@@ -33,6 +33,11 @@ public class GhostAI : StateMachine
     [SerializeField] private float wanderRadius = 7f;
     public Vector3 walkTarget;
     [SerializeField] private float grabRange = 0.3f;
+    [Header("Quest")]
+    [SerializeField] private GhostQuest activeQuest;
+    
+    private int _questProgress = 0;
+    private float _questDuration = 0.0f;
 
     private bool _grabAnimTriggered = false;
     private bool _grabAnimComplete = false;
@@ -52,6 +57,44 @@ public class GhostAI : StateMachine
     protected override void Update()
     {
         base.Update();
+
+        // Quest stuff
+        if (activeQuest != null && _questProgress < activeQuest.GoalCount)
+        {
+            switch(activeQuest.Goals[_questProgress].GoalState)
+            {
+                case GhostState.IDLE:
+                case GhostState.WANDER:
+                    if(_questDuration > activeQuest.Goals[_questProgress].Duration)
+                    {
+                        activeQuest.Goals[_questProgress].OnComplete.Invoke();
+                        _questDuration = 0.0f;
+                        ++_questProgress;
+                        recalculateWhenReady = true;
+                    }
+                    else
+                        _questDuration += Time.deltaTime;
+                    break;
+                case GhostState.WALK_TO:
+                    walkTarget = activeQuest.Goals[_questProgress].WalkTarget.position;
+                    if ((walkTarget - agent.transform.position).sqrMagnitude < activeQuest.Goals[_questProgress].walkTargetProximity * activeQuest.Goals[_questProgress].walkTargetProximity)
+                    {
+                        activeQuest.Goals[_questProgress].OnComplete.Invoke();
+                        ++_questProgress;
+                        recalculateWhenReady = true;
+                    }
+                    else if((agent.destination - walkTarget).sqrMagnitude > grabRange * grabRange)
+                    {
+                        // If target gets too far from pathfinding target then recalculate pathfinding
+                        // Using grabRange because why not
+                        recalculateWhenReady = true;
+                    }
+                    break;
+                default:
+                    Debug.LogWarning("[GhostAI] Trying to run unsupported quest type.");
+                    break;
+            }
+        }
 
         // Pass movement info for animation
         if(agent.isStopped || agent.remainingDistance <= agent.stoppingDistance)
@@ -73,17 +116,21 @@ public class GhostAI : StateMachine
         InitInterruptWatcher();
 
         // Figure out what state to run
-        if (_currentState == GhostState.NONE)
+        if (activeQuest != null && _questProgress < activeQuest.GoalCount)
+        {
+            _currentState = activeQuest.Goals[_questProgress].GoalState;
+        }
+        else if (_currentState == GhostState.NONE)
         {
             _currentState = _defaultState;
         }
-        else if(GhostManager.Instance.GhostsAggroToPlayer)
+        else if (GhostManager.Instance.GhostsAggroToPlayer)
         {
             walkTarget = PlayerRef.Transform.position;
             // probably want to change this to be set in some sensory way. Only when on screen or nearby?
             // Also would want to have this update if the player moves from their position
             // Can control all this by changing IsAggroToPlayer
-            if((walkTarget - agent.transform.position).sqrMagnitude < grabRange * grabRange)
+            if ((walkTarget - agent.transform.position).sqrMagnitude < grabRange * grabRange)
             {
                 _currentState = GhostState.GRAB;
             }
@@ -94,7 +141,7 @@ public class GhostAI : StateMachine
         }
         else
         {
-            if(WanderWhenIdling && _currentState == GhostState.IDLE)
+            if (WanderWhenIdling && _currentState == GhostState.IDLE)
             {
                 _currentState = GhostState.WANDER;
             }
@@ -138,6 +185,12 @@ public class GhostAI : StateMachine
         _activeInterruptWatcher = null;
     }
     #endregion
+
+    public void SetQuest(GhostQuest newQuest)
+    {
+        activeQuest = newQuest;
+        _questProgress = 0;
+    }
 
     private void GrabAnimGrab() => _grabAnimTriggered = true;
     private void GrabAnimComplete() => _grabAnimComplete = true;

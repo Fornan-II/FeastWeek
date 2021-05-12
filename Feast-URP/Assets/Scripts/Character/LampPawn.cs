@@ -11,7 +11,7 @@ public class LampPawn : VehiclePawn
 
     private Vector2 _lookInput;
 
-    private void OnLook(InputValue input) => _lookInput = input.Get<Vector2>();
+    private void OnLook(InputValue input) => _lookInput = input.Get<Vector2>() * SettingsManager.LookSensitivity;
     private void OnWalk(InputValue input) => ReturnControl();
     private void OnJump(InputValue input) => ReturnControl();
     private void OnInteract(InputValue input) => ReturnControl();

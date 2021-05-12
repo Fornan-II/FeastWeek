@@ -9,7 +9,9 @@ public class PauseManager : MonoBehaviour
     public static PauseManager Instance { get; private set; }
 
     public bool PausingAllowed = false;
+    [SerializeField] private FadeUI PauseInterface = null;
     [SerializeField] private FadeUI PauseMenu = null;
+    [SerializeField] private FadeUI OptionsMenu = null;
 
     private float _cachedTimeScale = 1f;
     private Util.CursorMode _cachedCursorMode;
@@ -62,10 +64,10 @@ public class PauseManager : MonoBehaviour
         Time.timeScale = 0f;
         _cachedCursorMode = Util.CursorMode.GetCurrent();
         Util.CursorMode.Default.Apply();
-        if (PauseMenu)
+        if (PauseInterface)
         {
-            PauseMenu.gameObject.SetActive(true);
-            PauseMenu.FadeIn();
+            PauseInterface.gameObject.SetActive(true);
+            PauseInterface.FadeIn();
         }
         _isPaused = true;
     }
@@ -76,7 +78,15 @@ public class PauseManager : MonoBehaviour
 
         Time.timeScale = _cachedTimeScale;
         _cachedCursorMode.Apply();
-        if (PauseMenu) PauseMenu.FadeOut(() => { PauseMenu.gameObject.SetActive(false); });
+        if (PauseInterface)
+        {
+            PauseInterface.FadeOut(() =>
+            {
+                PauseInterface.gameObject.SetActive(false);
+                OptionsMenu.SetClear();
+                PauseMenu.SetVisible();
+            });
+        }
         _isPaused = false;
     }
 
@@ -86,6 +96,20 @@ public class PauseManager : MonoBehaviour
 
         _isExitingToMainMenu = true;
         StartCoroutine(ExitToMainMenuCoroutine());
+    }
+
+    public void GoToOptions()
+    {
+        if (!_isPaused) return;
+
+        PauseMenu.FadeOut();
+        OptionsMenu.FadeIn();
+    }
+
+    public void ExitOptions()
+    {
+        OptionsMenu.FadeOut();
+        PauseMenu.FadeIn();
     }
 
     private IEnumerator ExitToMainMenuCoroutine()

@@ -24,6 +24,7 @@ public class FadeUI : MonoBehaviour
             startAlpha = uiGroup.alpha;
             duration = fadeDuration * (1 - startAlpha);
         }
+        uiGroup.blocksRaycasts = true;
         _fadeRoutine = PauseManager.Instance.StartCoroutine(Fade(startAlpha, 1f, duration, OnFadeComplete));
     }
 
@@ -37,7 +38,26 @@ public class FadeUI : MonoBehaviour
             startAlpha = uiGroup.alpha;
             duration = fadeDuration * startAlpha;
         }
+        uiGroup.blocksRaycasts = false;
         _fadeRoutine = PauseManager.Instance.StartCoroutine(Fade(startAlpha, 0f, duration, OnFadeComplete));
+    }
+
+    public void SetVisible()
+    {
+        if (_fadeRoutine != null)
+            StopCoroutine(_fadeRoutine);
+        _fadeRoutine = null;
+        uiGroup.blocksRaycasts = true;
+        uiGroup.alpha = 1f;
+    }
+
+    public void SetClear()
+    {
+        if (_fadeRoutine != null)
+            StopCoroutine(_fadeRoutine);
+        _fadeRoutine = null;
+        uiGroup.blocksRaycasts = false;
+        uiGroup.alpha = 0f;
     }
 
     private IEnumerator Fade(float startAlpha, float targetAlpha, float duration, UnityAction OnFadeComplete)

@@ -12,7 +12,7 @@ public class NoClipPawn : VehiclePawn
     private Vector2 _horizontalMovement;
     private float _verticalMovement;
 
-    private void OnLook(InputValue input) => _lookInput = input.Get<Vector2>();
+    private void OnLook(InputValue input) => _lookInput = input.Get<Vector2>() * SettingsManager.LookSensitivity;
     private void OnMoveHorizontal(InputValue input) => _horizontalMovement = input.Get<Vector2>();
     private void OnMoveVertical(InputValue input) => _verticalMovement = input.Get<float>();
 

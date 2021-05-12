@@ -39,7 +39,7 @@ public class FPSChar : Pawn, ICheckpointUser
     private float _footStepCooldown = 0f;
 
     private void OnWalk(InputValue input) => _moveInput = input.Get<Vector2>();
-    private void OnLook(InputValue input) => _lookInput = input.Get<Vector2>();
+    private void OnLook(InputValue input) => _lookInput = input.Get<Vector2>() * SettingsManager.LookSensitivity;
     private void OnJump(InputValue input) => _jumpInput = true;
     private void OnSprint(InputValue input) => _sprintInput = input.isPressed;
     private void OnInteract(InputValue input) => interacter.TryInteract(this);

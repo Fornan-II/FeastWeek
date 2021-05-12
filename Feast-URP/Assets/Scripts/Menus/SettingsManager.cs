@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class SettingsManager : MonoBehaviour
 {
@@ -22,17 +23,19 @@ public class SettingsManager : MonoBehaviour
     private const string k_Mixer_VolumeUI = "VolumeUI";
 
     [Header("UI Elements")]
+    [SerializeField] private Button applyButton;
     [SerializeField] private Slider lookSensitivitySlider;
     [SerializeField] private Slider brightnessSlider;
-    [SerializeField] private Dropdown fullScreenDropdown;
-    [SerializeField] private Dropdown resolutionDropdown;
+    [SerializeField] private TMP_Dropdown fullScreenDropdown;
+    [SerializeField] private TMP_Dropdown resolutionDropdown;
     [SerializeField] private Slider volumeMasterSlider;
     [SerializeField] private Slider volumeSFXSlider;
     [SerializeField] private Slider volumeAmbientSlider;
     [SerializeField] private Slider volumeMusicSlider;
     [SerializeField] private Slider volumeUISlider;
 
-    private float _lookSensitivity;
+    public static float LookSensitivity { get; private set; } = 1f;
+
     private float _brightness;
     private FullScreenMode _fullscreen;
     private int _resolutionIndex;   // of Screen.resolutions
@@ -45,6 +48,7 @@ public class SettingsManager : MonoBehaviour
     private void Start()
     {
         GetSettingValues();
+        SetUIValues();
     }
 
     #region Misc Public Methods
@@ -52,58 +56,75 @@ public class SettingsManager : MonoBehaviour
     {
         SaveSettings();
         ApplyAll();
+        applyButton.gameObject.SetActive(false);
     }
 
     public void ResetToSavedValues()
     {
         GetSettingValues();
         ApplyAll();
+        applyButton.gameObject.SetActive(false);
     }
     #endregion
 
     #region UI Receiving Methods
     public void SetLookSenstivity(float value)
     {
-        _lookSensitivity = value;
+        LookSensitivity = value;
+        applyButton.gameObject.SetActive(true);
     }
 
     public void SetBrightness(float value)
     {
         _brightness = value;
+        applyButton.gameObject.SetActive(true);
     }
 
-    // FullScreen dropdown
+    public void SetFullscreen(int value)
+    {
+        _fullscreen = (FullScreenMode)value;
+        applyButton.gameObject.SetActive(true);
+    }
     
-    // Resolution dropdown
+    public void SetResolution(int value)
+    {
+        _resolutionIndex = value;
+        applyButton.gameObject.SetActive(true);
+    }
 
     public void SetVolumeMaster(float value)
     {
         _volumeMaster = value;
         ApplyAudioVolumes();
+        applyButton.gameObject.SetActive(true);
     }
 
     public void SetVolumeSFX(float value)
     {
         _volumeSFX = value;
         ApplyAudioVolumes();
+        applyButton.gameObject.SetActive(true);
     }
 
     public void SetVolumeAmbient(float value)
     {
         _volumeAmbient = value;
         ApplyAudioVolumes();
+        applyButton.gameObject.SetActive(true);
     }
 
     public void SetVolumeMusic(float value)
     {
         _volumeMusic = value;
         ApplyAudioVolumes();
+        applyButton.gameObject.SetActive(true);
     }
 
     public void SetVolumeUI(float value)
     {
         _volumeUI = value;
         ApplyAudioVolumes();
+        applyButton.gameObject.SetActive(true);
     }
     #endregion
 
@@ -112,9 +133,9 @@ public class SettingsManager : MonoBehaviour
     {
         // Look sensitivity
         if (PlayerPrefs.HasKey(k_LookSensitivity_Float))
-            _brightness = PlayerPrefs.GetFloat(k_LookSensitivity_Float);
+            LookSensitivity = PlayerPrefs.GetFloat(k_LookSensitivity_Float);
         else
-            _brightness = 1f;
+            LookSensitivity = 1f;
 
         // Brightness
         if (PlayerPrefs.HasKey(k_Brightness_Float))
@@ -148,36 +169,36 @@ public class SettingsManager : MonoBehaviour
         if (PlayerPrefs.HasKey(k_VolumeMaster_Float))
             _volumeMaster = PlayerPrefs.GetFloat(k_VolumeMaster_Float);
         else
-            AudioManager.Data.Mixer.GetFloat(k_Mixer_VolumeMaster, out _volumeMaster);
+            _volumeMaster = 1.0f;
 
         // Volume SFX
         if (PlayerPrefs.HasKey(k_VolumeSFX_Float))
             _volumeSFX = PlayerPrefs.GetFloat(k_VolumeSFX_Float);
         else
-            AudioManager.Data.Mixer.GetFloat(k_Mixer_VolumeSFX, out _volumeSFX);
+            _volumeSFX = 1.0f;
 
         // Volume Ambient
         if (PlayerPrefs.HasKey(k_VolumeAmbient_Float))
             _volumeAmbient = PlayerPrefs.GetFloat(k_VolumeAmbient_Float);
         else
-            AudioManager.Data.Mixer.GetFloat(k_Mixer_VolumeAmbient, out _volumeAmbient);
+            _volumeAmbient = 1.0f;
 
         // Volume Music
         if (PlayerPrefs.HasKey(k_VolumeMusic_Float))
             _volumeMusic = PlayerPrefs.GetFloat(k_VolumeMusic_Float);
         else
-            AudioManager.Data.Mixer.GetFloat(k_Mixer_VolumeMusic, out _volumeMusic);
+            _volumeMusic = 1.0f;
 
         // Volume UI
         if (PlayerPrefs.HasKey(k_VolumeUI_Float))
             _volumeUI = PlayerPrefs.GetFloat(k_VolumeUI_Float);
         else
-            AudioManager.Data.Mixer.GetFloat(k_Mixer_VolumeUI, out _volumeUI);
+            _volumeUI = 1.0f;
     }
 
     private void SaveSettings()
     {
-        PlayerPrefs.SetFloat(k_LookSensitivity_Float, _lookSensitivity);
+        PlayerPrefs.SetFloat(k_LookSensitivity_Float, LookSensitivity);
         PlayerPrefs.SetFloat(k_Brightness_Float, _brightness);
         PlayerPrefs.SetInt(k_FullScreen_Int, (int)_fullscreen);
         PlayerPrefs.SetInt(k_Resolution_Int, _resolutionIndex);
@@ -206,22 +227,36 @@ public class SettingsManager : MonoBehaviour
 
     private void ApplyAudioVolumes()
     {
-        // I want to be able to scale volume properties to be more meaningful.
-        // Saw a post about it in the past, can't quite remember... something about logarithmic scale maybe.
-        AudioManager.Data.Mixer.SetFloat(k_Mixer_VolumeMaster, _volumeMaster);
-        AudioManager.Data.Mixer.SetFloat(k_Mixer_VolumeSFX, _volumeSFX);
-        AudioManager.Data.Mixer.SetFloat(k_Mixer_VolumeAmbient, _volumeAmbient);
-        AudioManager.Data.Mixer.SetFloat(k_Mixer_VolumeMusic, _volumeMusic);
-        AudioManager.Data.Mixer.SetFloat(k_Mixer_VolumeUI, _volumeUI);
+        AudioManager.Data.Mixer.SetFloat(k_Mixer_VolumeMaster, RemapVolumePercentToDecibel(_volumeMaster));
+        AudioManager.Data.Mixer.SetFloat(k_Mixer_VolumeSFX, RemapVolumePercentToDecibel(_volumeSFX));
+        AudioManager.Data.Mixer.SetFloat(k_Mixer_VolumeAmbient, RemapVolumePercentToDecibel(_volumeAmbient));
+        AudioManager.Data.Mixer.SetFloat(k_Mixer_VolumeMusic, RemapVolumePercentToDecibel(_volumeMusic));
+        AudioManager.Data.Mixer.SetFloat(k_Mixer_VolumeUI, RemapVolumePercentToDecibel(_volumeUI));
     }
 
     private void SetUIValues()
     {
-        lookSensitivitySlider.value = _lookSensitivity;
+        lookSensitivitySlider.value = LookSensitivity;
         brightnessSlider.value = _brightness;
 
+        List<string> optionData;
+        
+        fullScreenDropdown.ClearOptions();
+        optionData = new List<string>() { "Exclusive Full Screen", "Full Screen Window", "Maximized Window", "Windowed"  };
+        fullScreenDropdown.AddOptions(optionData);
+        optionData.Clear();
         fullScreenDropdown.value = (int)_fullscreen;
+        fullScreenDropdown.RefreshShownValue();
+
+        resolutionDropdown.ClearOptions();
+        foreach (var resolution in Screen.resolutions)
+        {
+            optionData.Add(string.Format("{0}x{1} {2}hz", resolution.width, resolution.height, resolution.refreshRate));
+        }
+        resolutionDropdown.AddOptions(optionData);
+        optionData.Clear();
         resolutionDropdown.value = _resolutionIndex;
+        resolutionDropdown.RefreshShownValue();
 
         volumeMasterSlider.value = _volumeMaster;
         volumeSFXSlider.value = _volumeSFX;
@@ -230,4 +265,10 @@ public class SettingsManager : MonoBehaviour
         volumeUISlider.value = _volumeUI;
     }
     #endregion
+
+    // Converte a 0 to 1 value to decibels, which is NOT a linear scale
+    // https://stackoverflow.com/questions/31598410/how-can-i-normalized-decibel-value-and-make-it-between-0-and-1
+    // Also handling when t is less than zero and would return negative infinity
+    // by setting it at the lowest volume (-80)
+    private float RemapVolumePercentToDecibel(float t) => t <= 0 ? -80f : 20.0f * Mathf.Log10(t);
 }

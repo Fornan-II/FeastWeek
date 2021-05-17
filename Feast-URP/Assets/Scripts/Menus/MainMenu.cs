@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class MainMenu : StateMachine
 {
+#pragma warning disable 0649
     [System.Serializable]
     private struct MenuObject
     {
@@ -11,7 +12,6 @@ public class MainMenu : StateMachine
         public Button FirstSelected;
     }
 
-#pragma warning disable 0649
     [Header("Menus")]
     [SerializeField] private MenuObject main;
     [SerializeField] private MenuObject options;

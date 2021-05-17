@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class GhostSpawnTrigger : LimitedTrigger
 {
+#pragma warning disable 0649
     [SerializeField] private Transform spawnPoint;
     [SerializeField] private GhostQuest quest;
-    [SerializeField] private float maxSpawnDelay = 0.3f;
 
     private GhostAI _spawnedGhost;
 

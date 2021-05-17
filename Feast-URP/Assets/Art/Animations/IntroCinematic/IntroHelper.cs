@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class IntroHelper : MonoBehaviour
+public class IntroHelper : Pawn, DefaultControls.IFPSCharacterActions
 {
 #pragma warning disable 0649
     [SerializeField] private FadeUI[] introPanels;
@@ -12,21 +12,49 @@ public class IntroHelper : MonoBehaviour
     [SerializeField] private Pawn playerPawn;
     [SerializeField] private Controller playerController;
     [SerializeField] private MusicManager musicManager;
+    [SerializeField] private float advanceAlphaThreshold = 0.67f;
 
     private int _currentPanel = 0;
-    private bool _readyForNextPanel = false;
+    private bool _canAdvancePanel = false;
     private bool _inPanelSequence = true;
 
     private void Start()
     {
         _currentPanel = 0;
         ShowPanel();
+
+        if (!IsBeingControlled)
+            playerController.TakeControlOf(this);
     }
 
     #region Input
-    private void OnInteract(InputValue value) => AdvancePanel();
-    private void OnJump(InputValue value) => AdvancePanel();
-    private void OnSprint(InputValue value) => AdvancePanel();
+    protected override void ActivateInput()
+    {
+        GameManager.Instance.Controls.FPSCharacter.SetCallbacks(this);
+        GameManager.Instance.Controls.FPSCharacter.Enable();
+    }
+
+    protected override void DeactivateInput()
+    {
+        GameManager.Instance.Controls.FPSCharacter.SetCallbacks(null);
+        GameManager.Instance.Controls.FPSCharacter.Disable();
+    }
+
+    public void OnWalk(InputAction.CallbackContext context) { /* Do nothing */ }
+    public void OnLook(InputAction.CallbackContext context) { /* Do nothing */ }
+    public void OnSprint(InputAction.CallbackContext context) { /* Do nothing */ }
+
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        if (context.started)
+            AdvancePanel();
+    }
+
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        if (context.started)
+            AdvancePanel();
+    }
     #endregion
 
     private void ShowPanel()
@@ -42,22 +70,20 @@ public class IntroHelper : MonoBehaviour
         else
         {
             introPanels[_currentPanel].gameObject.SetActive(true);
-            introPanels[_currentPanel].FadeIn(() =>
-            {
-                _readyForNextPanel = true;
-            });
+            introPanels[_currentPanel].FadeIn(() => _canAdvancePanel = true);
         }
     }
 
     private void AdvancePanel()
     {
-        if (_readyForNextPanel && _inPanelSequence)
+        if (_inPanelSequence && introPanels[_currentPanel].Alpha >= advanceAlphaThreshold && _canAdvancePanel)
         {
-            _readyForNextPanel = false;
+            _canAdvancePanel = false;
             introPanels[_currentPanel].FadeOut(() =>
             {
                 introPanels[_currentPanel].gameObject.SetActive(false);
                 ++_currentPanel;
+                _canAdvancePanel = true;
                 ShowPanel();
             });
         }

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class SettingsManager : MonoBehaviour
 {
+#pragma warning disable 0649
     private const string k_LookSensitivity_Float = "Look Sensitivity - Float";
     private const string k_Brightness_Float = "Brightness - Float";
     private const string k_FullScreen_Int = "Fullscreen - Int";
@@ -34,6 +37,11 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private Slider volumeMusicSlider;
     [SerializeField] private Slider volumeUISlider;
 
+    [Header("Support References")]
+    [SerializeField] private VolumeProfile postProcessingProfile;
+
+    private ColorAdjustments adjustmentsEffect;
+
     public static float LookSensitivity { get; private set; } = 1f;
 
     private float _brightness;
@@ -47,6 +55,11 @@ public class SettingsManager : MonoBehaviour
 
     private void Start()
     {
+        if (!postProcessingProfile.TryGet(out adjustmentsEffect))
+        {
+            Debug.LogError("Post Processing profile does not have Color Adjustments effect!");
+        }
+
         GetSettingValues();
         SetUIValues();
     }
@@ -62,6 +75,7 @@ public class SettingsManager : MonoBehaviour
     public void ResetToSavedValues()
     {
         GetSettingValues();
+        SetUIValues();
         ApplyAll();
         applyButton.gameObject.SetActive(false);
     }
@@ -77,6 +91,9 @@ public class SettingsManager : MonoBehaviour
     public void SetBrightness(float value)
     {
         _brightness = value;
+        // Automatically adjust brightness for feedback & because it's inexpensive to modify
+        adjustmentsEffect.postExposure.value = _brightness;
+
         applyButton.gameObject.SetActive(true);
     }
 
@@ -141,7 +158,7 @@ public class SettingsManager : MonoBehaviour
         if (PlayerPrefs.HasKey(k_Brightness_Float))
             _brightness = PlayerPrefs.GetFloat(k_Brightness_Float);
         else
-            _brightness = 1f;
+            _brightness = 0f;
 
         // Fullscreen
         if (PlayerPrefs.HasKey(k_FullScreen_Int))
@@ -213,8 +230,8 @@ public class SettingsManager : MonoBehaviour
 
     private void ApplyAll()
     {
-        // _lookSensitivity
-        // _brightness
+        // _lookSensitivity automatically handled because it's a public var
+        adjustmentsEffect.postExposure.value = _brightness;
 
         Screen.SetResolution(
             Screen.resolutions[_resolutionIndex].width,

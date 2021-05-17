@@ -9,17 +9,23 @@ public class GameManager : MonoBehaviour
     {
         get
         {
-            if (!_instance)
-                CreateInstance();
+            if (!_initialized) CreateInstance();
             return _instance;
         }
     }
 
+    private static bool _initialized = false;
+
     private static void CreateInstance()
     {
+        _initialized = true;
         _instance = new GameObject("~GameManager").AddComponent<GameManager>();
         DontDestroyOnLoad(_instance.gameObject);
+
+        _instance.Controls = new DefaultControls();
     }
 
-    
+    public DefaultControls Controls { get; private set; }
+
+    private void OnDestroy() => _instance = null;
 }

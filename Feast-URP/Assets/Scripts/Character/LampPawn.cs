@@ -2,7 +2,7 @@
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
-public class LampPawn : VehiclePawn
+public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
 {
 #pragma warning disable 0649
     [SerializeField] private Transform lookTransform;
@@ -11,10 +11,30 @@ public class LampPawn : VehiclePawn
 
     private Vector2 _lookInput;
 
-    private void OnLook(InputValue input) => _lookInput = input.Get<Vector2>() * SettingsManager.LookSensitivity;
-    private void OnWalk(InputValue input) => ReturnControl();
-    private void OnJump(InputValue input) => ReturnControl();
-    private void OnInteract(InputValue input) => ReturnControl();
+    #region Input
+    protected override void ActivateInput()
+    {
+        GameManager.Instance.Controls.FPSCharacter.SetCallbacks(this);
+        GameManager.Instance.Controls.FPSCharacter.Enable();
+    }
+
+    protected override void DeactivateInput()
+    {
+        GameManager.Instance.Controls.FPSCharacter.SetCallbacks(null);
+        GameManager.Instance.Controls.FPSCharacter.Disable();
+    }
+
+    public void OnWalk(InputAction.CallbackContext context)
+    {
+        if (context.ReadValue<Vector2>().sqrMagnitude > Mathf.Epsilon)
+            ReturnControl();
+    }
+
+    public void OnLook(InputAction.CallbackContext context) => _lookInput = context.ReadValue<Vector2>() * SettingsManager.LookSensitivity;
+    public void OnJump(InputAction.CallbackContext context) => ReturnControl();
+    public void OnSprint(InputAction.CallbackContext context) { /* Do nothing */ }
+    public void OnInteract(InputAction.CallbackContext context) => ReturnControl();
+    #endregion
 
     public override UnityAction BecomeControlledBy(Controller controller)
     {

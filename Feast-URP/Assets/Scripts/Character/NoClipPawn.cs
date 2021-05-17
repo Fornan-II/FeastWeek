@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class NoClipPawn : VehiclePawn
+public class NoClipPawn : VehiclePawn, DefaultControls.INoClipCharacterActions
 {
     [SerializeField] private float moveSpeed = 1f;
     [SerializeField] private float lookSpeed = 0.25f;
@@ -12,9 +12,22 @@ public class NoClipPawn : VehiclePawn
     private Vector2 _horizontalMovement;
     private float _verticalMovement;
 
-    private void OnLook(InputValue input) => _lookInput = input.Get<Vector2>() * SettingsManager.LookSensitivity;
-    private void OnMoveHorizontal(InputValue input) => _horizontalMovement = input.Get<Vector2>();
-    private void OnMoveVertical(InputValue input) => _verticalMovement = input.Get<float>();
+    #region Input
+    protected override void ActivateInput()
+    {
+        GameManager.Instance.Controls.NoClipCharacter.SetCallbacks(this);
+        GameManager.Instance.Controls.NoClipCharacter.Enable();
+    }
+    protected override void DeactivateInput()
+    {
+        GameManager.Instance.Controls.NoClipCharacter.SetCallbacks(null);
+        GameManager.Instance.Controls.NoClipCharacter.Disable();
+    }
+
+    public void OnLook(InputAction.CallbackContext context) => _lookInput = context.ReadValue<Vector2>() * SettingsManager.LookSensitivity;
+    public void OnMoveHorizontal(InputAction.CallbackContext context) => _horizontalMovement = context.ReadValue<Vector2>();
+    public void OnMoveVertical(InputAction.CallbackContext context) => _verticalMovement = context.ReadValue<float>();
+    #endregion
 
     private void Update()
     {

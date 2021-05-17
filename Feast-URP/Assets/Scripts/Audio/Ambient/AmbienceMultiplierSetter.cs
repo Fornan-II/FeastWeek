@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AmbienceMultiplierSetter : CubeTriggerVolume
 {
+#pragma warning disable 0649
     [SerializeField] private AmbientAudioBoxTrigger targetAmbience;
     [SerializeField] private Vector2 blendRemap = new Vector2(0f, 1f);
 

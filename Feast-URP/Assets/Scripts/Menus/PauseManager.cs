@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class PauseManager : MonoBehaviour
+public class PauseManager : MonoBehaviour, DefaultControls.IGlobalActions
 {
     public static PauseManager Instance { get; private set; }
 
@@ -46,7 +46,27 @@ public class PauseManager : MonoBehaviour
             Instance = null;
     }
 
-    private void OnPause(InputValue input) => TogglePause();
+    private void OnEnable()
+    {
+        GameManager.Instance.Controls.Global.SetCallbacks(this);
+        GameManager.Instance.Controls.Global.Enable();
+    }
+
+    private void OnDisable()
+    {
+        // Early exiting because when OnDisable() gets called during application quitting,
+        // errors can occur if GameManager gets destroyed before this is called
+        if (!GameManager.Instance) return;
+
+        GameManager.Instance.Controls.Global.SetCallbacks(null);
+        GameManager.Instance.Controls.Global.Disable();
+    }
+
+    public void OnPause(InputAction.CallbackContext context)
+    {
+        if (context.started)
+            TogglePause();
+    }
 
     public void TogglePause()
     {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class FPSChar : Pawn, ICheckpointUser
+public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActions
 {
 #pragma warning disable 0649
     [Header("Components")]
@@ -38,11 +38,30 @@ public class FPSChar : Pawn, ICheckpointUser
     private float _currentYVelocityMax = 0.0f;
     private float _footStepCooldown = 0f;
 
-    private void OnWalk(InputValue input) => _moveInput = input.Get<Vector2>();
-    private void OnLook(InputValue input) => _lookInput = input.Get<Vector2>() * SettingsManager.LookSensitivity;
-    private void OnJump(InputValue input) => _jumpInput = true;
-    private void OnSprint(InputValue input) => _sprintInput = input.isPressed;
-    private void OnInteract(InputValue input) => interacter.TryInteract(this);
+    #region Input
+    protected override void ActivateInput()
+    {
+        GameManager.Instance.Controls.FPSCharacter.SetCallbacks(this);
+        GameManager.Instance.Controls.FPSCharacter.Enable();
+    }
+
+    protected override void DeactivateInput()
+    {
+        GameManager.Instance.Controls.FPSCharacter.SetCallbacks(null);
+        GameManager.Instance.Controls.FPSCharacter.Disable();
+    }
+
+    public void OnWalk(InputAction.CallbackContext context) => _moveInput = Util.RemapSquareToCircle(context.ReadValue<Vector2>());
+    public void OnLook(InputAction.CallbackContext context) => _lookInput = context.ReadValue<Vector2>() * SettingsManager.LookSensitivity;
+    public void OnJump(InputAction.CallbackContext context) => _jumpInput = true;
+    public void OnSprint(InputAction.CallbackContext context) => _sprintInput = !context.canceled;
+
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        if (context.started)
+            interacter.TryInteract(this);
+    }
+    #endregion
 
     protected override void StopBeingControlled()
     {
@@ -82,7 +101,7 @@ public class FPSChar : Pawn, ICheckpointUser
     {
         if (!IsBeingControlled) return;
         // Planar Movement
-        Vector3 moveCalc = (transform.forward * _moveInput.y + transform.right * _moveInput.x).normalized * moveSpeed * (_sprintInput && _isGrounded && _moveInput.y > 0 ? sprintMultiplier : 1f);
+        Vector3 moveCalc = (transform.forward * _moveInput.y + transform.right * _moveInput.x) * moveSpeed * (_sprintInput && _isGrounded && _moveInput.y > 0 ? sprintMultiplier : 1f);
         moveCalc = Vector3.ProjectOnPlane(moveCalc, _groundNormal);
         Debug.DrawRay(transform.position - Vector3.up * movementController.height * 0.5f, moveCalc, Color.yellow, 0.05f);
         moveCalc = Vector3.Lerp(new Vector3(movementController.velocity.x, 0f, movementController.velocity.z), moveCalc, _isGrounded ? moveGroundAccelLerp : moveAerialAccelLerp);

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-
 public class Controller : MonoBehaviour
 {
     public Pawn ControlledPawn => controlledPawn;
@@ -10,7 +9,10 @@ public class Controller : MonoBehaviour
     [SerializeField] protected Pawn controlledPawn;
     private UnityAction _pawnReleaseMethod;
 
-    private void Start() => TakeControlOf(controlledPawn);
+    private void Start()
+    {
+        TakeControlOf(controlledPawn);
+    }
 
     public void TakeControlOf(Pawn pawn)
     {

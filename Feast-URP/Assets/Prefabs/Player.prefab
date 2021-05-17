@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1715510752619392745}
   - component: {fileID: 1715510752619392747}
-  - component: {fileID: 1715510752619392744}
   - component: {fileID: 7507402167451724083}
   - component: {fileID: 118242237}
   m_Layer: 0
@@ -48,7 +47,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20512525ef37fc644997ae268e5c0005, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerInput: {fileID: 1715510752619392744}
   cursorSettings:
     Visible: 0
     LockMode: 1
@@ -124,44 +122,6 @@ MonoBehaviour:
     m_Bits: 4294967295
   walkingFootstepInterval: {x: 0.5, y: 0.53}
   sprintingFootstepInterval: {x: 0.3, y: 0.4}
---- !u!114 &1715510752619392744
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1715510752619392751}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 67ffa7a364998f944b5c27ddd6fbee99, type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: ee345128-11f0-4e94-ac14-15e224b603f7
-    m_ActionName: FSPCharacter/Walk[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: f8470140-94bb-430d-bd62-330d667ee5b1
-    m_ActionName: FSPCharacter/Look[/Mouse/delta]
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: FSPCharacter
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!114 &7507402167451724083
 MonoBehaviour:
   m_ObjectHideFlags: 0

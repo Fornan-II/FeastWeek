@@ -8,6 +8,7 @@ using TMPro;
 public class FadeUI : MonoBehaviour
 {
     public bool IsFading => _fadeRoutine != null;
+    public float Alpha => uiGroup.alpha;
 
     [SerializeField] private CanvasGroup uiGroup;
     [SerializeField] private float fadeDuration = 1f;

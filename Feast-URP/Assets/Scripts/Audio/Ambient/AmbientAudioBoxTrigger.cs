@@ -5,6 +5,7 @@ using UnityEngine.Audio;
 
 public class AmbientAudioBoxTrigger : CubeTriggerVolume
 {
+#pragma warning disable 0649
     [Header("Main Settings")]
     [SerializeField] private float fadeInTime = -1f;
     [SerializeField] private AudioSource source;

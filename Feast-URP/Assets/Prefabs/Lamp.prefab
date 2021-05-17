@@ -4326,6 +4326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 133cba7e36ef11349ad53d9c5636a0f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsInteractable: 1
   OnInteract:
     m_PersistentCalls:
       m_Calls:
@@ -4351,7 +4352,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5302490587900948190}
   - component: {fileID: 200821454877358410}
-  - component: {fileID: 1152027330421573094}
   m_Layer: 0
   m_Name: Lamp
   m_TagString: Untagged
@@ -4388,7 +4388,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cdbee8c2bde09e4d8806c3296d7f632, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerInput: {fileID: 1152027330421573094}
   cursorSettings:
     Visible: 0
     LockMode: 1
@@ -4401,36 +4400,6 @@ MonoBehaviour:
   lookTransform: {fileID: 4706495316682923024}
   lookSpeed: 0.06
   clampAngle: 20
---- !u!114 &1152027330421573094
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5302490587900948195}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 67ffa7a364998f944b5c27ddd6fbee99, type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: FSPCharacter
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!1 &5302490587928021627
 GameObject:
   m_ObjectHideFlags: 0

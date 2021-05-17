@@ -9,15 +9,15 @@ public class Pawn : MonoBehaviour
     public Controller MyController { get; protected set; }
     public bool IsBeingControlled => MyController;
 
-    [SerializeField] PlayerInput playerInput;
+    //[SerializeField] PlayerInput playerInput;
     [SerializeField] protected Util.CursorMode cursorSettings = Util.CursorMode.Default;
     [SerializeField] protected UnityEvent OnBecomeControlled;
     [SerializeField] protected UnityEvent OnStopBeingControlled;
-
+    
     public virtual UnityAction BecomeControlledBy(Controller controller)
     {
         MyController = controller;
-        playerInput.enabled = true;
+        ActivateInput();
         cursorSettings.Apply();
         OnBecomeControlled.Invoke();
         return StopBeingControlled;
@@ -26,17 +26,34 @@ public class Pawn : MonoBehaviour
     protected virtual void StopBeingControlled()
     {
         MyController = null;
-        playerInput.enabled = false;
+        DeactivateInput();
         OnStopBeingControlled.Invoke();
     }
 
-#if UNITY_EDITOR
-    private void OnValidate()
+    protected virtual void OnEnable()
     {
-        if(!playerInput && TryGetComponent(out playerInput))
-        {
-            playerInput.DeactivateInput();
-        }
+        if (IsBeingControlled)
+            ActivateInput();
     }
-#endif
+
+    protected virtual void OnDisable()
+    {
+        // Early exiting because when OnDisable() gets called during application quitting,
+        // errors can occur if GameManager gets destroyed before this is called
+        if (!GameManager.Instance) return;
+
+        DeactivateInput();
+    }
+
+    protected virtual void ActivateInput()
+    {
+        // Example of how to initialize 
+        // GameManager.Controls.FPSCharacter.SetCallbacks(this);
+        Debug.LogWarning("Pawn.ActivateInput() called! Make sure to override this method!");
+    }
+
+    protected virtual void DeactivateInput()
+    {
+        Debug.LogWarning("Pawn.DeactivateInput() called! Make sure to override this method!");
+    }
 }

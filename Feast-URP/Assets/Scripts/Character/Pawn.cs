@@ -42,7 +42,8 @@ public class Pawn : MonoBehaviour
         // errors can occur if GameManager gets destroyed before this is called
         if (!GameManager.Instance) return;
 
-        DeactivateInput();
+        if(IsBeingControlled)
+            DeactivateInput();
     }
 
     protected virtual void ActivateInput()

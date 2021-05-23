@@ -23,6 +23,8 @@ public class Controller : MonoBehaviour
             return;
         }
 #endif
+        // Already controlling this pawn, don't need to do anything.
+        if (pawn == controlledPawn) return;
 
         if (controlledPawn && _pawnReleaseMethod != null)
         {

@@ -65,8 +65,21 @@ public class GameManager : MonoBehaviour
         // https://forum.unity.com/threads/detect-most-recent-input-device-type.753206/#post-5026484
 
         // This method gets called a lot because it's called for every input
+
+        bool deviceIsDifferent = false;
         
-        if (_lastUsedDevice != context.control.device)
+        // Using a try catch here because the new Input System has a bug where during context switches it will trigger this callback and
+        // send a context where context.control throws a IndexOutOfRangeException.
+        try
+        {
+            deviceIsDifferent = _lastUsedDevice != context.control.device;
+        }
+        catch(IndexOutOfRangeException)
+        {
+            return;
+        }
+
+        if (deviceIsDifferent)
         {
             _lastUsedDevice = context.control.device;
 

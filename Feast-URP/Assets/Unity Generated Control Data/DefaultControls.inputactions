@@ -7,7 +7,7 @@
             "actions": [
                 {
                     "name": "Walk",
-                    "type": "PassThrough",
+                    "type": "Value",
                     "id": "ee345128-11f0-4e94-ac14-15e224b603f7",
                     "expectedControlType": "Vector2",
                     "processors": "",
@@ -15,7 +15,7 @@
                 },
                 {
                     "name": "Look",
-                    "type": "PassThrough",
+                    "type": "Value",
                     "id": "f8470140-94bb-430d-bd62-330d667ee5b1",
                     "expectedControlType": "Vector2",
                     "processors": "",
@@ -247,7 +247,7 @@
             "actions": [
                 {
                     "name": "Look",
-                    "type": "PassThrough",
+                    "type": "Value",
                     "id": "562cc132-389a-4a19-85a0-a32b8234de1c",
                     "expectedControlType": "Vector2",
                     "processors": "",
@@ -255,7 +255,7 @@
                 },
                 {
                     "name": "MoveHorizontal",
-                    "type": "PassThrough",
+                    "type": "Value",
                     "id": "72ded832-2b69-4aa2-a71f-96423f15ab26",
                     "expectedControlType": "Vector2",
                     "processors": "",
@@ -265,7 +265,7 @@
                     "name": "MoveVertical",
                     "type": "Value",
                     "id": "ce0c5d0d-e3f3-4fb5-a46a-03ff3331c59b",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": ""
                 }

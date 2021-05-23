@@ -13,11 +13,12 @@ public class Pawn : MonoBehaviour
     [SerializeField] protected Util.CursorMode cursorSettings = Util.CursorMode.Default;
     [SerializeField] protected UnityEvent OnBecomeControlled;
     [SerializeField] protected UnityEvent OnStopBeingControlled;
-    
+
     public virtual UnityAction BecomeControlledBy(Controller controller)
     {
         MyController = controller;
-        ActivateInput();
+        // Delay control by a frame to avoid issues of input being handled twice
+        StartCoroutine(DelayedActivateInput());
         cursorSettings.Apply();
         OnBecomeControlled.Invoke();
         return StopBeingControlled;
@@ -42,7 +43,7 @@ public class Pawn : MonoBehaviour
         // errors can occur if GameManager gets destroyed before this is called
         if (!GameManager.Instance) return;
 
-        if(IsBeingControlled)
+        if (IsBeingControlled)
             DeactivateInput();
     }
 
@@ -56,5 +57,12 @@ public class Pawn : MonoBehaviour
     protected virtual void DeactivateInput()
     {
         Debug.LogWarning("Pawn.DeactivateInput() called! Make sure to override this method!");
+    }
+
+    private IEnumerator DelayedActivateInput()
+    {
+        yield return null;
+        if(IsBeingControlled)
+            ActivateInput();
     }
 }

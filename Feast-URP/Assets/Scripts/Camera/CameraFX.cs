@@ -6,6 +6,12 @@ using UnityEngine;
 [Serializable]
 public class CameraFX
 {
+    private class TransformEffect
+    {
+        public Vector3 position;
+        public Quaternion rotation;
+    }
+
     // Properties
     [Header("Fade")]
     [SerializeField, ColorUsage(false, true)] private Color defaultFadeColor = Color.magenta;
@@ -13,11 +19,13 @@ public class CameraFX
     [SerializeField] private AnimationCurve impulseCurve = AnimationCurve.EaseInOut(0, 1, 1, 0);
     [Header("Screenshake")]
     [SerializeField] private float screenShakeExponent = 0.5f;
-    [SerializeField, Range(0, 1)] private float screenShakeSmoothing = 0f;
+    [SerializeField] private float defaultCameraShakeFrequency = 18f;
+    [SerializeField] private float cameraShakeRotationMultiplier = 5f;
 
     // Private members
     private MainCamera _mainCameraRef;
     private Coroutine _activeFadeRoutine;
+    private List<TransformEffect> _transformEffects = new List<TransformEffect>();
 
     public void Init(MainCamera mainCameraInstance)
     {
@@ -61,84 +69,88 @@ public class CameraFX
     #endregion
 
     #region Transform Effects
-    private Coroutine StartTransformEffect(Func<Transform, IEnumerator> effect)
+    public void ApplyTransformEffects()
     {
-        // Create new transform
-        Transform effectTransform = new GameObject("~TransformEffect").transform;
+        _mainCameraRef.transform.localPosition = Vector3.zero;
+        _mainCameraRef.transform.localRotation = Quaternion.identity;
 
-        // Move effectTransform to MainCamera.Camera's parent
-        // Then insert effectTransform between MainCamera.Camera and it's parent
-        Util.MoveTransformToTarget(effectTransform, MainCamera.Camera.transform.parent, true);
-        MainCamera.Camera.transform.SetParent(effectTransform);
-
-        // Start transform effect
-        return _mainCameraRef.StartCoroutine(effect.Invoke(effectTransform));
-    }
-
-    private void CleanUpTransformEffect(Transform effectTransform)
-    {
-        // Have all children of transform set their parent as effectTransform's parent
-        for(int i = 0; i < effectTransform.childCount; ++i)
+        foreach(var effect in _transformEffects)
         {
-            Util.MoveTransformToTarget(effectTransform.GetChild(i), effectTransform.parent, true);
+            _mainCameraRef.transform.localPosition += effect.position;
+            _mainCameraRef.transform.localRotation *= effect.rotation;
         }
-
-        // Delete effectTransform
-        GameObject.Destroy(effectTransform.gameObject);
     }
 
     public void ApplyImpulse(Vector3 sourcePos, float strength, float duration = 0.5f)
     {
-        IEnumerator ImpulseCoroutine(Transform t)
+        IEnumerator ImpulseCoroutine()
         {
-            Vector3 startOffset = t.parent.InverseTransformVector(MainCamera.Camera.transform.position - sourcePos).normalized * strength;
+            Vector3 startOffset = (_mainCameraRef.transform.position - sourcePos).normalized * strength;
+            TransformEffect t = new TransformEffect() { position = startOffset, rotation = Quaternion.identity };
+            _transformEffects.Add(t);
 
             for(float timer = 0.0f; timer < duration; timer += Time.deltaTime)
             {
-                t.localPosition = Vector3.Lerp(Vector3.zero, startOffset, impulseCurve.Evaluate(timer / duration));
+                t.position = Vector3.Lerp(Vector3.zero, startOffset, impulseCurve.Evaluate(timer / duration));
                 yield return null;
             }
 
-            CleanUpTransformEffect(t);
+            _transformEffects.Remove(t);
         };
 
-        StartTransformEffect(ImpulseCoroutine);
+        _mainCameraRef.StartCoroutine(ImpulseCoroutine());
     }
 
-    public void ApplyScreenShake(float strength, float duration = 0.5f)
+    public void ApplyScreenShake(float strength, float duration = 0.5f) => ApplyScreenShake(strength, defaultCameraShakeFrequency, duration);
+
+    public void ApplyScreenShake(float strength, float frequency, float duration)
     {
-        IEnumerator ScreenShakeCoroutine(Transform t)
+        IEnumerator ScreenShakeCoroutine()
         {
+            TransformEffect t = new TransformEffect();
+            _transformEffects.Add(t);
+
             for (float timer = 0.0f; timer < duration; timer += Time.deltaTime)
             {
-                Vector3 newPosition = UnityEngine.Random.insideUnitSphere * strength * Mathf.Clamp01(Mathf.Pow(1f - timer / duration, screenShakeExponent));
-                t.localPosition = Vector3.Lerp(newPosition, t.localPosition, screenShakeSmoothing);
+                //UnityEngine.Random.insideUnitSphere * strength * Mathf.Clamp01(Mathf.Pow(1f - timer / duration, screenShakeExponent));
+                float tValue = Mathf.Pow(1f - timer / duration, screenShakeExponent);
+                t.position = new Vector3((Mathf.PerlinNoise(Time.timeSinceLevelLoad * frequency, 0f) * 2f - 1f) * strength * tValue * 0.5f,
+                                        (Mathf.PerlinNoise(Time.timeSinceLevelLoad * frequency, 3f) * 2f - 1f) * strength * tValue * 0.5f,
+                                        (Mathf.PerlinNoise(Time.timeSinceLevelLoad * frequency, 7f) * 2f - 1f) * strength * tValue * 0.5f);
+                t.rotation = Quaternion.Euler(Vector3.forward * ((Mathf.PerlinNoise(Time.timeSinceLevelLoad * frequency, 11f) * 2f - 1f) * strength * 0.5f * tValue * cameraShakeRotationMultiplier));
                 yield return null;
             }
 
-            CleanUpTransformEffect(t);
+            _transformEffects.Remove(t);
         };
 
-        StartTransformEffect(ScreenShakeCoroutine);
+        _mainCameraRef.StartCoroutine(ScreenShakeCoroutine());
     }
 
-    public Action<float> ContinuousScreenShake(float initialStrength)
+    public Action<float> ContinuousScreenShake(float initialStrength) => ContinuousScreenShake(initialStrength, defaultCameraShakeFrequency);
+
+    public Action<float> ContinuousScreenShake(float initialStrength, float frequency)
     {
         float strength = initialStrength;
 
-        IEnumerator ScreenShakeCoroutine(Transform t)
+        IEnumerator ScreenShakeCoroutine()
         {
+            TransformEffect t = new TransformEffect();
+            _transformEffects.Add(t);
+
             while(strength > 0f)
             {
-                Vector3 newPosition = UnityEngine.Random.insideUnitSphere * strength;
-                t.localPosition = Vector3.Lerp(newPosition, t.localPosition, screenShakeSmoothing);
+                t.position = new Vector3((Mathf.PerlinNoise(Time.timeSinceLevelLoad * frequency, 0f) * 2f - 1f) * strength * 0.5f,
+                                        (Mathf.PerlinNoise(Time.timeSinceLevelLoad * frequency, 3f) * 2f - 1f) * strength * 0.5f,
+                                        (Mathf.PerlinNoise(Time.timeSinceLevelLoad * frequency, 7f) * 2f - 1f) * strength * 0.5f);
+                t.rotation = Quaternion.Euler(Vector3.forward * ((Mathf.PerlinNoise(Time.timeSinceLevelLoad * frequency, 11f) * 2f - 1f) * strength * 0.5f * cameraShakeRotationMultiplier));
                 yield return null;
             }
 
-            CleanUpTransformEffect(t);
+            _transformEffects.Remove(t);
         };
 
-        StartTransformEffect(ScreenShakeCoroutine);
+        _mainCameraRef.StartCoroutine(ScreenShakeCoroutine());
         return (float value) => strength = value;
     }
     #endregion

@@ -64,6 +64,11 @@ public class MainCamera : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        Effects.ApplyTransformEffects();
+    }
+
     private void OnDestroy()
     {
         if (_instance == this)

@@ -29,7 +29,12 @@ public class RaycastInteracter : MonoBehaviour
         if (_hadInteractable && !_targetedInteractable)
             MsgBox.HideMessage();
         else if (!_hadInteractable && _targetedInteractable)
-            MsgBox.ShowMessage("Left Mouse to Interact", -1f);
+        {
+            MsgBox.ShowMessage(GameManager.Instance.UsingGamepadControls()
+                ? "X to interact"
+                : "Left Mouse to interact"
+                , -1f);
+        }
     }
 
     private void OnDisable()

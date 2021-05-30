@@ -26,6 +26,7 @@ public class FadeUI : MonoBehaviour
             duration = fadeDuration * (1 - startAlpha);
         }
         uiGroup.blocksRaycasts = true;
+        uiGroup.interactable = true;
         _fadeRoutine = PauseManager.Instance.StartCoroutine(Fade(startAlpha, 1f, duration, OnFadeComplete));
     }
 
@@ -40,6 +41,7 @@ public class FadeUI : MonoBehaviour
             duration = fadeDuration * startAlpha;
         }
         uiGroup.blocksRaycasts = false;
+        uiGroup.interactable = false;
         _fadeRoutine = PauseManager.Instance.StartCoroutine(Fade(startAlpha, 0f, duration, OnFadeComplete));
     }
 
@@ -49,6 +51,7 @@ public class FadeUI : MonoBehaviour
             StopCoroutine(_fadeRoutine);
         _fadeRoutine = null;
         uiGroup.blocksRaycasts = true;
+        uiGroup.interactable = true;
         uiGroup.alpha = 1f;
     }
 
@@ -58,6 +61,7 @@ public class FadeUI : MonoBehaviour
             StopCoroutine(_fadeRoutine);
         _fadeRoutine = null;
         uiGroup.blocksRaycasts = false;
+        uiGroup.interactable = false;
         uiGroup.alpha = 0f;
     }
 

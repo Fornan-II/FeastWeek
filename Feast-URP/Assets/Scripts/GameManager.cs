@@ -37,15 +37,27 @@ public class GameManager : MonoBehaviour
     public event Action OnControlSchemeChanged;
 
     private InputDevice _lastUsedDevice;
-
+    
     private void OnDestroy()
     {
         _instance = null;
 
         foreach (var map in Controls.asset.actionMaps)
         {
-            map.actionTriggered -= ActionMap_actionTriggered;
+            UnregisterActions(map);
         }
+    }
+
+    public bool UsingGamepadControls() => ActiveControlScheme == ControlSchemeType.GAMEPAD;
+
+    public void RegisterActions(InputActionMap map)
+    {
+        map.actionTriggered += ActionMap_actionTriggered;
+    }
+
+    public void UnregisterActions(InputActionMap map)
+    {
+        map.actionTriggered -= ActionMap_actionTriggered;
     }
 
     private void SetupControls()
@@ -54,7 +66,7 @@ public class GameManager : MonoBehaviour
         
         foreach (var map in Controls.asset.actionMaps)
         {
-            map.actionTriggered += ActionMap_actionTriggered;
+            RegisterActions(map);
         }
     }
 

@@ -1,26 +1,31 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class MainMenu : StateMachine
 {
 #pragma warning disable 0649
     [System.Serializable]
-    private struct MenuObject
+    public struct MenuObject
     {
         public FadeUI Menu;
         public Button FirstSelected;
+
+        public readonly static MenuObject Empty = new MenuObject() { Menu = null, FirstSelected = null };
     }
 
     [Header("Menus")]
     [SerializeField] private MenuObject main;
     [SerializeField] private MenuObject options;
+    [SerializeField] private MenuObject controls;
     [Header("Game Start")]
     [SerializeField] private float fadeOutTime = 1f;
     [SerializeField] private float fadeInTime = 2f;
     [SerializeField] private int levelBuildIndex = 1;
 
-    bool _menuIsMain = true;
+    private MenuObject _activeMenu;
+
     bool _loadGameStarted = false;
 
     private IEnumerator Start()
@@ -33,40 +38,61 @@ public class MainMenu : StateMachine
         MainCamera.Effects.ResetFadeColorToDefault();
     }
 
-    protected override void RecalculateState() => _activeState = StartCoroutine(_menuIsMain ? Main() : Options());
-
-    private IEnumerator Main()
+    private void OnEnable()
     {
-        main.Menu.gameObject.SetActive(true);
-        main.Menu.FadeIn();
-        main.FirstSelected.Select();
-        main.FirstSelected.OnSelect(null);
-        yield return new WaitUntil(() => !_menuIsMain);
+        GameManager.Instance.OnControlSchemeChanged += OnControlSchemeChanged;
+    }
 
-        main.Menu.FadeOut();
-        yield return new WaitUntil(() => !main.Menu.IsFading);
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        GameManager.Instance.OnControlSchemeChanged -= OnControlSchemeChanged;
+    }
 
-        main.Menu.gameObject.SetActive(false);
+    private void OnControlSchemeChanged()
+    {
+        if (GameManager.Instance.UsingGamepadControls())
+        {
+            _activeMenu.FirstSelected?.Select();
+            _activeMenu.FirstSelected?.OnSelect(null);
+        }
+        else
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+    }
+
+    protected override void RecalculateState()// => _activeState = StartCoroutine(_menuIsMain ? Main() : Options());
+    {
+        if (!_activeMenu.Menu)
+            _activeMenu = main;
+
+        _activeState = StartCoroutine(ShowMenu());
+    }
+
+    private IEnumerator ShowMenu()
+    {
+        MenuObject menu = _activeMenu;
+
+        menu.Menu.gameObject.SetActive(true);
+        menu.Menu.FadeIn();
+        if (GameManager.Instance.UsingGamepadControls())
+        {
+            menu.FirstSelected.Select();
+            menu.FirstSelected.OnSelect(null);
+        }
+        yield return new WaitUntil(() => menu.Menu != _activeMenu.Menu);
+
+        menu.Menu.FadeOut();
+        yield return new WaitUntil(() => !menu.Menu.IsFading);
+
+        menu.Menu.gameObject.SetActive(false);
         _activeState = null;
     }
 
-    private IEnumerator Options()
-    {
-        options.Menu.gameObject.SetActive(true);
-        options.Menu.FadeIn();
-        options.FirstSelected.Select();
-        options.FirstSelected.OnSelect(null);
-        yield return new WaitUntil(() => _menuIsMain && !options.Menu.IsFading);
-
-        options.Menu.FadeOut();
-        yield return new WaitUntil(() => !options.Menu.IsFading);
-
-        options.Menu.gameObject.SetActive(false);
-        _activeState = null;
-    }
-
-    public void SetMenuMain() => _menuIsMain = true;
-    public void SetMenuOptions() => _menuIsMain = false;
+    public void SetMenuMain() => _activeMenu = main;
+    public void SetMenuOptions() => _activeMenu = options;
+    public void SetMenuControls() => _activeMenu = controls;
     public void QuitGame() => Application.Quit();
 
     public void StartGame()
@@ -75,10 +101,7 @@ public class MainMenu : StateMachine
         if (_loadGameStarted) return;
         _loadGameStarted = true;
 
-        if (_menuIsMain)
-            main.Menu.FadeOut();
-        else
-            options.Menu.FadeOut();
+        _activeMenu.Menu?.FadeOut();
 
         IEnumerator LoadGame()
         {

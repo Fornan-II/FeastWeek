@@ -6,6 +6,7 @@ public class RaycastInteracter : MonoBehaviour
 {
     [SerializeField] private LayerMask interactMask = Physics.AllLayers;
     [SerializeField] private float interactRange = 1.5f;
+    [SerializeField] private UnityEngine.UI.Image interactIcon;
 
     public bool CanInteract => _targetedInteractable;
 
@@ -27,13 +28,17 @@ public class RaycastInteracter : MonoBehaviour
         }
 
         if (_hadInteractable && !_targetedInteractable)
+        {
             MsgBox.HideMessage();
+            interactIcon.enabled = false;
+        }
         else if (!_hadInteractable && _targetedInteractable)
         {
             MsgBox.ShowMessage(GameManager.Instance.UsingGamepadControls()
                 ? "X to interact"
                 : "Left Mouse to interact"
                 , -1f);
+            interactIcon.enabled = true;
         }
     }
 
@@ -42,6 +47,7 @@ public class RaycastInteracter : MonoBehaviour
         if(_targetedInteractable)
         {
             MsgBox.HideMessage();
+            interactIcon.enabled = false;
             _targetedInteractable = null;
         }
     }

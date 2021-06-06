@@ -46,6 +46,7 @@ public class MainMenu : StateMachine
     protected override void OnDisable()
     {
         base.OnDisable();
+        if (!GameManager.Instance) return;
         GameManager.Instance.OnControlSchemeChanged -= OnControlSchemeChanged;
     }
 

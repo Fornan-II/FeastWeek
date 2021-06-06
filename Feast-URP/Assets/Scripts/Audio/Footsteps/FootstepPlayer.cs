@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class FootstepPlayer : MonoBehaviour
 {
+    public AudioCue.CueSettings FootStepSoundSettings => footstepSoundSettings;
+
 #pragma warning disable 0649
     [SerializeField] private AudioClip defaultFootstepSound;
     [SerializeField] private FootstepData footstepData;
@@ -21,7 +23,9 @@ public class FootstepPlayer : MonoBehaviour
         }
     }
 
-    public void PlayFootstep(FootstepSurface.SurfaceType surfaceType)
+    public void PlayFootstep(FootstepSurface.SurfaceType surfaceType) => PlayFootstep(surfaceType, footstepSoundSettings);
+
+    public void PlayFootstep(FootstepSurface.SurfaceType surfaceType, AudioCue.CueSettings soundSettings)
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         bool unsupportedSound = !(surfaceType == FootstepSurface.SurfaceType.UNKNOWN || _footstepAudioDictionary.ContainsKey(surfaceType));
@@ -34,14 +38,14 @@ public class FootstepPlayer : MonoBehaviour
         if (surfaceType == FootstepSurface.SurfaceType.UNKNOWN || !_footstepAudioDictionary.ContainsKey(surfaceType))
         {
 #endif
-            AudioManager.PlaySound(defaultFootstepSound, transform.position, footstepSoundSettings);
+            AudioManager.PlaySound(defaultFootstepSound, transform.position, soundSettings);
         }
         else
         {
             AudioManager.PlaySound(
                 _footstepAudioDictionary[surfaceType].GetNext(),
                 transform.position,
-                footstepSoundSettings
+                soundSettings
                 );
         }
     }

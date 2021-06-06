@@ -24,6 +24,7 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
     [Header("Sound")]
     [SerializeField] private Vector2 walkingFootstepInterval = new Vector2(0.0203f, 0.0392f);
     [SerializeField] private Vector2 sprintingFootstepInterval = new Vector2(0.0135f, 0.0261f);
+    [SerializeField] private float jumpVolumeMultiplier = 2f;
 
     private Vector2 _moveInput;
     private Vector2 _lookInput;
@@ -92,9 +93,20 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
 
         if (!IsBeingControlled || Time.timeScale <= 0f) return;
 
+        bool wasGrounded = _isGrounded;
         GroundCheck();
+        if (_isGrounded && !wasGrounded) OnPlayerBecomeGrounded();
+
         PlayerMovement();
         PlayerLook();
+    }
+
+    private void OnPlayerBecomeGrounded()
+    {
+        _footStepCooldown = _sprintInput ? Util.RandomInRange(sprintingFootstepInterval) : Util.RandomInRange(walkingFootstepInterval);
+        AudioCue.CueSettings cueSettings = footstepPlayer.FootStepSoundSettings;
+        cueSettings.Volume *= jumpVolumeMultiplier;
+        footstepPlayer.PlayFootstep(_groundSurfaceType, cueSettings);
     }
     
     private void PlayerMovement()
@@ -113,6 +125,14 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
             // If can jump and trying to jump, jump! Applies no gravity this frame.
             moveCalc.y = jumpForce;
             _currentYVelocityMax = jumpForce;
+
+            // Play footstep audio at scaled volume to simulate pushing off the ground with both feet
+            
+            AudioCue.CueSettings cueSettings = footstepPlayer.FootStepSoundSettings;
+            cueSettings.Volume *= jumpVolumeMultiplier;
+            footstepPlayer.PlayFootstep(_groundSurfaceType, cueSettings);
+            // Setting _isGrounded to false so that later in //Footstep audio we don't play footsteps again (and also because we're jumping, we're no longer grounded anyways)
+            _isGrounded = false;
         }
         else
         {

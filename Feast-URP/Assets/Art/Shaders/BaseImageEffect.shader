@@ -3,6 +3,7 @@
     Properties
     {
 		[HideInInspector]_MainTex("Texture", 2D) = "white" {}
+		_Saturation("Saturation", Range(0.0, 1.0)) = 0.5
     }
     SubShader
     {
@@ -42,12 +43,16 @@
 			fixed _InvertValue;
 			fixed4 _FadeColor;
 			float _ScreenFade;
+			float _Saturation;
 
             fixed4 frag (v2f i) : SV_Target
             {
 				fixed4 col = tex2D(_MainTex, i.uv);
+				float desaturated = col.r * 0.21f + col.g * 0.72 * col.b * 0.7;
 				//Invert value
-				col = (1 - _InvertValue) * col + (_InvertValue) * (1 - col);
+				col =
+					(1 - _InvertValue) * col
+					+ (_InvertValue) * (1 - lerp(float4(desaturated, desaturated, desaturated, 1), col, _Saturation));
 				//Fade
 				col = lerp(col, _FadeColor, _ScreenFade);
                 return col;

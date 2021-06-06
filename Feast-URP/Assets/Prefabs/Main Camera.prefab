@@ -58,8 +58,8 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.07
-  far clip plane: 500
+  near clip plane: 0.03
+  far clip plane: 300
   field of view: 100
   orthographic: 0
   orthographic size: 5
@@ -159,7 +159,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     screenShakeExponent: 0.5
-    screenShakeSmoothing: 0.5
+    defaultCameraShakeFrequency: 18
+    cameraShakeRotationMultiplier: 5
 --- !u!114 &7698335246697107474
 MonoBehaviour:
   m_ObjectHideFlags: 0

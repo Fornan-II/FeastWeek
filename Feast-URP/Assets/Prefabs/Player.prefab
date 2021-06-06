@@ -148,7 +148,7 @@ CharacterController:
   m_Height: 1.59
   m_Radius: 0.17
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 0.2
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0, z: 0}
@@ -215,6 +215,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   interactRange: 1.5
+  interactIcon: {fileID: 0}
 --- !u!1 &6838422858601821986
 GameObject:
   m_ObjectHideFlags: 0

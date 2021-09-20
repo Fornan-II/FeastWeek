@@ -5,11 +5,18 @@ using UnityEngine.InputSystem;
 public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
 {
 #pragma warning disable 0649
+    [Header("Components")]
     [SerializeField] private Transform lookTransform;
+    [SerializeField] private AudioSource audioSource;
+    [Header("Look Settings")]
     [SerializeField] private float lookSpeed = 0.25f;
     [SerializeField] private float clampAngle = 60f;
+    [Header("Audio Settings")]
+    [SerializeField] private float swivelAudioMaxVolume = 1.0f;
+    [SerializeField] private float swivelAudioFadeDuration = 0.1f;
 
     private Vector2 _lookInput;
+    private float _timeUntilAudioStop = 0.0f;
 
     #region Input
     protected override void ActivateInput()
@@ -50,8 +57,26 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
 
     private void Update()
     {
-        if (!IsBeingControlled || Time.timeScale <= 0f) return;
+        if (_lookInput.sqrMagnitude > Mathf.Epsilon)
+        {
+            if (_timeUntilAudioStop <= 0f)
+                audioSource.UnPause();
+            _timeUntilAudioStop = swivelAudioFadeDuration;
+        }
+        
+        if(_timeUntilAudioStop > 0f)
+        {
+            float t = _timeUntilAudioStop / swivelAudioFadeDuration;
+            audioSource.volume = swivelAudioMaxVolume * t * t;
+        }
+        else
+        {
+            audioSource.Pause();
+        }
+        _timeUntilAudioStop -= Time.deltaTime;
 
+        if (!IsBeingControlled || Time.timeScale <= 0f) return;
+        
         // Rotate
         Vector2 lookCalc = _lookInput * lookSpeed;
         lookTransform.rotation *= Quaternion.Euler(-lookCalc.y, lookCalc.x, 0);

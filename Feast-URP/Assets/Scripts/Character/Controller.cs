@@ -11,7 +11,10 @@ public class Controller : MonoBehaviour
 
     private void Start()
     {
-        TakeControlOf(controlledPawn);
+        if (!controlledPawn) return;
+        Pawn temp = controlledPawn;
+        controlledPawn = null;
+        TakeControlOf(temp);
     }
 
     public void TakeControlOf(Pawn pawn)

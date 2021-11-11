@@ -71,6 +71,7 @@ public class AudioCue : MonoBehaviour
         public Vector2 PitchRange;
         public float MinDistance;
         public float MaxDistance;
+        public bool Is3D;
 
         public float GetPitch() => Random.Range(PitchRange.x, PitchRange.y);
 
@@ -80,7 +81,8 @@ public class AudioCue : MonoBehaviour
             Volume = 1f,
             PitchRange = Vector2.one,
             MinDistance = 1f,
-            MaxDistance = 50f
+            MaxDistance = 50f,
+            Is3D = true
         };
     }
     #endregion
@@ -165,12 +167,16 @@ public class AudioCue : MonoBehaviour
     public void SetClip(AudioClip clip) => Source.clip = clip;
     public void ResetClip() => Source.clip = null;
 
+    public void SetVolume(float value)
+    {
+        _settings.Volume = value;
+        _source.volume = value;
+    }
+
     protected void CreateAudioSource()
     {
         _source = gameObject.AddComponent<AudioSource>();
         _source.playOnAwake = false;
-        //spatialBlend = 1 makes the audio 3D
-        _source.spatialBlend = 1f;
         _source.rolloffMode = AudioRolloffMode.Custom;
         _source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, AudioManager.Data.DefaultRollOffCurve);
         
@@ -183,6 +189,7 @@ public class AudioCue : MonoBehaviour
         _source.loop = _settings.Loop;
         _source.volume = _settings.Volume;
         _source.pitch = _settings.GetPitch();
+        _source.spatialBlend = _settings.Is3D ? 1 : 0;
         
         // Set up correct roll off
         _source.minDistance = _settings.MinDistance;

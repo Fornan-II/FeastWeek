@@ -41,9 +41,12 @@ public class EndSequence : MonoBehaviour
 
     private IEnumerator Anim()
     {
-        musicManager.enabled = false;
-        musicManager.musicSource.clip = deathBlobMusic;
-        musicManager.musicSource.Play();
+        musicManager.StopImmediately();
+        musicManager.FadeInNewSong(
+            deathBlobMusic,
+            Mathf.Max(2f, alembicBlobStartTime - 2f),
+            true
+        );
 
         bool directorStarted = false;
         float animLength = Util.AnimationCurveLengthTime(ghostBonesAnimation);
@@ -73,7 +76,7 @@ public class EndSequence : MonoBehaviour
             director.Stop();
             deathBlob.SetActive(false);
             castleDoor.CloseDoor();
-            musicManager.FadeOut(7f);
+            musicManager.FadeOutAnySongs(10f);
 
             yield return new WaitForSeconds(2f);
             deathAnimation.SetTrigger("PlayAnimation");
@@ -85,7 +88,6 @@ public class EndSequence : MonoBehaviour
             MainCamera.Effects.CrossFade(5f, true);
 
             yield return new WaitForSeconds(6f);
-            MainCamera.Effects.SetColorInvert(false);
             UnityEngine.SceneManagement.SceneManager.LoadScene(0);
         }
     }

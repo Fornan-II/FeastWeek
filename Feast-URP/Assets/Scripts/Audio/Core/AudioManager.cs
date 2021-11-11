@@ -41,6 +41,7 @@ public static class AudioManager
     {
         AudioCue cue = AudioCue.GetActiveCue();
 
+        cue.Source.spatialBlend = 1f;
         cue.transform.position = location;
         cue.Settings = settings;
         cue.SetClip(clip);

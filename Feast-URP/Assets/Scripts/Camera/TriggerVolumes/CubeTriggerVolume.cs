@@ -41,7 +41,7 @@ public class CubeTriggerVolume : BaseTriggerVolume
         innerHalfExtents.z = Mathf.Max(innerHalfExtents.z, 0f);
     }
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         Gizmos.color = IsOverlapping ? Color.green : Color.yellow;
         Gizmos.matrix = transform.localToWorldMatrix;

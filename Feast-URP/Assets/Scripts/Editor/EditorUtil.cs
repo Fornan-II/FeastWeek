@@ -155,4 +155,7 @@ public static class EditorUtil
     {
         Shader.SetGlobalFloat("_InvertValue", 1 - Shader.GetGlobalFloat("_InvertValue"));
     }
+
+    [MenuItem("Tools/Misc/Unlock Cursor")]
+    private static void UnlockCursor() => Util.CursorMode.Default.Apply();
 }

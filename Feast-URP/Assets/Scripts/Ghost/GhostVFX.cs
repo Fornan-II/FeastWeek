@@ -13,8 +13,10 @@ public class GhostVFX : MonoBehaviour
     [SerializeField] private SkinnedMeshRenderer meshRenderer;
     [SerializeField] private ParticleSystem particles;
     [SerializeField] private RandomBlink blink;
+    [SerializeField] private AudioSource whisperAudio;
     [Header("Properties")]
     [SerializeField] private float visibilityTransitionTime = 1.0f;
+    [SerializeField] private AnimationCurve whisperVolumeCurve;
 
     private bool _isVisible = false;
     private bool _shouldBeVisible = false;
@@ -45,12 +47,15 @@ public class GhostVFX : MonoBehaviour
         bool transitionInProgress = true;
         bool particlesActive = !_shouldBeVisible;
         blink.enabled = false;
+        whisperAudio.volume = 0f; // just setting this to 0 to be safe. It'll be set properly in the while loop
+        whisperAudio.Play();
 
         while(transitionInProgress)
         {
             float t = Mathf.Clamp01(visibilityTimer / visibilityTransitionTime);
             meshRenderer.material.SetFloat(k_GhostAlpha, t);
             blink.SetOpenness(Util.Remap(t, 0.25f, .75f, 0, 1));
+            whisperAudio.volume = whisperVolumeCurve.Evaluate(t);
 
             if(t <= 0.5f && particlesActive)
             {
@@ -84,6 +89,7 @@ public class GhostVFX : MonoBehaviour
             meshRenderer.material.SetFloat(k_GhostAlpha, 0f);
             blink.SetOpenness(0f);
             if (particles.isPlaying) particles.Stop();
+            whisperAudio.Stop();
         }
 
         _isVisible = _shouldBeVisible;
@@ -96,6 +102,7 @@ public class GhostVFX : MonoBehaviour
     {
         particles = particles ?? GetComponent<ParticleSystem>();
         blink = blink ?? GetComponent<RandomBlink>();
+        whisperAudio = whisperAudio ?? GetComponent<AudioSource>();
     }
 
     [ContextMenu("Become Visible")]

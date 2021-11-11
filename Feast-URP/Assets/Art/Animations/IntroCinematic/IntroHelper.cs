@@ -13,6 +13,9 @@ public class IntroHelper : Pawn, DefaultControls.IFPSCharacterActions
     [SerializeField] private Controller playerController;
     [SerializeField] private MusicManager musicManager;
     [SerializeField] private float advanceAlphaThreshold = 0.67f;
+    [SerializeField] private AudioClip themeSong;
+    [SerializeField] private AudioClip mainAmbient;
+    [SerializeField] private float musicCrossfadeTime = 135f;
 
     private int _currentPanel = 0;
     private bool _canAdvancePanel = false;
@@ -64,8 +67,7 @@ public class IntroHelper : Pawn, DefaultControls.IFPSCharacterActions
             _inPanelSequence = false;
             cameraView.RequestView();
             anim.SetTrigger("StartFlying");
-            musicManager.enabled = true;
-            musicManager.PlayImmediately(1);
+            StartMusic();
         }
         else
         {
@@ -95,13 +97,23 @@ public class IntroHelper : Pawn, DefaultControls.IFPSCharacterActions
         {
             // This is handled in ShowPanel(),
             // but in Debug mode this method is called directly skipping ShowPanel()
-            musicManager.enabled = true;
-            musicManager.PlayImmediately(1);
+            StartMusic();
         }
 
         playerController.TakeControlOf(playerPawn);
         PauseManager.Instance.PausingAllowed = true;
         StartCoroutine(FPS_Tutorial());
+    }
+
+    private void StartMusic()
+    {
+        musicManager.enabled = true;
+        musicManager.PlaySongDirectly(themeSong, false);
+
+        musicManager.AddSongEvent(
+            musicCrossfadeTime,
+            () => musicManager.CrossfadeInNewSong(mainAmbient, 3f, true)
+            );
     }
 
     private IEnumerator FPS_Tutorial()

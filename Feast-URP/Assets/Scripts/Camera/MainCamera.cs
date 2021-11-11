@@ -74,6 +74,11 @@ public class MainCamera : MonoBehaviour
         if (_instance == this)
         {
             _instance = null;
+
+            // Clean up any possible camera effects
+            cameraEffects.ResetFadeColorToDefault();
+            cameraEffects.CrossFade(0f, false);
+            cameraEffects.SetColorInvert(false);
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.playModeStateChanged -= PlaymodeCleanup;
 #endif

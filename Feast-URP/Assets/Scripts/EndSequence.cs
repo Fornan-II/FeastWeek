@@ -88,6 +88,7 @@ public class EndSequence : MonoBehaviour
             MainCamera.Effects.CrossFade(5f, true);
 
             yield return new WaitForSeconds(6f);
+            GlobalData.HasCompletedGame = true;
             UnityEngine.SceneManagement.SceneManager.LoadScene(0);
         }
     }

@@ -12,6 +12,8 @@ public static class EditorUtil
     public static void OpenScene_SampleScene() => EditorSceneManager.OpenScene("Assets/Scenes/SampleScene.unity", OpenSceneMode.Single);
     [MenuItem("Tools/Open Scene/Main Menu")]
     public static void OpenScene_MainMenu() => EditorSceneManager.OpenScene("Assets/Scenes/MainMenu.unity", OpenSceneMode.Single);
+    [MenuItem("Tools/Open Scene/Dark Room")]
+    public static void OpenScene_DarkRoom() => EditorSceneManager.OpenScene("Assets/Scenes/DarkRoom.unity", OpenSceneMode.Single);
 
     [MenuItem("Tools/Misc/Fix lingering screen fade")]
     public static void FixLingeringScreenFade() => Shader.SetGlobalFloat("_ScreenFade", 0f);
@@ -145,7 +147,7 @@ public static class EditorUtil
         MeshRenderer[] allMR = GameObject.FindObjectsOfType<MeshRenderer>();
         foreach (var mr in allMR)
         {
-            if (mr.gameObject.isStatic)
+            if (mr.gameObject.isStatic && mr.tag != "Use Reflection Probes")
                 mr.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
         }
     }

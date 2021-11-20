@@ -10,6 +10,7 @@ public static class AudioManager
     {
         Master = 0,
         SFX = 1,
+        SFX_Ducking = 5,
         Ambient = 2,
         Music = 3,
         UI = 4
@@ -31,6 +32,7 @@ public static class AudioManager
         {
             {MixerGroup.Master, Data.Mixer.FindMatchingGroups("Master")[0]},
             {MixerGroup.SFX, Data.Mixer.FindMatchingGroups("SFX")[0]},
+            {MixerGroup.SFX_Ducking, Data.Mixer.FindMatchingGroups("Ducking")[0]},
             {MixerGroup.Ambient, Data.Mixer.FindMatchingGroups("Ambient")[0]},
             {MixerGroup.Music, Data.Mixer.FindMatchingGroups("Music")[0]},
             {MixerGroup.UI, Data.Mixer.FindMatchingGroups("UI")[0]}
@@ -41,7 +43,6 @@ public static class AudioManager
     {
         AudioCue cue = AudioCue.GetActiveCue();
 
-        cue.Source.spatialBlend = 1f;
         cue.transform.position = location;
         cue.Settings = settings;
         cue.SetClip(clip);
@@ -52,14 +53,8 @@ public static class AudioManager
 
     public static AudioCue PlaySound(AudioClip clip, Transform followTransform, AudioCue.CueSettings settings)
     {
-        AudioCue cue = AudioCue.GetActiveCue();
-
+        AudioCue cue = PlaySound(clip, followTransform.position, settings);
         cue.transform.parent = followTransform;
-        cue.transform.localPosition = Vector3.zero;
-        cue.Settings = settings;
-        cue.SetClip(clip);
-        cue.Play();
-        
         return cue;
     }
 

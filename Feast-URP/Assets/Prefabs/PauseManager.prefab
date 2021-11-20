@@ -386,6 +386,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6605620506683481246}
   - component: {fileID: 6605620506683481245}
+  - component: {fileID: 688953217058444202}
   m_Layer: 0
   m_Name: PauseManager
   m_TagString: Untagged
@@ -423,6 +424,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PausingAllowed: 0
   PauseInterface: {fileID: 8611950180764996216}
+  PostProcessingVolume: {fileID: 688953217058444202}
+  PostProcessingFadeSpeed: 7
   PauseMenu:
     Menu: {fileID: 290927261557141626}
     FirstSelected: {fileID: 1332928592714646423}
@@ -432,6 +435,23 @@ MonoBehaviour:
   ControlsMenu:
     Menu: {fileID: 4448765973307335864}
     FirstSelected: {fileID: 265935228577845093}
+--- !u!114 &688953217058444202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6605620506683481244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 0
+  sharedProfile: {fileID: 11400000, guid: 4e96d81a8aa564847bd18762f3e1104e, type: 2}
 --- !u!1001 &1121929162817396100
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -995,6 +1015,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ControlsMenu
       objectReference: {fileID: 0}
+    - target: {fileID: 6229657793633966612, guid: 86a55ca10937842429cde83bc31e4d7c, type: 3}
+      propertyPath: inputSystem
+      value: 
+      objectReference: {fileID: 759224679}
     - target: {fileID: 6866602780182215464, guid: 86a55ca10937842429cde83bc31e4d7c, type: 3}
       propertyPath: m_Alpha
       value: 0
@@ -1273,6 +1297,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 7851321294358340375, guid: eef2eeb540504cb4393006b4c5813653, type: 3}
+      propertyPath: inputSystem
+      value: 
+      objectReference: {fileID: 759224679}
     - target: {fileID: 8024595791796446109, guid: eef2eeb540504cb4393006b4c5813653, type: 3}
       propertyPath: m_AnchorMin.x
       value: 0.5

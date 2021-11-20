@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2499900498466645129}
   m_Layer: 0
   m_Name: LampHead
-  m_TagString: Untagged
+  m_TagString: Use Reflection Probes
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4402,6 +4402,33 @@ MonoBehaviour:
   audioSource: {fileID: 8969521524939777023}
   lookSpeed: 0.06
   clampAngle: 20
+  swivelVolumeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.023914473
+      outSlope: 0.023914473
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.0522696
+    - serializedVersion: 3
+      time: 75
+      value: 0.6
+      inSlope: 0.0013757945
+      outSlope: 0.0013757945
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.07034485
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  swivelSmoothing: 0.5
+  minSwivelVolume: 0.0001
+  debug_RecordLookInputMax: 0
 --- !u!82 &8969521524939777023
 AudioSource:
   m_ObjectHideFlags: 0
@@ -4412,8 +4439,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: -3765141215965081628, guid: c9f9246b6256cbb4e90077ca76b6e09a, type: 2}
-  m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_audioClip: {fileID: 8300000, guid: 00f8f5f3e692d164fbef368f8d7131d7, type: 3}
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 1
@@ -4423,9 +4450,9 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 15
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 2
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -4433,23 +4460,23 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
+      time: 0.06666667
       value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: -1.5963892
+      outSlope: -1.5963892
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      inWeight: 0
+      outWeight: 0.124999985
     - serializedVersion: 3
       time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
+      value: 0.06666667
+      inSlope: -0.020118034
+      outSlope: -0.020118034
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      inWeight: 0.15178576
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -4458,7 +4485,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -4512,7 +4539,7 @@ GameObject:
   - component: {fileID: 5302490587928021625}
   m_Layer: 0
   m_Name: Lamp_Lens
-  m_TagString: Untagged
+  m_TagString: Use Reflection Probes
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4810,7 +4837,7 @@ GameObject:
   - component: {fileID: 5302490588095497661}
   m_Layer: 0
   m_Name: Lamp_LightBaseBottom
-  m_TagString: Untagged
+  m_TagString: Use Reflection Probes
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6802,7 +6829,7 @@ GameObject:
   - component: {fileID: 5302490589272184240}
   m_Layer: 0
   m_Name: Lamp_LightBaseTop
-  m_TagString: Untagged
+  m_TagString: Use Reflection Probes
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8678,7 +8705,7 @@ GameObject:
   - component: {fileID: 7988400602094111858}
   m_Layer: 0
   m_Name: Handle
-  m_TagString: Untagged
+  m_TagString: Use Reflection Probes
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

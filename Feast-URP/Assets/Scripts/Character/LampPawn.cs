@@ -12,11 +12,12 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
     [SerializeField] private float lookSpeed = 0.25f;
     [SerializeField] private float clampAngle = 60f;
     [Header("Audio Settings")]
-    [SerializeField] private float swivelAudioMaxVolume = 1.0f;
-    [SerializeField] private float swivelAudioFadeDuration = 0.1f;
+    [SerializeField] private AnimationCurve swivelVolumeCurve;
+    [SerializeField] private float swivelSmoothing = 0.3f;
+    [SerializeField] private float minSwivelVolume = 0.0001f;
 
     private Vector2 _lookInput;
-    private float _timeUntilAudioStop = 0.0f;
+    private float _swivelSmoothVelocity = 0.0f;
 
     #region Input
     protected override void ActivateInput()
@@ -38,14 +39,17 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
     }
 
     public void OnLook(InputAction.CallbackContext context) => _lookInput = context.ReadValue<Vector2>() * SettingsManager.LookSensitivity;
-    public void OnJump(InputAction.CallbackContext context) => ReturnControl();
+    public void OnJump(InputAction.CallbackContext context) { if (!PauseManager.Instance.IsPaused) ReturnControl(); }
     public void OnSprint(InputAction.CallbackContext context) { /* Do nothing */ }
-    public void OnInteract(InputAction.CallbackContext context) => ReturnControl();
+    public void OnInteract(InputAction.CallbackContext context) { if (!PauseManager.Instance.IsPaused) ReturnControl(); }
     #endregion
 
     public override UnityAction BecomeControlledBy(Controller controller)
     {
-        MsgBox.ShowMessage("Mouse to control", 3f);
+        MsgBox.ShowMessage(GameManager.Instance.UsingGamepadControls()
+            ? "Right stick to control"
+            : "Mouse to control",
+            3f);
         return base.BecomeControlledBy(controller);
     }
 
@@ -57,23 +61,26 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
 
     private void Update()
     {
-        if (_lookInput.sqrMagnitude > Mathf.Epsilon)
+        // Lamp Audio
+        if (IsBeingControlled || audioSource.volume > 0)
         {
-            if (_timeUntilAudioStop <= 0f)
-                audioSource.UnPause();
-            _timeUntilAudioStop = swivelAudioFadeDuration;
+            float newVolume = Mathf.SmoothDamp(audioSource.volume, swivelVolumeCurve.Evaluate(_lookInput.sqrMagnitude), ref _swivelSmoothVelocity, swivelSmoothing);
+
+            // SmoothDamp doesn't seem to converge to 0 so let's help it out
+            if (newVolume < minSwivelVolume)
+                newVolume = 0f;
+
+            if (newVolume > 0 && audioSource.volume <= 0f)
+            {
+                audioSource.Play();
+            }
+            else if (newVolume <= 0 && audioSource.volume > 0f)
+            {
+                audioSource.Pause();
+            }
+
+            audioSource.volume = newVolume;
         }
-        
-        if(_timeUntilAudioStop > 0f)
-        {
-            float t = _timeUntilAudioStop / swivelAudioFadeDuration;
-            audioSource.volume = swivelAudioMaxVolume * t * t;
-        }
-        else
-        {
-            audioSource.Pause();
-        }
-        _timeUntilAudioStop -= Time.deltaTime;
 
         if (!IsBeingControlled || Time.timeScale <= 0f) return;
         

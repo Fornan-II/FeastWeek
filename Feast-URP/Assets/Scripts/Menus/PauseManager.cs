@@ -10,10 +10,16 @@ public class PauseManager : MonoBehaviour, DefaultControls.IGlobalActions
     public static PauseManager Instance { get; private set; }
 
     public bool PausingAllowed = false;
+    public bool IsPaused => _isPaused;
+
     [SerializeField] private FadeUI PauseInterface;
+    [SerializeField] private UnityEngine.Rendering.Volume PostProcessingVolume;
+    [SerializeField] private float PostProcessingFadeSpeed = 0.3f;
     [SerializeField] private MainMenu.MenuObject PauseMenu;
     [SerializeField] private MainMenu.MenuObject OptionsMenu;
     [SerializeField] private MainMenu.MenuObject ControlsMenu;
+
+    private Coroutine _activePostProcessingFadeCoroutine;
 
     private float _cachedTimeScale = 1f;
     private Util.CursorMode _cachedCursorMode;
@@ -125,6 +131,7 @@ public class PauseManager : MonoBehaviour, DefaultControls.IGlobalActions
         }
         PauseInterface.gameObject.SetActive(true);
         PauseInterface.FadeIn();
+        FadePostProcessingWeight(1f, PostProcessingFadeSpeed);
 
         _currentMenu = PauseMenu;
 
@@ -143,6 +150,7 @@ public class PauseManager : MonoBehaviour, DefaultControls.IGlobalActions
             ControlsMenu.Menu.SetClear();
             OptionsMenu.Menu.SetClear();
         });
+        FadePostProcessingWeight(0f, PostProcessingFadeSpeed);
 
         _currentMenu = MainMenu.MenuObject.Empty;
 
@@ -169,5 +177,28 @@ public class PauseManager : MonoBehaviour, DefaultControls.IGlobalActions
         yield return new WaitForSeconds(2f);
         SceneManager.LoadScene(0);
         _isExitingToMainMenu = false;
+    }
+
+    private void FadePostProcessingWeight(float target, float speed)
+    {
+        if(_activePostProcessingFadeCoroutine != null) StopCoroutine(_activePostProcessingFadeCoroutine);
+        _activePostProcessingFadeCoroutine = StartCoroutine(FadePostProcessingWeightCoroutine(target, speed));
+    }
+
+    private IEnumerator FadePostProcessingWeightCoroutine(float target, float speed)
+    {
+        if(PostProcessingVolume.weight != target)
+        {
+            bool targetIsGreater = target > PostProcessingVolume.weight;
+
+            while (targetIsGreater ? PostProcessingVolume.weight < target : PostProcessingVolume.weight > target)
+            {
+                PostProcessingVolume.weight += speed * Time.unscaledDeltaTime * (targetIsGreater ? 1f : -1f);
+                yield return null;
+            }
+            PostProcessingVolume.weight = target;
+        }
+
+        _activePostProcessingFadeCoroutine = null;
     }
 }

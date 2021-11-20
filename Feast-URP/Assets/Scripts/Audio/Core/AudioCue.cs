@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -28,12 +29,12 @@ public class AudioCue : MonoBehaviour
             _audioCuePoolParent.name = "Audio Cue Pool";
             DontDestroyOnLoad(_audioCuePoolParent);
         }
-        
+
         GameObject newGameObject = new GameObject();
         newGameObject.name = "Audio Cue";
         newGameObject.SetActive(false);
         newGameObject.transform.parent = _audioCuePoolParent;
-        
+
         AudioCue newCue = newGameObject.AddComponent<AudioCue>();
         newCue.CreateAudioSource();
         _inactiveAudioCues.Add(newCue);
@@ -46,7 +47,7 @@ public class AudioCue : MonoBehaviour
         _inactiveAudioCues = null;
 
         if (!resetActiveCues) return;
-        
+
         while (_activeAudioCues.Count > 0)
         {
             Destroy(_activeAudioCues[0]);
@@ -64,10 +65,10 @@ public class AudioCue : MonoBehaviour
             this = Default;
             Group = group;
         }
-        
+
         public AudioManager.MixerGroup Group;
         public bool Loop;
-        [Range(0,1)] public float Volume;
+        [Range(0, 1)] public float Volume;
         public Vector2 PitchRange;
         public float MinDistance;
         public float MaxDistance;
@@ -86,12 +87,15 @@ public class AudioCue : MonoBehaviour
         };
     }
     #endregion
-    
+
     #region Variables
 
     protected AudioSource _source;
+    protected Coroutine _activeFadeRoutine;
     public AudioSource Source => _source;
     public bool IsPlaying => _source.isPlaying;
+    public bool IsFading => _activeFadeRoutine != null;
+
 
     protected CueSettings _settings = CueSettings.Default;
     public CueSettings Settings
@@ -126,7 +130,7 @@ public class AudioCue : MonoBehaviour
         {
             OnFinishedPlaying?.Invoke();
             OnFinishedPlaying = null;
-            
+
             SetInactive();
         }
     }
@@ -161,9 +165,15 @@ public class AudioCue : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    
+
     public void Play() => Source.Play();
-    public void Stop() => Source.Stop();
+    public void Stop(bool setInactive = true)
+    {
+        Source.Stop();
+
+        if (setInactive)
+            SetInactive();
+    }
     public void SetClip(AudioClip clip) => Source.clip = clip;
     public void ResetClip() => Source.clip = null;
 
@@ -171,6 +181,38 @@ public class AudioCue : MonoBehaviour
     {
         _settings.Volume = value;
         _source.volume = value;
+    }
+
+    public void FadeIn(float targetVolume, float duration, UnityAction OnFadeComplete = null)
+    {
+        if (IsFading)
+            StopCoroutine(_activeFadeRoutine);
+        _activeFadeRoutine = StartCoroutine(FadeAudio(0f, targetVolume, duration, OnFadeComplete));
+    }
+    public void FadeOut(float duration, UnityAction OnFadeComplete = null)
+    {
+        if (IsFading)
+            StopCoroutine(_activeFadeRoutine);
+        _activeFadeRoutine = StartCoroutine(FadeAudio(Settings.Volume, 0f, duration, OnFadeComplete));
+    }
+
+    protected IEnumerator FadeAudio(float initial, float target, float duration, UnityAction OnFadeComplete)
+    {
+        SetVolume(initial);
+
+        for (float timer = 0.0f; timer < duration; timer += Time.deltaTime)
+        {
+            yield return null;
+            float t = timer / duration;
+            SetVolume(Mathf.Lerp(initial, target, t * t));
+        }
+
+        SetVolume(target);
+        OnFadeComplete?.Invoke();
+        _activeFadeRoutine = null;
+
+        if (Settings.Volume <= 0)
+            Stop();
     }
 
     protected void CreateAudioSource()

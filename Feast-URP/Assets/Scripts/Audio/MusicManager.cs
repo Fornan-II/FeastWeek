@@ -10,7 +10,6 @@ public class MusicManager : MonoBehaviour
 
     public List<AudioCue> ActiveCues => _activeSongCues;
     private List<AudioCue> _activeSongCues = new List<AudioCue>(1);
-    private bool _mixingProhibited = false;
     private List<SongEvent> _songEventQueue = new List<SongEvent>(); // Using a list so that I can sort through them on insertion
 
 #if UNITY_EDITOR // Useful for debugging
@@ -63,20 +62,26 @@ public class MusicManager : MonoBehaviour
 
     public void MixSongs(AudioCue songPlayer1, AudioCue songPlayer2, float mix)
     {
-        if (_mixingProhibited) return;
+        // Don't mix if the songs are fading, otherwise SetVolume would compete and sound weird
+        if (songPlayer1.IsFading || songPlayer2.IsFading)
+            return;
 
         // 0 is songPlayer1, 1 is songPlayer2
         songPlayer1.SetVolume(Mathf.Lerp(defaultVolume, 0, mix * mix));
         songPlayer2.SetVolume(Mathf.Lerp(0, defaultVolume, mix * mix));
     }
 
-    public void FadeInNewSong(AudioClip song, float duration, bool looping = false) => StartCoroutine(FadeAudio(PlaySongDirectly(song, looping), 0f, defaultVolume, duration));
+    public void FadeInNewSong(AudioClip song, float duration, bool looping = false)
+    {
+        AudioCue cue = PlaySongDirectly(song, looping);
+        cue.FadeIn(cue.Settings.Volume, duration);
+    }
 
     public void FadeOutAnySongs(float duration)
     {
         foreach(var cue in _activeSongCues)
         {
-            StartCoroutine(FadeAudio(cue, cue.Settings.Volume, 0f, duration));
+            cue.FadeOut(duration);
         }
     }
 
@@ -84,25 +89,6 @@ public class MusicManager : MonoBehaviour
     {
         FadeOutAnySongs(duration);
         FadeInNewSong(song, duration, looping);
-    }
-
-    private IEnumerator FadeAudio(AudioCue cue, float initial, float target, float duration)
-    {
-        // Prohibit mixing while fading audio as a hack to not have mixing and fading conflict
-        _mixingProhibited = true;
-        cue.SetVolume(initial);
-
-        for (float timer = 0.0f; timer < duration; timer += Time.deltaTime)
-        {
-            yield return null;
-            float t = timer / duration;
-            cue.SetVolume(Mathf.Lerp(initial, target, t * t));
-        }
-
-        cue.SetVolume(target);
-        if (cue.Settings.Volume <= 0)
-            cue.Stop();
-        _mixingProhibited = false;
     }
 
     public void AddSongEvent(float time, Action songEvent)

@@ -73,23 +73,36 @@ public class DebugMenu : MonoBehaviour
         float height = 25f;
         Rect rect = new Rect(0, 0, 250f, height);
 
-        if (GUI.Button(rect, "Toggle noclip")) ToggleNoClip();
-        rect.y += height;
-        if (GUI.Button(rect, "Open castle door")) OpenCastleDoor();
-        rect.y += height;
-        if (_checkpoints.Length > 0)
+        if (SceneManager.GetActiveScene().buildIndex == 0)
         {
-            if (GUI.Button(rect, "Warp to next Checkpoint")) NextCheckpoint();
+            if (GUI.Button(rect, "Load completed game menu")) LoadCompletedGameMenu();
+        }
+        else
+        {
+            if (GUI.Button(rect, "Toggle noclip")) ToggleNoClip();
             rect.y += height;
-            if (GUI.Button(rect, "Warp to previous Checkpoint")) PreviousCheckpoint();
+            if (GUI.Button(rect, "Open castle door")) OpenCastleDoor();
+            rect.y += height;
+            if (_checkpoints.Length > 0)
+            {
+                if (GUI.Button(rect, "Warp to next Checkpoint")) NextCheckpoint();
+                rect.y += height;
+                if (GUI.Button(rect, "Warp to previous Checkpoint")) PreviousCheckpoint();
+                rect.y += height;
+            }
+            if (GUI.Button(rect, "Skip intro sequence")) SkipIntroSequence();
             rect.y += height;
         }
-        if (GUI.Button(rect, "Skip intro sequence")) SkipIntroSequence();
-        rect.y += height;
     }
 
     private void OnSceneLoad(Scene loadedScene, LoadSceneMode mode) => _checkpoints = FindObjectsOfType<Checkpoint>();
     private void OnSceneUnloaded(Scene unloadedScene) => _checkpoints = FindObjectsOfType<Checkpoint>();
+
+    private void LoadCompletedGameMenu()
+    {
+        GlobalData.HasCompletedGame = true;
+        SceneManager.LoadScene(0);
+    }
 
     private void ToggleNoClip()
     {

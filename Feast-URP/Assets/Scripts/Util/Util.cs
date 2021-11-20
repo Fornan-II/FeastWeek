@@ -58,13 +58,13 @@ public static class Util
 
         public void Apply()
         {
-            Cursor.visible = Visible;
+            CursorVisibilityManager.CursorVisibility = Visible;
             Cursor.lockState = LockMode;
         }
 
         public static CursorMode Default => new CursorMode(true, CursorLockMode.None);
 
-        public static CursorMode GetCurrent() => new CursorMode(Cursor.visible, Cursor.lockState);
+        public static CursorMode GetCurrent() => new CursorMode(CursorVisibilityManager.CursorVisibility, Cursor.lockState);
 
         public override bool Equals(object obj)
         {

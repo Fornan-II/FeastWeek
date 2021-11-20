@@ -90,6 +90,8 @@ public class SettingsManager : MonoBehaviour
 
     public void SetBrightness(float value)
     {
+        if (!adjustmentsEffect) return;
+
         _brightness = value;
         // Automatically adjust brightness for feedback & because it's inexpensive to modify
         adjustmentsEffect.postExposure.value = _brightness;

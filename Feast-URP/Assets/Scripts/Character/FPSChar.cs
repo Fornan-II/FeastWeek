@@ -22,8 +22,7 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
     [SerializeField, Range(0, 1)] private float groundCheckSensitivity = 0.95f;
     [SerializeField] private LayerMask groundCheckMask = Physics.AllLayers;
     [Header("Sound")]
-    [SerializeField] private Vector2 walkingFootstepInterval = new Vector2(0.0203f, 0.0392f);
-    [SerializeField] private Vector2 sprintingFootstepInterval = new Vector2(0.0135f, 0.0261f);
+    [SerializeField] private Vector2 footstepStrideDistance = new Vector2(0.0203f, 0.0392f);
     [SerializeField] private float jumpVolumeMultiplier = 2f;
 
     private Vector2 _moveInput;
@@ -37,7 +36,7 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
     private FootstepSurface.SurfaceType _groundSurfaceType;
 
     private float _currentYVelocityMax = 0.0f;
-    private float _footStepCooldown = 0f;
+    private float _distanceToNextFootstep = 0f;
 
     #region Input
     protected override void ActivateInput()
@@ -88,8 +87,8 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
     // Update is called once per frame
     void Update()
     {
-        if(_footStepCooldown > 0f)
-            _footStepCooldown -= Time.deltaTime;
+        //if(_distanceToNextFootstep > 0f)
+        //    _distanceToNextFootstep -= Time.deltaTime;
 
         if (!IsBeingControlled || Time.timeScale <= 0f) return;
 
@@ -103,7 +102,8 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
 
     private void OnPlayerBecomeGrounded()
     {
-        _footStepCooldown = _sprintInput ? Util.RandomInRange(sprintingFootstepInterval) : Util.RandomInRange(walkingFootstepInterval);
+        // Play footstep for landing on the ground
+        _distanceToNextFootstep = Util.RandomInRange(footstepStrideDistance);
         AudioCue.CueSettings cueSettings = footstepPlayer.FootStepSoundSettings;
         cueSettings.Volume *= jumpVolumeMultiplier;
         footstepPlayer.PlayFootstep(_groundSurfaceType, cueSettings);
@@ -127,15 +127,22 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
             _currentYVelocityMax = jumpForce;
 
             // Play footstep audio at scaled volume to simulate pushing off the ground with both feet
-            
             AudioCue.CueSettings cueSettings = footstepPlayer.FootStepSoundSettings;
             cueSettings.Volume *= jumpVolumeMultiplier;
             footstepPlayer.PlayFootstep(_groundSurfaceType, cueSettings);
-            // Setting _isGrounded to false so that later in //Footstep audio we don't play footsteps again (and also because we're jumping, we're no longer grounded anyways)
+            // Setting _isGrounded to false since we're no longer grounded
             _isGrounded = false;
         }
         else
         {
+            //Footstep audio
+            _distanceToNextFootstep -= moveCalc.magnitude * Time.deltaTime;
+            if (_distanceToNextFootstep <= 0f && _isGrounded)
+            {
+                _distanceToNextFootstep = Util.RandomInRange(footstepStrideDistance);
+                footstepPlayer.PlayFootstep(_groundSurfaceType);
+            }
+
             // Keep the player moving at their current vertical speed.
             // Apply gravity, unless grounded (prevents slowly sliding down slopes)
             // Adding to preserve yVelocity from moveCalc being projected on ground plane.
@@ -149,13 +156,6 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
         _jumpInput = false;
         
         movementController.Move(moveCalc * Time.deltaTime);
-
-        //Footstep audio
-        if((Mathf.Abs(moveCalc.x) > Mathf.Epsilon || Mathf.Abs(moveCalc.z) > Mathf.Epsilon) && _footStepCooldown <= 0f && _isGrounded)
-        {
-            _footStepCooldown = _sprintInput ? Util.RandomInRange(sprintingFootstepInterval) : Util.RandomInRange(walkingFootstepInterval);
-            footstepPlayer.PlayFootstep(_groundSurfaceType);
-        }
     }
 
     private void PlayerLook()

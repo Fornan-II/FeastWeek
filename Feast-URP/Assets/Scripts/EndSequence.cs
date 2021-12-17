@@ -18,6 +18,7 @@ public class EndSequence : MonoBehaviour
     [SerializeField] private ViewRequester deathView;
     [SerializeField] private Animator deathAnimation;
     [SerializeField] private DoorMechanic castleDoor;
+    [SerializeField] private AnimationCurve initialScreenshakeAnimation;
 
     private bool _hasBeenActivated = false;
     private bool _deathBlobCollided = false;
@@ -39,6 +40,19 @@ public class EndSequence : MonoBehaviour
 
     public void OnBlobCollision() => _deathBlobCollided = true;
 
+    private IEnumerator RunScreenShakeCoroutine(AnimationCurve curve)
+    {
+        System.Action<float> screenshake = MainCamera.Effects.ContinuousScreenShake(Mathf.Max(Mathf.Epsilon, curve.Evaluate(0f)));
+
+        for(float timer = 0.0f; timer < Util.AnimationCurveLengthTime(curve); timer += Time.deltaTime)
+        {
+            yield return null;
+            screenshake(Mathf.Max(Mathf.Epsilon, curve.Evaluate(timer)));
+        }
+
+        screenshake(0f);
+    }
+
     private IEnumerator Anim()
     {
         musicManager.StopImmediately();
@@ -47,6 +61,11 @@ public class EndSequence : MonoBehaviour
             Mathf.Max(2f, alembicBlobStartTime - 2f),
             true
         );
+
+        // Just disable pausing during end sequence so the music is timed well enough
+        PauseManager.Instance.PausingAllowed = false;
+
+        StartCoroutine(RunScreenShakeCoroutine(initialScreenshakeAnimation));
 
         bool directorStarted = false;
         float animLength = Util.AnimationCurveLengthTime(ghostBonesAnimation);
@@ -69,7 +88,6 @@ public class EndSequence : MonoBehaviour
         // Check which of the changed bools triggered and what ending to show.
         if(_deathBlobCollided)
         {
-            PauseManager.Instance.PausingAllowed = false;
             MainCamera.Effects.SetFadeColor(Color.black);
             MainCamera.Effects.CrossFade(0f, true);
             playerController.ReleaseControl();

@@ -120,8 +120,7 @@ MonoBehaviour:
   groundCheckMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  walkingFootstepInterval: {x: 0.5, y: 0.53}
-  sprintingFootstepInterval: {x: 0.3, y: 0.4}
+  footstepStrideDistance: {x: 1.15, y: 1.25}
   jumpVolumeMultiplier: 2
 --- !u!114 &7507402167451724083
 MonoBehaviour:

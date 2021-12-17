@@ -12,6 +12,8 @@ public class DoorMechanic : MonoBehaviour
     [SerializeField] private float doorDissolveTime = 2.0f;
     [SerializeField] private AudioClip lampActiveSFX;
     [SerializeField] private AudioCue.CueSettings lampActiveSFXSettings = AudioCue.CueSettings.Default;
+    [SerializeField] private AudioClip onLampAlignSFX;
+    [SerializeField] private AudioCue.CueSettings onLampAlignSFXSettings = AudioCue.CueSettings.Default;
     [SerializeField] private float lampActiveFadeTime = 0.7f;
     [SerializeField] private AudioClip doorExplosionSFX;
     [SerializeField] private AudioCue.CueSettings doorExplosionSFXSettings = AudioCue.CueSettings.Default;
@@ -71,6 +73,9 @@ public class DoorMechanic : MonoBehaviour
                 // Start cue volume at zero then fade in
                 lamps[i].activeSFXCue = AudioManager.PlaySound(lampActiveSFX, lamps[i].Transform, lampActiveSFXSettings);
                 lamps[i].activeSFXCue.FadeIn(lampActiveSFXSettings.Volume, lampActiveFadeTime);
+
+                // Play on align sfx
+                AudioManager.PlaySound(onLampAlignSFX, transform.position + doorCenterOffset, onLampAlignSFXSettings);
             }
 
             runeDoor.sharedMaterial.SetFloat(lamps[i].GetMaterialPropertyID(), tValue);

@@ -18,7 +18,6 @@ public class SettingsManager : MonoBehaviour
     private const string k_VolumeSFX_Float = "Volume: SFX - Float";
     private const string k_VolumeAmbient_Float = "Volume: Ambient - Float";
     private const string k_VolumeMusic_Float = "Volume: Music - Float";
-    private const string k_VolumeUI_Float = "Volume: UI - Float";
     private const string k_Mixer_VolumeMaster = "VolumeMaster";
     private const string k_Mixer_VolumeSFX = "VolumeSFX";
     private const string k_Mixer_VolumeAmbient = "VolumeAmbient";
@@ -35,12 +34,12 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private Slider volumeSFXSlider;
     [SerializeField] private Slider volumeAmbientSlider;
     [SerializeField] private Slider volumeMusicSlider;
-    [SerializeField] private Slider volumeUISlider;
 
     [Header("Support References")]
     [SerializeField] private VolumeProfile postProcessingProfile;
 
     private ColorAdjustments adjustmentsEffect;
+    private bool _initialized;
 
     public static float LookSensitivity { get; private set; } = 1f;
 
@@ -53,15 +52,25 @@ public class SettingsManager : MonoBehaviour
     private float _volumeMusic;
     private float _volumeUI;
 
-    private void Start()
+    public void Initialize()
     {
+        _initialized = true;
+
         if (!postProcessingProfile.TryGet(out adjustmentsEffect))
         {
             Debug.LogError("Post Processing profile does not have Color Adjustments effect!");
         }
 
         GetSettingValues();
+        ApplyAll();
+    }
+
+    private void OnEnable()
+    {
+        if (!_initialized)
+            Initialize();
         SetUIValues();
+        applyButton.gameObject.SetActive(false);
     }
 
     #region Misc Public Methods
@@ -169,14 +178,20 @@ public class SettingsManager : MonoBehaviour
             _fullscreen = Screen.fullScreenMode;
 
         // Resolution
+        bool validResolution = false;
+
         if (PlayerPrefs.HasKey(k_Resolution_Int))
+        {
             _resolutionIndex = PlayerPrefs.GetInt(k_Resolution_Int);
-        else
+            validResolution = 0 <= _resolutionIndex && _resolutionIndex < Screen.resolutions.Length;
+        }
+        
+        if(!validResolution)
         {
             bool searchingForIndex = true;
-            for(int i = 0; i < Screen.resolutions.Length && searchingForIndex; ++i)
+            for (int i = 0; i < Screen.resolutions.Length && searchingForIndex; ++i)
             {
-                if(Screen.resolutions[i].Equals(Screen.currentResolution))
+                if (Screen.resolutions[i].Equals(Screen.currentResolution))
                 {
                     searchingForIndex = false;
                     _resolutionIndex = i;
@@ -207,12 +222,6 @@ public class SettingsManager : MonoBehaviour
             _volumeMusic = PlayerPrefs.GetFloat(k_VolumeMusic_Float);
         else
             _volumeMusic = 1.0f;
-
-        // Volume UI
-        if (PlayerPrefs.HasKey(k_VolumeUI_Float))
-            _volumeUI = PlayerPrefs.GetFloat(k_VolumeUI_Float);
-        else
-            _volumeUI = 1.0f;
     }
 
     private void SaveSettings()
@@ -225,7 +234,6 @@ public class SettingsManager : MonoBehaviour
         PlayerPrefs.SetFloat(k_VolumeSFX_Float, _volumeSFX);
         PlayerPrefs.SetFloat(k_VolumeAmbient_Float, _volumeAmbient);
         PlayerPrefs.SetFloat(k_VolumeMusic_Float, _volumeMusic);
-        PlayerPrefs.SetFloat(k_VolumeUI_Float, _volumeUI);
 
         PlayerPrefs.Save();
     }
@@ -281,7 +289,6 @@ public class SettingsManager : MonoBehaviour
         volumeSFXSlider.value = _volumeSFX;
         volumeAmbientSlider.value = _volumeAmbient;
         volumeMusicSlider.value = _volumeMusic;
-        volumeUISlider.value = _volumeUI;
     }
     #endregion
 

@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: BlobDetectionMask
-  m_Shader: {fileID: 4800000, guid: 1390d583c34fb174680674c185d72a56, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: c81dafb41578dcf499e19d968c1d1b87, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -23,6 +23,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    m_Floats: []
-    m_Colors: []
+    - _NoiseTex:
+        m_Texture: {fileID: 2800000, guid: 1ca45b44cc8552546808717c17270369, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Vector1_3A3D361A: 1
+    - _SecondaryContribution: 1
+    m_Colors:
+    - Color_7E1C134B: {r: 0, g: 0, b: 0, a: 1}
+    - Color_DE01A03: {r: 0.11372549, g: 0.11372549, b: 0.11372549, a: 1}
   m_BuildTextureStacks: []

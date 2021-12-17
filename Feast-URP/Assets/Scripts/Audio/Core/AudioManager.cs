@@ -12,8 +12,7 @@ public static class AudioManager
         SFX = 1,
         SFX_Ducking = 5,
         Ambient = 2,
-        Music = 3,
-        UI = 4
+        Music = 3
     }
     public static AudioManagerData Data { private set; get; }
     private static Dictionary<MixerGroup, AudioMixerGroup> _mixerGroups;
@@ -34,8 +33,7 @@ public static class AudioManager
             {MixerGroup.SFX, Data.Mixer.FindMatchingGroups("SFX")[0]},
             {MixerGroup.SFX_Ducking, Data.Mixer.FindMatchingGroups("Ducking")[0]},
             {MixerGroup.Ambient, Data.Mixer.FindMatchingGroups("Ambient")[0]},
-            {MixerGroup.Music, Data.Mixer.FindMatchingGroups("Music")[0]},
-            {MixerGroup.UI, Data.Mixer.FindMatchingGroups("UI")[0]}
+            {MixerGroup.Music, Data.Mixer.FindMatchingGroups("Music")[0]}
         };
     }
     

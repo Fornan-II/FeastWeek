@@ -76,7 +76,10 @@ public class PauseManager : MonoBehaviour, DefaultControls.IGlobalActions
     {
         if (_currentMenu.Menu == next.Menu) return;
 
-        _currentMenu.Menu?.FadeOut();
+        // Caching so that we maintain a reference to _currentMenu even after it gets set to next at the end of this method
+        MainMenu.MenuObject _currentCached = _currentMenu;
+        _currentMenu.Menu?.FadeOut(() => _currentCached.Menu.gameObject.SetActive(false));
+        next.Menu.gameObject.SetActive(true);
         next.Menu?.FadeIn();
 
         if(GameManager.Instance.UsingGamepadControls())
@@ -96,6 +99,9 @@ public class PauseManager : MonoBehaviour, DefaultControls.IGlobalActions
 
     private void OnControlSchemeChanged()
     {
+        // Early exiting on this because this callback gets called after GameManager.Instance gets set to null
+        if (!GameManager.Instance) return;
+
         if(GameManager.Instance.UsingGamepadControls())
         {
             _currentMenu.FirstSelected?.Select();
@@ -123,6 +129,7 @@ public class PauseManager : MonoBehaviour, DefaultControls.IGlobalActions
         Time.timeScale = 0f;
         _cachedCursorMode = Util.CursorMode.GetCurrent();
         Util.CursorMode.Default.Apply();
+        PauseMenu.Menu.gameObject.SetActive(true);
         PauseMenu.Menu.SetVisible();
         if(GameManager.Instance.UsingGamepadControls())
         {
@@ -149,6 +156,10 @@ public class PauseManager : MonoBehaviour, DefaultControls.IGlobalActions
             PauseInterface.gameObject.SetActive(false);
             ControlsMenu.Menu.SetClear();
             OptionsMenu.Menu.SetClear();
+            
+            PauseMenu.Menu.gameObject.SetActive(false);
+            ControlsMenu.Menu.gameObject.SetActive(false);
+            OptionsMenu.Menu.gameObject.SetActive(false);
         });
         FadePostProcessingWeight(0f, PostProcessingFadeSpeed);
 

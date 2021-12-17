@@ -8,18 +8,26 @@ using UnityEngine.UI;
 
 public class BackButton : MonoBehaviour
 {
-    [SerializeField] private InputSystemUIInputModule inputSystem;
     [SerializeField] private Button backButton;
 
     private void OnEnable()
     {
-        inputSystem.cancel.action.started += OnCancelStarted;
+        InputSystemUIInputModule inputSystem = UnityEngine.EventSystems.EventSystem.current?.GetComponent<InputSystemUIInputModule>();
+
+        if(inputSystem)
+            inputSystem.cancel.action.started += OnCancelStarted;
+        else
+            Debug.LogWarning("[BackButton] Attempted to register actions to current EventSystem but couldn't find one.");
     }
 
     private void OnDisable()
     {
-        if(inputSystem)
+        InputSystemUIInputModule inputSystem = UnityEngine.EventSystems.EventSystem.current?.GetComponent<InputSystemUIInputModule>();
+
+        if (inputSystem)
             inputSystem.cancel.action.started -= OnCancelStarted;
+        else
+            Debug.LogWarning("[BackButton] Attempted to register actions to current EventSystem but couldn't find one.");
     }
 
     private void OnCancelStarted(InputAction.CallbackContext obj)

@@ -40,12 +40,12 @@ public class GameManager : MonoBehaviour
     
     private void OnDestroy()
     {
-        _instance = null;
-
         foreach (var map in Controls.asset.actionMaps)
         {
             UnregisterActions(map);
         }
+
+        _instance = null;
     }
 
     public bool UsingGamepadControls() => ActiveControlScheme == ControlSchemeType.GAMEPAD;

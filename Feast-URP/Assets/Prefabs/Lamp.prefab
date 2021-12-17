@@ -4428,7 +4428,6 @@ MonoBehaviour:
     m_RotationOrder: 4
   swivelSmoothing: 0.5
   minSwivelVolume: 0.0001
-  debug_RecordLookInputMax: 0
 --- !u!82 &8969521524939777023
 AudioSource:
   m_ObjectHideFlags: 0
@@ -8708,7 +8707,7 @@ GameObject:
   m_TagString: Use Reflection Probes
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &7042931942778061106
 Transform:
@@ -12439,7 +12438,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &4912797288309110660
 Transform:

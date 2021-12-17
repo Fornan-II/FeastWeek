@@ -200,7 +200,8 @@ public class AudioCue : MonoBehaviour
     {
         SetVolume(initial);
 
-        for (float timer = 0.0f; timer < duration; timer += Time.deltaTime)
+        // Using unscaledDeltaTime because AudioSources are not affected by Time.timeScale
+        for (float timer = 0.0f; timer < duration; timer += Time.unscaledDeltaTime)
         {
             yield return null;
             float t = timer / duration;

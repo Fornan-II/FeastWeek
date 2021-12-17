@@ -70,6 +70,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Boolean_29E26A12: 1
+    - Boolean_6AE68B5F: 1
     - Vector1_42E39E05: 10
     - Vector1_50438C99: 2
     - Vector1_5CE39E59: 0.01

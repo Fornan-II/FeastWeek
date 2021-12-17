@@ -1896,7 +1896,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiGroup: {fileID: 6866602780182215464}
-  fadeDuration: 0.33333334
+  fadeDuration: 0.5
 --- !u!225 &6866602780182215464
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -2522,11 +2522,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 125
+      value: -25
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 70
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_SizeDelta.x
@@ -2538,7 +2538,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_AnchorMin.y
@@ -2546,7 +2546,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2554,11 +2554,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_Pivot.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_Pivot.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040623, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size

@@ -21,7 +21,7 @@ public static class EditorUtil
     [MenuItem("Tools/Toggle Render Features")]
     private static void ToggleFog()
     {
-        var renderPipeline = AssetDatabase.LoadAssetAtPath<ForwardRendererData>("Assets/Settings/ForwardRenderer.asset");
+        var renderPipeline = AssetDatabase.LoadAssetAtPath<ForwardRendererData>("Assets/Settings/Renderer Data/Main Renderer.asset");
         foreach (var feature in renderPipeline.rendererFeatures)
         {
             feature.SetActive(!feature.isActive);

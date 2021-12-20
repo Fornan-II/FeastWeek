@@ -22,7 +22,6 @@ public class SettingsManager : MonoBehaviour
     private const string k_Mixer_VolumeSFX = "VolumeSFX";
     private const string k_Mixer_VolumeAmbient = "VolumeAmbient";
     private const string k_Mixer_VolumeMusic = "VolumeMusic";
-    private const string k_Mixer_VolumeUI = "VolumeUI";
 
     [Header("UI Elements")]
     [SerializeField] private Button applyButton;
@@ -50,7 +49,6 @@ public class SettingsManager : MonoBehaviour
     private float _volumeSFX;
     private float _volumeAmbient;
     private float _volumeMusic;
-    private float _volumeUI;
 
     public void Initialize()
     {
@@ -144,13 +142,6 @@ public class SettingsManager : MonoBehaviour
     public void SetVolumeMusic(float value)
     {
         _volumeMusic = value;
-        ApplyAudioVolumes();
-        applyButton.gameObject.SetActive(true);
-    }
-
-    public void SetVolumeUI(float value)
-    {
-        _volumeUI = value;
         ApplyAudioVolumes();
         applyButton.gameObject.SetActive(true);
     }
@@ -258,7 +249,6 @@ public class SettingsManager : MonoBehaviour
         AudioManager.Data.Mixer.SetFloat(k_Mixer_VolumeSFX, RemapVolumePercentToDecibel(_volumeSFX));
         AudioManager.Data.Mixer.SetFloat(k_Mixer_VolumeAmbient, RemapVolumePercentToDecibel(_volumeAmbient));
         AudioManager.Data.Mixer.SetFloat(k_Mixer_VolumeMusic, RemapVolumePercentToDecibel(_volumeMusic));
-        AudioManager.Data.Mixer.SetFloat(k_Mixer_VolumeUI, RemapVolumePercentToDecibel(_volumeUI));
     }
 
     private void SetUIValues()

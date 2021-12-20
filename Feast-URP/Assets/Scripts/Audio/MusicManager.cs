@@ -27,6 +27,8 @@ public class MusicManager : MonoBehaviour
         {
             cue.Stop();
         }
+
+        _songEventQueue.Clear();
     }
 
     public AudioCue PlaySongDirectly(AudioClip song, bool looping = false)
@@ -46,7 +48,7 @@ public class MusicManager : MonoBehaviour
         return newSongCue;
     }
 
-    public void SetSongCueInactive(AudioCue cue)
+    public void SetSongCueInactive(AudioCue cue, bool clearEventQueue = true)
     {
         if (_activeSongCues.Contains(cue))
         {
@@ -56,6 +58,9 @@ public class MusicManager : MonoBehaviour
         {
             Debug.LogWarning("[MusicManager] Tried to set song cue inactive that was not found in active song cues.");
         }
+
+        if(clearEventQueue)
+            _songEventQueue.Clear();
 
         cue.SetInactive();
     }
@@ -81,7 +86,7 @@ public class MusicManager : MonoBehaviour
     {
         foreach(var cue in _activeSongCues)
         {
-            cue.FadeOut(duration);
+            cue.FadeOut(duration, () => SetSongCueInactive(cue));
         }
     }
 

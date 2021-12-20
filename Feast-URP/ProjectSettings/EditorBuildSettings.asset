@@ -11,5 +11,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Level.unity
     guid: f632f612dff1b204c83e8113dfd28a9d
+  - enabled: 0
+    path: Assets/Scenes/DarkRoom.unity
+    guid: b55e71b63bd8e2a4098ebac9d95b9c9d
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 72dfce2ab66fd5940acee79a90d9e22a, type: 2}

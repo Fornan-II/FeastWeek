@@ -30,7 +30,8 @@ public class RaycastInteracter : MonoBehaviour
         if (_hadInteractable && !_targetedInteractable)
         {
             MsgBox.HideMessage();
-            interactIcon.enabled = false;
+            if(interactIcon)
+                interactIcon.enabled = false;
         }
         else if (!_hadInteractable && _targetedInteractable)
         {

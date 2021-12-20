@@ -19,6 +19,8 @@ public class EndSequence : MonoBehaviour
     [SerializeField] private Animator deathAnimation;
     [SerializeField] private DoorMechanic castleDoor;
     [SerializeField] private AnimationCurve initialScreenshakeAnimation;
+    [SerializeField] private AnimationCurve onBlobDetectedAudioFilterCurve;
+    [SerializeField] private float musicFadeOutTime = 2f;
 
     private bool _hasBeenActivated = false;
     private bool _deathBlobCollided = false;
@@ -94,7 +96,8 @@ public class EndSequence : MonoBehaviour
             director.Stop();
             deathBlob.SetActive(false);
             castleDoor.CloseDoor();
-            musicManager.FadeOutAnySongs(10f);
+            // musicManager.FadeOutAnySongs(10f);
+            StartCoroutine(MusicCustomFadeOut());
 
             yield return new WaitForSeconds(2f);
             deathAnimation.SetTrigger("PlayAnimation");
@@ -110,4 +113,27 @@ public class EndSequence : MonoBehaviour
             UnityEngine.SceneManagement.SceneManager.LoadScene(0);
         }
     }
+
+    private IEnumerator MusicCustomFadeOut()
+    {
+        musicManager.FadeOutAnySongs(musicFadeOutTime);
+        AudioLowPassFilter filter = MainCamera.Camera.gameObject.AddComponent<AudioLowPassFilter>();
+
+        float animLength = Util.AnimationCurveLengthTime(onBlobDetectedAudioFilterCurve);
+        for (float timer = 0.0f; timer < animLength; timer += Time.deltaTime)
+        {
+            filter.cutoffFrequency = onBlobDetectedAudioFilterCurve.Evaluate(timer);
+            yield return null;
+        }
+
+        Destroy(filter);
+    }
+
+#if UNITY_EDITOR
+    [ContextMenu("Test custom music fade out")]
+    private void DebugPlayCustomMusicFadeOut()
+    {
+        StartCoroutine(MusicCustomFadeOut());
+    }
+#endif
 }

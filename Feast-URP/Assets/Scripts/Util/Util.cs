@@ -91,4 +91,16 @@ public static class Util
         if (setTargetAsParent)
             transform.SetParent(target);
     }
+
+    public static IEnumerator FadeMusicSource(AudioSource source, float duration, float targetVolume)
+    {
+        float initialVolume = source.volume;
+        for(float timer = 0.0f; timer < duration; timer += Time.deltaTime)
+        {
+            float t = timer / duration;
+            source.volume = Mathf.Lerp(initialVolume, targetVolume, t * t);
+            yield return null;
+        }
+        source.volume = targetVolume;
+    }
 }

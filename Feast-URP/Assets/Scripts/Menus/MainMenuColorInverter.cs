@@ -6,6 +6,8 @@ using TMPro;
 public class MainMenuColorInverter : MonoBehaviour
 {
     [SerializeField] private Canvas menuCanvas;
+    [SerializeField] private AudioClip themeSong;
+    [SerializeField] private AudioCue.CueSettings themeSongSettings = AudioCue.CueSettings.Default;
 
     private void Start()
     {
@@ -19,6 +21,9 @@ public class MainMenuColorInverter : MonoBehaviour
             // isn't set to ScreenSpaceCamera
             menuCanvas.renderMode = RenderMode.ScreenSpaceCamera;
             menuCanvas.worldCamera = MainCamera.Camera;
+
+            // Play music
+            AudioManager.PlaySound(themeSong, Vector3.zero, themeSongSettings);
         }
     }
 

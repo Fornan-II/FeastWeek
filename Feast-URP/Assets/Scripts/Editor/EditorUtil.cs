@@ -9,11 +9,11 @@ public static class EditorUtil
     [MenuItem("Tools/Open Scene/Level")]
     private static void OpenScene_Level() => EditorSceneManager.OpenScene("Assets/Scenes/Level.unity", OpenSceneMode.Single);
     [MenuItem("Tools/Open Scene/SampleScene")]
-    public static void OpenScene_SampleScene() => EditorSceneManager.OpenScene("Assets/Scenes/SampleScene.unity", OpenSceneMode.Single);
+    public static void OpenScene_SampleScene() => EditorSceneManager.OpenScene("Assets/Scenes/Sample Scene.unity", OpenSceneMode.Single);
     [MenuItem("Tools/Open Scene/Main Menu")]
-    public static void OpenScene_MainMenu() => EditorSceneManager.OpenScene("Assets/Scenes/MainMenu.unity", OpenSceneMode.Single);
-    [MenuItem("Tools/Open Scene/Dark Room")]
-    public static void OpenScene_DarkRoom() => EditorSceneManager.OpenScene("Assets/Scenes/DarkRoom.unity", OpenSceneMode.Single);
+    public static void OpenScene_MainMenu() => EditorSceneManager.OpenScene("Assets/Scenes/Main Menu.unity", OpenSceneMode.Single);
+    [MenuItem("Tools/Open Scene/Dark Forest")]
+    public static void OpenScene_DarkRoom() => EditorSceneManager.OpenScene("Assets/Scenes/Dark Forest.unity", OpenSceneMode.Single);
 
     [MenuItem("Tools/Misc/Fix lingering screen fade")]
     public static void FixLingeringScreenFade() => Shader.SetGlobalFloat("_ScreenFade", 0f);

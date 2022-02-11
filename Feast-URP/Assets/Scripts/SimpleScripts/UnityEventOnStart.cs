@@ -1,15 +1,22 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.Events;
 
 public class UnityEventOnStart : MonoBehaviour
 {
+    [SerializeField] private float OnStartDelay = 0f;
     [SerializeField] private UnityEvent OnStart;
     [SerializeField] private UnityEvent OnEnabled;
     [SerializeField] private UnityEvent OnDisabled;
     [SerializeField] private UnityEvent OnDestroyed;
     
-    private void Start()
+    private IEnumerator Start()
     {
+        if(OnStartDelay > 0f)
+        {
+            yield return new WaitForSeconds(OnStartDelay);
+        }
+
         OnStart.Invoke();
     }
 

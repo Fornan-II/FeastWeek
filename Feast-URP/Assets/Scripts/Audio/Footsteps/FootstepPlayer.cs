@@ -6,6 +6,8 @@ public class FootstepPlayer : MonoBehaviour
 {
     public AudioCue.CueSettings FootStepSoundSettings => footstepSoundSettings;
 
+    public bool Mute = false;
+
 #pragma warning disable 0649
     [SerializeField] private AudioClip defaultFootstepSound;
     [SerializeField] private FootstepData footstepData;
@@ -23,10 +25,14 @@ public class FootstepPlayer : MonoBehaviour
         }
     }
 
+    public void SetMute(bool value) => Mute = value;
+
     public void PlayFootstep(FootstepSurface.SurfaceType surfaceType) => PlayFootstep(surfaceType, footstepSoundSettings);
 
     public void PlayFootstep(FootstepSurface.SurfaceType surfaceType, AudioCue.CueSettings soundSettings)
     {
+        if (Mute) return;
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         bool unsupportedSound = !(surfaceType == FootstepSurface.SurfaceType.UNKNOWN || _footstepAudioDictionary.ContainsKey(surfaceType));
 

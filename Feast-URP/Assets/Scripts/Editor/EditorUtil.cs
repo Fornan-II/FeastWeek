@@ -160,4 +160,40 @@ public static class EditorUtil
 
     [MenuItem("Tools/Misc/Unlock Cursor")]
     private static void UnlockCursor() => Util.CursorMode.Default.Apply();
+
+    [MenuItem("Tools/Misc/Bake Selected Particles")]
+    private static void BakeSelectedParticlesMesh()
+    {
+        if (!Selection.activeGameObject)
+        {
+            Debug.LogError("Could not bake particles - no ParticleSystem selected.");
+            return;
+        }
+
+
+        ParticleSystemRenderer sourceParticles;
+        if (!Selection.activeGameObject.TryGetComponent(out sourceParticles))
+        {
+            Debug.LogError("Could not bake particles - Selection is not ParticleSystem.");
+            return;
+        }
+
+        GameObject newMesh = new GameObject(string.Format("Baked Mesh - {0}", Selection.activeGameObject.name));
+        newMesh.transform.position = Selection.activeTransform.position;
+        newMesh.transform.rotation = Selection.activeTransform.rotation;
+        newMesh.transform.localScale = Selection.activeTransform.lossyScale;
+
+        MeshFilter meshFilter = newMesh.AddComponent<MeshFilter>();
+        meshFilter.sharedMesh = new Mesh();
+        meshFilter.sharedMesh.name = Selection.activeGameObject.name;
+
+        Camera[] sceneCameras = SceneView.GetAllSceneCameras();
+        if (sceneCameras.Length > 0 && !EditorApplication.isPlaying)
+            sourceParticles.BakeMesh(meshFilter.sharedMesh, sceneCameras[0]);
+        else
+            sourceParticles.BakeMesh(meshFilter.sharedMesh);
+
+        MeshRenderer meshRenderer = newMesh.AddComponent<MeshRenderer>();
+        meshRenderer.sharedMaterial = sourceParticles.sharedMaterial;
+    }
 }

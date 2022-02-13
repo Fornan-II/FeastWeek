@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: GhostGrass Particles
+  m_Shader: {fileID: -6465566751694194690, guid: fd7ff28ff706c55458f983b24ef71e4f, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - Texture2D_31C8608D:
+        m_Texture: {fileID: 2800000, guid: 5fe07e878baf7c9439e70ea02f1fc142, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_922F926D:
+        m_Texture: {fileID: 2800000, guid: 5fe07e878baf7c9439e70ea02f1fc142, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_F7E51839:
+        m_Texture: {fileID: 2800000, guid: eec18b853aa7a6c46b870a8059ffe8a2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 4f9d00d006d2af64e94266be183ed623, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_205DC9EB_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 5fe07e878baf7c9439e70ea02f1fc142, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WindNoise:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Boolean_6AE68B5F: 0
+    - Boolean_EF5497A7: 0
+    - Vector1_240455BE: 1
+    - Vector1_4122CB83: 0.125
+    - Vector1_42E39E05: 30
+    - Vector1_50438C99: 2
+    - Vector1_5CE39E59: 0.2
+    - Vector1_66BC3F64: 2
+    - Vector1_67D54603: 0
+    - Vector1_715362D6: 0.1
+    - Vector1_7B07A125: 0
+    - Vector1_822D356E: 1
+    - Vector1_8A23A9EA: 5
+    - Vector1_8D51F46F: 0.5
+    - Vector1_A879BE4: 0
+    - Vector1_B63125D: 15
+    - Vector1_CA27BA55: -0.96
+    - Vector1_D041A913: 0
+    - Vector1_D5ECDC3A: 10
+    - Vector1_D7FFBE45: 1
+    - Vector1_D986E7DD: 0.01
+    - Vector1_DC753C22: 2
+    - Vector1_E50D797: 0
+    - _AlphaClip: 0.96
+    - _CullDistance: 5
+    - _WindScrollRate: 0.2
+    m_Colors:
+    - Color_250FA0D: {r: 1, g: 1, b: 1, a: 1}
+    - Color_523BC0AF: {r: 1, g: 1, b: 1, a: 1}
+    - Color_9BE2D0AE: {r: 2.1185474, g: 2.1185474, b: 2.1185474, a: 1}
+    - Vector2_1376DBFB: {r: -0.05, g: -0.1, b: 0, a: 0}
+    - _Tint: {r: 0.14048593, g: 0.7264151, b: 0.14288731, a: 1}
+    - _WindDir: {r: 1, g: 1, b: 0, a: 0}
+  m_BuildTextureStacks: []

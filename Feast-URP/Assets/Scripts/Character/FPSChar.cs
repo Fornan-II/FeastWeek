@@ -58,7 +58,7 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-        if (context.started && !PauseManager.Instance.IsPaused)
+        if (context.started && (PauseManager.Instance ? !PauseManager.Instance.IsPaused : true))
             interacter.TryInteract(this);
     }
     #endregion

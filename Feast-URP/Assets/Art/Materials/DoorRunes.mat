@@ -30,8 +30,8 @@ Material:
     - Vector1_F27EAB2C: 100
     - Vector1_FB15DDDB: 0.02
     - _Dissolve: 0
-    - _LimeContribution: 0.78612643
-    - _MagentaContribution: 0.60867524
+    - _LimeContribution: 0
+    - _MagentaContribution: 0
     m_Colors:
     - Color_5250406D: {r: 20.320307, g: 12.067956, b: 2.750784, a: 1}
     - Color_9D5DC64: {r: 2.3142083, g: 1.6434602, b: 4.4102983, a: 1}

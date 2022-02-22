@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActions
 {
 #pragma warning disable 0649
+    public Transform LookTransform => lookTransform;
+
     [Header("Components")]
     [SerializeField] private CharacterController movementController;
     [SerializeField] private RaycastInteracter interacter;
@@ -83,6 +85,8 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
         _currentYVelocityMax = externalForce.y;
         movementController.Move(externalForce * Time.deltaTime);
     }
+
+    public Vector3 GetVelocity() => movementController.velocity;
 
     // Update is called once per frame
     void Update()

@@ -98,7 +98,7 @@ public class EndSequence : MonoBehaviour
             castleDoor.CloseDoor();
             yield return MusicCustomFadeOut();
 
-#if true
+#if false
             deathAnimation.SetTrigger("PlayAnimation");
             deathView.RequestView();
             MainCamera.Effects.SetColorInvert(true);
@@ -112,7 +112,7 @@ public class EndSequence : MonoBehaviour
             UnityEngine.SceneManagement.SceneManager.LoadScene(0);
 #else
             UnityEngine.SceneManagement.SceneManager.LoadScene(2);
-            PauseManager.Instance.PausingAllowed = true;            // Re-enabling pausing for Dark Forest scene. May remove later depending on how long sequence is.
+            PauseManager.Instance.PausingAllowed = true;
 #endif
         }
     }

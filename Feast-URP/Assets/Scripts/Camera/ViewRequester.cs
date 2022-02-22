@@ -6,18 +6,20 @@ public class ViewRequester : MonoBehaviour
 {
     public bool SetFOVEveryFrame = false;
 
+    public float FieldOfView = 100;
     [SerializeField] private bool setFOV = false;
-    [SerializeField] private float fieldOfView = 100;
 
     public bool HasView() => MainCamera.RootTransform.parent == transform;
 
+    [ContextMenu("Request view")]
     public void RequestView()
     {
         MainCamera.RequestView(transform);
         if(setFOV)
-            MainCamera.SetFOV(fieldOfView);
+            MainCamera.SetFOV(FieldOfView);
     }
 
+    [ContextMenu("Release view")]
     public void ReleaseView()
     {
         if(HasView())
@@ -28,7 +30,7 @@ public class ViewRequester : MonoBehaviour
     {
         if(SetFOVEveryFrame && HasView())
         {
-            MainCamera.SetFOV(fieldOfView);
+            MainCamera.SetFOV(FieldOfView);
         }
     }
 }

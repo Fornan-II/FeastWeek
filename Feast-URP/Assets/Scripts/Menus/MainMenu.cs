@@ -15,6 +15,13 @@ public class MainMenu : StateMachine
         public readonly static MenuObject Empty = new MenuObject() { Menu = null, FirstSelected = null };
     }
 
+    [SerializeField] private Canvas menuCanvas;
+    [Header("Initialization")]
+    [SerializeField] private float menuFadeInTime = 1f;
+    [Header("Post-Completion settings")]
+    [SerializeField] private float menuPostCompletionFadeInTime = 7f;
+    [SerializeField] private AudioClip themeSong;
+    [SerializeField] private AudioCue.CueSettings themeSongSettings = AudioCue.CueSettings.Default;
     [Header("Menus")]
     [SerializeField] private MenuObject main;
     [SerializeField] private MenuObject options;
@@ -32,9 +39,32 @@ public class MainMenu : StateMachine
     {
         Util.CursorMode.Default.Apply();
         PauseManager.Instance.PausingAllowed = false;
-        MainCamera.Effects.CrossFade(1f, false);
 
-        yield return new WaitForSeconds(1f);
+        float fadeTime;
+        if(GlobalData.HasCompletedGame)
+        {
+            // Invert color
+            MainCamera.Effects.SetColorInvert(true);
+
+            // Applying this so color inversion applies to UI
+            // Under normal conditions the PP makes text look bad so usually
+            // isn't set to ScreenSpaceCamera
+            menuCanvas.renderMode = RenderMode.ScreenSpaceCamera;
+            menuCanvas.worldCamera = MainCamera.Camera;
+
+            // Play music
+            AudioManager.PlaySound(themeSong, Vector3.zero, themeSongSettings);
+
+            //MainCamera.Effects.SetFadeColor(Color.black);
+            fadeTime = menuPostCompletionFadeInTime;
+        }
+        else
+        {
+            fadeTime = menuFadeInTime;
+        }
+
+        MainCamera.Effects.CrossFade(fadeTime, false);
+        yield return new WaitForSeconds(menuPostCompletionFadeInTime);
         MainCamera.Effects.ResetFadeColorToDefault();
     }
 
@@ -131,4 +161,11 @@ public class MainMenu : StateMachine
 
         PauseManager.Instance.StartCoroutine(LoadGame());
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        menuCanvas = menuCanvas ?? GetComponent<Canvas>();
+    }
+#endif
 }

@@ -6,8 +6,8 @@ using UnityEngine.Events;
 
 public static class Util
 {
-    public static Vector3 XZVector3(Vector2 value) => new Vector3(value.x, 0, value.y);
     public static Vector3 XZVector3(Vector2 value, float yValue) => new Vector3(value.x, yValue, value.y);
+    public static Vector3 XZVector3(Vector2 value) => XZVector3(value, 0f);
 
     // https://www.xarg.org/2017/07/how-to-map-a-square-to-a-circle/
     public static Vector2 RemapSquareToCircle(Vector2 value) => new Vector2(
@@ -68,6 +68,7 @@ public static class Util
 
         public override bool Equals(object obj)
         {
+            // Potentially use hashcode to avoid garbage made from unboxing?
             CursorMode other = (CursorMode)obj;
             return Visible == other.Visible && LockMode == other.LockMode;
         }
@@ -75,10 +76,7 @@ public static class Util
         public static bool operator ==(CursorMode c1, CursorMode c2) => c1.Equals(c2);
         public static bool operator !=(CursorMode c1, CursorMode c2) => !c1.Equals(c2);
 
-        public override int GetHashCode()
-        {
-            return Visible.GetHashCode() ^ LockMode.GetHashCode();
-        }
+        public override int GetHashCode() => Visible.GetHashCode() ^ LockMode.GetHashCode();
     }
 
     [System.Serializable]

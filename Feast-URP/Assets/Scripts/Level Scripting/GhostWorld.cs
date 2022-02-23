@@ -29,6 +29,7 @@ public class GhostWorld : MonoBehaviour
     [SerializeField] private Animator endSequence3Animator;
     [Header("End sequence part 4")]
     [SerializeField] private float finalFadeOutDuration = 10f;
+    [SerializeField, ColorUsage(false, true)] private Color fadeColor;
     [SerializeField] private float blackOutLingerTime = 7f;
 
     bool _endAnimStarted = false;
@@ -52,7 +53,8 @@ public class GhostWorld : MonoBehaviour
     private IEnumerator EndAnimation()
     {
         // End sequence part 1
-        PauseManager.Instance.PausingAllowed = false;
+        if(PauseManager.Instance)
+            PauseManager.Instance.PausingAllowed = false;
         playerCharacter.MyController.ReleaseControl();
 
         Util.MoveTransformToTarget(endSequence1View.transform, MainCamera.RootTransform);
@@ -82,25 +84,31 @@ public class GhostWorld : MonoBehaviour
             Vector3 vecToTarget = forestGodFaceTransform.position - endSequence1View.transform.position;
             endSequence1View.transform.rotation = Quaternion.Slerp(initRotation, Quaternion.LookRotation(vecToTarget), lookAtAnim.Evaluate(timer));
 
-            if(!fadeStarted)
+            if(godBlink.enabled && !godBlink.IsBlinking)
+            {
+                godBlink.enabled = false;
+            }
+            else if(!fadeStarted)
             {
                 if(vecToTarget.sqrMagnitude < part1EndRadius * part1EndRadius)
                 {
-                    // SYNC FADE WITH BLINKING
-                    //MainCamera.Effects.SetFadeColor(Color.black);
-                    //MainCamera.Effects.CrossFade(fadeDuration, true);
-                    //fadeStarted = true;
-                    //fadeStartTime = timer;
-                    continueCameraMove = false;
+                    MainCamera.Effects.SetFadeColor(Color.black);
+                    fadeStarted = true;
+                    fadeStartTime = timer;
                 }
             }
-            //else
-            //{
-            //    if (timer > fadeStartTime + fadeDuration)
-            //    {
-            //        continueCameraMove = false;
-            //    }
-            //}
+            else if (timer - fadeStartTime > Util.AnimationCurveLengthTime(eyeCloseAnim))
+            {
+                continueCameraMove = false;
+                MainCamera.Effects.ManuallySetScreenFade(1f);
+            }
+            else
+            {
+                // Close eyes
+                float t = eyeCloseAnim.Evaluate(timer - fadeStartTime);
+                godBlink.SetOpenness(t);
+                MainCamera.Effects.ManuallySetScreenFade(1f - t);
+            }
 
             yield return null;
             timer += Time.deltaTime;
@@ -108,26 +116,53 @@ public class GhostWorld : MonoBehaviour
 
         // End sequence part 2
         endSequence2View.RequestView();
-        // unload forest, load in ghost dining hall
-
+        // Open eyes
+        for (timer = 0.0f; timer < Util.AnimationCurveLengthTime(eyeOpenAnim); timer += Time.deltaTime)
+        {
+            float t = eyeOpenAnim.Evaluate(timer);
+            godBlink.SetOpenness(t);
+            MainCamera.Effects.ManuallySetScreenFade(1f - t);
+            yield return null;
+        }
+        godBlink.SetOpenness(1f);
         yield return new WaitForSeconds(part2Duration);
+        // Close eyes
+        for (timer = 0.0f; timer < Util.AnimationCurveLengthTime(eyeCloseAnim); timer += Time.deltaTime)
+        {
+            float t = eyeCloseAnim.Evaluate(timer);
+            godBlink.SetOpenness(t);
+            MainCamera.Effects.ManuallySetScreenFade(1f - t);
+            yield return null;
+        }
+
         // End sequence part 3
         forestGeometry.SetActive(false);
         hallGeometry.SetActive(true);
 
         endSequence3View.RequestView();
         godLookAtTarget.Target = endSequence3View.transform;
-
         endSequence3Animator.SetTrigger("EndSequence3");
+
+        // Open eyes
+        for (timer = 0.0f; timer < Util.AnimationCurveLengthTime(eyeOpenAnim); timer += Time.deltaTime)
+        {
+            float t = eyeOpenAnim.Evaluate(timer);
+            godBlink.SetOpenness(t);
+            MainCamera.Effects.ManuallySetScreenFade(1f - t);
+            yield return null;
+        }
+        godBlink.SetOpenness(1f);
+        godBlink.enabled = true;
 
         yield return new WaitUntil(() => _endAnimReadyToEnd);
 
         // End sequence part 4
-        MainCamera.Effects.SetFadeColor(Color.black);
+        MainCamera.Effects.SetFadeColor(fadeColor);
         MainCamera.Effects.CrossFade(finalFadeOutDuration, true);
         yield return new WaitForSeconds(finalFadeOutDuration + blackOutLingerTime);
         // Fade out audio?
-        PauseManager.Instance.PausingAllowed = true;
+        if (PauseManager.Instance)
+            PauseManager.Instance.PausingAllowed = true;
         GlobalData.HasCompletedGame = true;
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }

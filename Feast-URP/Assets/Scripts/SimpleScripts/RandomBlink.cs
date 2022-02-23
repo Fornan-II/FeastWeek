@@ -5,6 +5,8 @@ using UnityEngine;
 public class RandomBlink : MonoBehaviour
 {
 #pragma warning disable 0649
+    public bool IsBlinking => _isBlinking;
+
     [SerializeField] private Transform eyeTransform;
     [SerializeField] private Vector2 BlinkIntervalRange = new Vector2(1f, 30f);
     [SerializeField] private AnimationCurve blinkAnim;

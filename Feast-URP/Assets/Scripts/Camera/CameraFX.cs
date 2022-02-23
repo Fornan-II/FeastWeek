@@ -36,6 +36,7 @@ public class CameraFX
     #region Crossfading
     public void SetFadeColor(Color color) => Shader.SetGlobalColor("_FadeColor", color);
     public void ResetFadeColorToDefault() => Shader.SetGlobalColor("_FadeColor", defaultFadeColor);
+    public void ManuallySetScreenFade(float value) => Shader.SetGlobalFloat("_ScreenFade", Mathf.Clamp01(value));
 
     public void CrossFade(float fadeDuration, bool fadeOut)
     {

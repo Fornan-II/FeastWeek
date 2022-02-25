@@ -11,27 +11,18 @@ public class CameraShakeSphereTriggerVolume : SphereTriggerVolume
     // I'm adding this here because I want the audio to blend based on proximity, just like the camera shake
     // This class should be renamed to be more specific to the death blob, but it's a bit late for that now.
     [Header("Danger Music")]
+    [SerializeField] private MusicManager musicManagerRef;
     [SerializeField] private AudioClip dangerMusic;
     [SerializeField] private AnimationCurve dangerAudioCurve;
     [Header("Controller rumble")]
+    [SerializeField] private ControllerRumbler controllerRumbler;
     [SerializeField] private AnimationCurve lowFreqRumbleCurve;
     [SerializeField] private AnimationCurve highFreqRumbleCurve;
-
-    private ControllerRumbler controllerRumbler;
-
-    private MusicManager musicManagerRef;
-    private AudioCue dangerMusicCue;
+    private Song dangerMusicSong;
 
     private Action<float> _screenShakeEffect;
 
     private float BlendedStrength() => Mathf.Max(Mathf.Epsilon, screenShakeStrength * Mathf.Pow(blendValue, screenShakeBlendExponent));
-
-    private void Start()
-    {
-        // Ewwww
-        musicManagerRef = FindObjectOfType<MusicManager>();
-        controllerRumbler = gameObject.AddComponent<ControllerRumbler>();
-    }
 
     private void OnDisable()
     {
@@ -45,15 +36,15 @@ public class CameraShakeSphereTriggerVolume : SphereTriggerVolume
     protected override void OnOverlapStart()
     {
         _screenShakeEffect = MainCamera.Effects.ContinuousScreenShake(BlendedStrength());
-        dangerMusicCue = musicManagerRef.PlaySongDirectly(dangerMusic, true);
-        dangerMusicCue.SetVolume(0f);
+        dangerMusicSong = musicManagerRef.PlaySongDirectly(dangerMusic, true);
+        dangerMusicSong.SongCue.SetVolume(0f);
     }
 
     protected override void OnOverlap()
     {
         _screenShakeEffect(BlendedStrength());
 
-        musicManagerRef.MixSongs(musicManagerRef.ActiveCues[0], dangerMusicCue, dangerAudioCurve.Evaluate(blendValue));
+        musicManagerRef.MixSongs(musicManagerRef.ActiveSongs[0], dangerMusicSong, dangerAudioCurve.Evaluate(blendValue));
 
         controllerRumbler.LowFrequencyRumble = lowFreqRumbleCurve.Evaluate(blendValue);
         controllerRumbler.HighFrequencyRumble = highFreqRumbleCurve.Evaluate(blendValue);
@@ -64,11 +55,18 @@ public class CameraShakeSphereTriggerVolume : SphereTriggerVolume
         _screenShakeEffect(0f);
         _screenShakeEffect = null;
 
-        musicManagerRef.MixSongs(musicManagerRef.ActiveCues[0], dangerMusicCue, 0);
-        musicManagerRef.SetSongCueInactive(dangerMusicCue);
-        dangerMusicCue = null;
+        musicManagerRef.MixSongs(musicManagerRef.ActiveSongs[0], dangerMusicSong, 0);
+        musicManagerRef.SetSongCueInactive(dangerMusicSong);
+        dangerMusicSong = null;
 
         controllerRumbler.LowFrequencyRumble = 0f;
         controllerRumbler.HighFrequencyRumble = 0f;
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (!controllerRumbler) controllerRumbler = GetComponent<ControllerRumbler>();
+    }
+#endif
 }

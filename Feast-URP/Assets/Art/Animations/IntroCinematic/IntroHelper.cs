@@ -108,9 +108,9 @@ public class IntroHelper : Pawn, DefaultControls.IFPSCharacterActions
     private void StartMusic()
     {
         musicManager.enabled = true;
-        musicManager.PlaySongDirectly(themeSong, false);
+        Song mainTheme = musicManager.PlaySongDirectly(themeSong, false);
 
-        musicManager.AddSongEvent(
+        mainTheme.AddSongEvent(
             musicCrossfadeTime,
             () => musicManager.CrossfadeInNewSong(mainAmbient, 3f, true)
             );

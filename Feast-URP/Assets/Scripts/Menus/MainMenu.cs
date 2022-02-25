@@ -52,10 +52,7 @@ public class MainMenu : StateMachine
             menuCanvas.renderMode = RenderMode.ScreenSpaceCamera;
             menuCanvas.worldCamera = MainCamera.Camera;
 
-            // Play music
-            AudioManager.PlaySound(themeSong, Vector3.zero, themeSongSettings);
-
-            //MainCamera.Effects.SetFadeColor(Color.black);
+            MainCamera.Effects.SetFadeColor(Color.black);
             fadeTime = menuPostCompletionFadeInTime;
         }
         else
@@ -66,6 +63,13 @@ public class MainMenu : StateMachine
         MainCamera.Effects.CrossFade(fadeTime, false);
         yield return new WaitForSeconds(menuPostCompletionFadeInTime);
         MainCamera.Effects.ResetFadeColorToDefault();
+
+        if (GlobalData.HasCompletedGame)
+        {
+            yield return new WaitForSeconds(3f);
+            // Play music
+            AudioManager.PlaySound(themeSong, Vector3.zero, themeSongSettings);
+        }
     }
 
     private void OnEnable()

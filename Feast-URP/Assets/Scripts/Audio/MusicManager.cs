@@ -8,115 +8,86 @@ public class MusicManager : MonoBehaviour
 #pragma warning disable 0649
     [SerializeField] private float defaultVolume = 0.85f;
 
-    public List<AudioCue> ActiveCues => _activeSongCues;
-    private List<AudioCue> _activeSongCues = new List<AudioCue>(1);
-    private List<SongEvent> _songEventQueue = new List<SongEvent>(); // Using a list so that I can sort through them on insertion
-
-#if UNITY_EDITOR // Useful for debugging
-    [System.Serializable]
-#endif
-    private struct SongEvent
-    {
-        public float Time;
-        public Action Event;
-    }
+    public List<Song> ActiveSongs { get; private set; } = new List<Song>();
 
     public void StopImmediately()
     {
-        foreach(var cue in _activeSongCues)
+        foreach(var song in ActiveSongs)
         {
-            cue.Stop();
+            song.SongCue.Stop();
         }
-
-        _songEventQueue.Clear();
     }
 
-    public AudioCue PlaySongDirectly(AudioClip song, bool looping = false)
+    public Song PlaySongDirectly(AudioClip song, bool looping = false)
     {
-        AudioCue newSongCue = AudioManager.PlaySound(song, Vector3.zero, new AudioCue.CueSettings(AudioManager.MixerGroup.Music)
+        Song newSong = new Song(AudioManager.PlaySound(song, Vector3.zero, new AudioCue.CueSettings(AudioManager.MixerGroup.Music)
         {
             Volume = defaultVolume,
-            Loop = looping
-        });
-        // Make cue have 2D audio
-        newSongCue.Source.spatialBlend = 0f;
+            Loop = looping,
+            Is3D = false
+        }));
 
         // Make sure this song cue is set up to be tracked
-        newSongCue.OnFinishedPlaying += () => _activeSongCues.Remove(newSongCue);
-        _activeSongCues.Add(newSongCue);
+        newSong.SongCue.OnFinishedPlaying += () => ActiveSongs.Remove(newSong);
+        ActiveSongs.Add(newSong);
 
-        return newSongCue;
+        return newSong;
     }
 
-    public void SetSongCueInactive(AudioCue cue, bool clearEventQueue = true)
+    public void SetSongCueInactive(Song song)
     {
-        if (_activeSongCues.Contains(cue))
+        if (ActiveSongs.Contains(song))
         {
-            _activeSongCues.Remove(cue);
+            ActiveSongs.Remove(song);
         }
         else
         {
             Debug.LogWarning("[MusicManager] Tried to set song cue inactive that was not found in active song cues.");
         }
 
-        if(clearEventQueue)
-            _songEventQueue.Clear();
-
-        cue.SetInactive();
+        song.SongCue.SetInactive();
     }
 
-    public void MixSongs(AudioCue songPlayer1, AudioCue songPlayer2, float mix)
+    public void MixSongs(Song song1, Song song2, float mix)
     {
         // Don't mix if the songs are fading, otherwise SetVolume would compete and sound weird
-        if (songPlayer1.IsFading || songPlayer2.IsFading)
+        if (song1.SongCue.IsFading || song2.SongCue.IsFading)
             return;
 
         // 0 is songPlayer1, 1 is songPlayer2
-        songPlayer1.SetVolume(Mathf.Lerp(defaultVolume, 0, mix * mix));
-        songPlayer2.SetVolume(Mathf.Lerp(0, defaultVolume, mix * mix));
+        song1.SongCue.SetVolume(Mathf.Lerp(defaultVolume, 0, mix * mix));
+        song2.SongCue.SetVolume(Mathf.Lerp(0, defaultVolume, mix * mix));
     }
 
-    public void FadeInNewSong(AudioClip song, float duration, bool looping = false)
+    public Song FadeInNewSong(AudioClip song, float duration, bool looping = false)
     {
-        AudioCue cue = PlaySongDirectly(song, looping);
-        cue.FadeIn(cue.Settings.Volume, duration);
+        Song newSong = PlaySongDirectly(song, looping);
+        newSong.SongCue.FadeIn(newSong.SongCue.Settings.Volume, duration);
+        return newSong;
     }
 
     public void FadeOutAnySongs(float duration)
     {
-        foreach(var cue in _activeSongCues)
+        for(int i = 0; i < ActiveSongs.Count; ++i)
         {
-            cue.FadeOut(duration, () => SetSongCueInactive(cue));
+            // Doing things this way because we want the song at i right now,
+            // not the song at i when the fade is done.
+            Song thisSong = ActiveSongs[i];
+            ActiveSongs[i].SongCue.FadeOut(duration, () => SetSongCueInactive(thisSong));
         }
     }
 
-    public void CrossfadeInNewSong(AudioClip song, float duration, bool looping = false)
+    public Song CrossfadeInNewSong(AudioClip song, float duration, bool looping = false)
     {
         FadeOutAnySongs(duration);
-        FadeInNewSong(song, duration, looping);
-    }
-
-    public void AddSongEvent(float time, Action songEvent)
-    {
-        int i = 0;
-        for(; i < _songEventQueue.Count; ++i)
-        {
-            if (_songEventQueue[i].Time < time)
-                break;
-        }
-        _songEventQueue.Insert(i, new SongEvent() { Time = time, Event = songEvent });
+        return FadeInNewSong(song, duration, looping);
     }
 
     private void Update()
     {
-        if (_activeSongCues.Count > 0)
+        for(int i = 0; i < ActiveSongs.Count; ++i)
         {
-            while(_songEventQueue.Count > 0 && _activeSongCues[0].Source.time >= _songEventQueue[0].Time)
-            {
-                _songEventQueue[0].Event();
-                _songEventQueue.RemoveAt(0);
-            }
+            ActiveSongs[i].CheckForSongEvent();
         }
-
     }
 }

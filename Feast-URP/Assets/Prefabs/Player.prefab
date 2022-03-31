@@ -122,6 +122,40 @@ MonoBehaviour:
     m_Bits: 4294967295
   footstepStrideDistance: {x: 1.15, y: 1.25}
   jumpVolumeMultiplier: 2
+  landingForceCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 10
+      value: 0.33333334
+      inSlope: 0.09943391
+      outSlope: 0.09943391
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.051419683
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  timeCurveScaler: 1.6
 --- !u!114 &7507402167451724083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,8 +231,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SetFOVEveryFrame: 0
+  FieldOfView: 100
   setFOV: 1
-  fieldOfView: 100
 --- !u!114 &6961860451848926185
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -259,6 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28c4219cd6d0e644db9a66de29df96b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Mute: 0
   defaultFootstepSound: {fileID: 0}
   footstepData: {fileID: 11400000, guid: 5827a607574e29241b61a3c25ff76f3a, type: 2}
   footstepSoundSettings:

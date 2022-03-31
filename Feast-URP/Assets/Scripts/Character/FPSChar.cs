@@ -26,6 +26,9 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
     [Header("Sound")]
     [SerializeField] private Vector2 footstepStrideDistance = new Vector2(0.0203f, 0.0392f);
     [SerializeField] private float jumpVolumeMultiplier = 2f;
+    [Header("Visual Flare")]
+    [SerializeField] private AnimationCurve landingForceCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+    [SerializeField] private float timeCurveScaler = 2f;
 
     private Vector2 _moveInput;
     private Vector2 _lookInput;
@@ -91,9 +94,6 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
     // Update is called once per frame
     void Update()
     {
-        //if(_distanceToNextFootstep > 0f)
-        //    _distanceToNextFootstep -= Time.deltaTime;
-
         if (!IsBeingControlled || Time.timeScale <= 0f) return;
 
         bool wasGrounded = _isGrounded;
@@ -106,11 +106,20 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
 
     private void OnPlayerBecomeGrounded()
     {
-        // Play footstep for landing on the ground
+        // Play footstep sfx for landing on the ground
         _distanceToNextFootstep = Util.RandomInRange(footstepStrideDistance);
         AudioCue.CueSettings cueSettings = footstepPlayer.FootStepSoundSettings;
         cueSettings.Volume *= jumpVolumeMultiplier;
         footstepPlayer.PlayFootstep(_groundSurfaceType, cueSettings);
+
+        // Apply some camera impulse to represent force of landing on the ground
+        float strength = landingForceCurve.Evaluate(-movementController.velocity.y);
+
+        if(strength > 0f)
+        {
+            MainCamera.Effects.ApplyImpulse(MainCamera.Camera.transform.position + Vector3.up, strength, strength * timeCurveScaler);
+        }
+        Debug.LogFormat("{0} => {1}", movementController.velocity.y, strength);
     }
     
     private void PlayerMovement()

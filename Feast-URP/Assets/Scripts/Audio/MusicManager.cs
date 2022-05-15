@@ -28,7 +28,7 @@ public class MusicManager : MonoBehaviour
         }));
 
         // Make sure this song cue is set up to be tracked
-        newSong.SongCue.OnFinishedPlaying += () => ActiveSongs.Remove(newSong);
+        newSong.SongCue.OnFinishedPlaying += () => SetSongCueInactive(newSong);
         ActiveSongs.Add(newSong);
 
         return newSong;

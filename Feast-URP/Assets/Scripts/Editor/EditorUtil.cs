@@ -18,14 +18,16 @@ public static class EditorUtil
     [MenuItem("Tools/Misc/Fix lingering screen fade")]
     public static void FixLingeringScreenFade() => Shader.SetGlobalFloat("_ScreenFade", 0f);
 
-    [MenuItem("Tools/Toggle Render Features")]
+    [MenuItem("Tools/Clear fog")]
     private static void ToggleFog()
     {
-        var renderPipeline = AssetDatabase.LoadAssetAtPath<ForwardRendererData>("Assets/Settings/Renderer Data/Main Renderer.asset");
-        foreach (var feature in renderPipeline.rendererFeatures)
-        {
-            feature.SetActive(!feature.isActive);
-        }
+        // Commented out code from previous fog set up. "Toggle Render Features".
+        //var renderPipeline = AssetDatabase.LoadAssetAtPath<ForwardRendererData>("Assets/Settings/Renderer Data/Main Renderer.asset");
+        //foreach (var feature in renderPipeline.rendererFeatures)
+        //{
+        //    feature.SetActive(!feature.isActive);
+        //}
+        FogData.SetNULLFog();
     }
 
     [MenuItem("Tools/Bakery Helpers/Invisible Colliders/Enable")]

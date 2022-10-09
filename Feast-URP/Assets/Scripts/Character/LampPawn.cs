@@ -7,17 +7,100 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
 #pragma warning disable 0649
     [Header("Components")]
     [SerializeField] private Transform lookTransform;
-    [SerializeField] private AudioSource audioSource;
-    [Header("Look Settings")]
+    [SerializeField] private DoorMechanic target;
+    [SerializeField] private AudioSource rotationAudioSource;
+    [SerializeField] private Interactable interactable;
+    [Header("Swiveling Settings")]
     [SerializeField] private float lookSpeed = 0.25f;
+    [SerializeField] private float lookInputDecay = 0.07f;
     [SerializeField] private float clampAngle = 60f;
-    [Header("Audio Settings")]
+    [Header("Alignment Settings")]
+    [SerializeField] private float alignmentCutoff = 0.85f;
+    [SerializeField] private AnimationCurve sensitivityCurve = AnimationCurve.Linear(1f, 1f, 0.85f, 0.2f);
+    [Header("Audio - Swiveling")]
     [SerializeField] private AnimationCurve swivelVolumeCurve;
     [SerializeField] private float swivelSmoothing = 0.3f;
     [SerializeField] private float minSwivelVolume = 0.0001f;
+    [Header("Audio - Alignment")]
+    [SerializeField] private AudioClip lampActiveSFX;
+    [SerializeField] private AudioCue.CueSettings lampActiveSFXSettings = AudioCue.CueSettings.Default;
+    [SerializeField] private float lampActiveSFXFadeOutDuration = 0.7f;
+    [Header("Audio - Connection Broken")]
+    [SerializeField] private AudioClip onConnectionBrokenSFX;
+    [SerializeField] private AudioCue.CueSettings onConnectionBrokenSFXSettings = AudioCue.CueSettings.Default;
 
     private Vector2 _lookInput;
     private float _swivelSmoothVelocity = 0.0f;
+    private bool _isConnectedToTarget = true;
+    private AudioCue _lampActiveCue;
+
+    private void Start()
+    {
+        _lampActiveCue = AudioManager.PlaySound(lampActiveSFX, lookTransform.transform.position, lampActiveSFXSettings);
+    }
+
+    private void Update()
+    {
+        // Handle swivel audio
+        if (IsBeingControlled || rotationAudioSource.volume > 0)
+        {
+            float newVolume = Mathf.SmoothDamp(rotationAudioSource.volume, swivelVolumeCurve.Evaluate(_lookInput.sqrMagnitude), ref _swivelSmoothVelocity, swivelSmoothing);
+
+            // SmoothDamp doesn't seem to converge to 0 so let's help it out
+            if (newVolume < minSwivelVolume)
+                newVolume = 0f;
+
+            if (newVolume > 0 && rotationAudioSource.volume <= 0f)
+            {
+                rotationAudioSource.Play();
+            }
+            else if (newVolume <= 0 && rotationAudioSource.volume > 0f)
+            {
+                rotationAudioSource.Pause();
+            }
+
+            rotationAudioSource.volume = newVolume;
+        }
+
+        // Check that this is being controlled and that the game is not paused
+        if (!IsBeingControlled || Time.timeScale <= 0f) return;
+
+        Vector3 vecToTarget = (target.GetTargetPosition() - lookTransform.position).normalized;
+        float dot = Vector3.Dot(lookTransform.forward, vecToTarget);
+
+        // Rotate lamp based on input
+        {
+            Vector2 lookCalc = _lookInput * lookSpeed;
+
+            if (_isConnectedToTarget)
+            {
+                lookCalc *= sensitivityCurve.Evaluate(dot);
+            }
+
+            lookTransform.rotation *= Quaternion.Euler(-lookCalc.y, lookCalc.x, 0);
+            ConstrainLampRotation();
+        }
+
+        // Check lamp's connection to target
+        if(_isConnectedToTarget)
+        {
+            if(dot < alignmentCutoff)
+            {
+                _isConnectedToTarget = false;
+                AudioManager.PlaySound(onConnectionBrokenSFX, target.GetTargetPosition(), onConnectionBrokenSFXSettings);
+                _lampActiveCue.FadeOut(lampActiveSFXFadeOutDuration);
+                _lampActiveCue = null;
+
+                // Allow it to still be interactable?
+                interactable.IsInteractable = false;
+                ReturnControl();
+                // Have the look sensitivity of the FPSChar pawn be set to 0, then fade up back to default.
+                
+                MainCamera.Effects.ApplyScreenShake(0.03f);
+                // Particles?
+            }
+        }
+    }
 
     #region Input
     protected override void ActivateInput()
@@ -44,6 +127,7 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
     public void OnInteract(InputAction.CallbackContext context) { if (!PauseManager.Instance.IsPaused) ReturnControl(); }
     #endregion
 
+    #region Pawn/Controller control
     public override UnityAction BecomeControlledBy(Controller controller)
     {
         MsgBox.ShowMessage(GameManager.Instance.UsingGamepadControls()
@@ -58,46 +142,53 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
         base.StopBeingControlled();
         _lookInput = Vector2.zero;
     }
+    #endregion
 
-    private void Update()
+    private void ConstrainLampRotation()
     {
-        // Lamp Audio
-        if (IsBeingControlled || audioSource.volume > 0)
-        {
-            float newVolume = Mathf.SmoothDamp(audioSource.volume, swivelVolumeCurve.Evaluate(_lookInput.sqrMagnitude), ref _swivelSmoothVelocity, swivelSmoothing);
-
-            // SmoothDamp doesn't seem to converge to 0 so let's help it out
-            if (newVolume < minSwivelVolume)
-                newVolume = 0f;
-
-            if (newVolume > 0 && audioSource.volume <= 0f)
-            {
-                audioSource.Play();
-            }
-            else if (newVolume <= 0 && audioSource.volume > 0f)
-            {
-                audioSource.Pause();
-            }
-
-            audioSource.volume = newVolume;
-        }
-
-        if (!IsBeingControlled || Time.timeScale <= 0f) return;
-        
-        // Rotate
-        Vector2 lookCalc = _lookInput * lookSpeed;
-        lookTransform.rotation *= Quaternion.Euler(-lookCalc.y, lookCalc.x, 0);
-
-        // Clamp
+        // Clamp pitch
         Quaternion forwardQuaternion = Quaternion.Euler(Vector3.forward) * Quaternion.Euler(0, lookTransform.localEulerAngles.y, 0f);
         if (Quaternion.Angle(forwardQuaternion, lookTransform.localRotation) > clampAngle)
         {
             lookTransform.localRotation = Quaternion.RotateTowards(forwardQuaternion, lookTransform.localRotation, clampAngle);
         }
 
-        // Stop roll
+        // Remove roll
         Vector3 localRotation = lookTransform.localEulerAngles;
         localRotation.z = 0f;
         lookTransform.localRotation = Quaternion.Euler(localRotation);
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {   
+        if(lookTransform && target)
+        {
+            Vector3 vecToTarget = (target.GetTargetPosition() - lookTransform.position).normalized;
+            Vector3 tangentToTarget = Vector3.Cross(vecToTarget, Vector3.up);
+            float dot = Vector3.Dot(lookTransform.forward, vecToTarget);
+
+            UnityEditor.Handles.color = Color.red;
+            UnityEditor.Handles.DrawWireArc(lookTransform.position + vecToTarget, vecToTarget, tangentToTarget, 360f, Mathf.Tan(Mathf.Acos(alignmentCutoff)));
+
+
+            Gizmos.color = dot >= alignmentCutoff ? Color.green : Color.blue;
+            Gizmos.DrawRay(lookTransform.position, lookTransform.forward * 2f);
+        }
+    }
+
+    [ContextMenu("Align to target")]
+    private void AlignToTarget()
+    {
+        if(!(lookTransform && target))
+        {
+            Debug.LogError("Failed to align lamp. Please check that both lookTransform and target are assigned in the inspector.");
+            return;
+        }
+        
+        UnityEditor.Undo.RecordObject(lookTransform, "Align lamp to target");
+        lookTransform.transform.forward = target.GetTargetPosition() - lookTransform.position;
+        ConstrainLampRotation();
+    }
+#endif
 }

@@ -4399,9 +4399,46 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   lookTransform: {fileID: 4706495316682923024}
-  audioSource: {fileID: 8969521524939777023}
+  target: {fileID: 0}
+  rotationAudioSource: {fileID: 8969521524939777023}
+  interactable: {fileID: 2499900498466645129}
   lookSpeed: 0.06
+  lookInputDecay: 0.5
   clampAngle: 20
+  alignmentCutoff: 0.85
+  sensitivityCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.85
+      value: 0.01
+      inSlope: 0.3674378
+      outSlope: 0.12657921
+      tangentMode: 5
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.12000029
+    - serializedVersion: 3
+      time: 0.9
+      value: 0.05
+      inSlope: 1.4496325
+      outSlope: 1.6420692
+      tangentMode: 1
+      weightedMode: 0
+      inWeight: 0.13272707
+      outWeight: 0.26363724
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 24.778357
+      outSlope: 24.778357
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.043715823
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   swivelVolumeCurve:
     serializedVersion: 2
     m_Curve:
@@ -4428,6 +4465,25 @@ MonoBehaviour:
     m_RotationOrder: 4
   swivelSmoothing: 0.5
   minSwivelVolume: 0.0001
+  lampActiveSFX: {fileID: 8300000, guid: 031f8305c6b67ec4ab9226909ecb4c99, type: 3}
+  lampActiveSFXSettings:
+    Group: 1
+    Loop: 1
+    Volume: 0.3
+    PitchRange: {x: 1, y: 1}
+    MinDistance: 1
+    MaxDistance: 7
+    Is3D: 1
+  lampActiveSFXFadeOutDuration: 0.7
+  onConnectionBrokenSFX: {fileID: 8300000, guid: 7972299142dee4f428201e2f61dbb007, type: 3}
+  onConnectionBrokenSFXSettings:
+    Group: 0
+    Loop: 0
+    Volume: 0.715
+    PitchRange: {x: 1, y: 1}
+    MinDistance: 1
+    MaxDistance: 100
+    Is3D: 1
 --- !u!82 &8969521524939777023
 AudioSource:
   m_ObjectHideFlags: 0

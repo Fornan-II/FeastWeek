@@ -52,37 +52,37 @@ public class DoorMechanic : MonoBehaviour
     {
         if (_doorHasOpened) return;
         
-        bool anyLampFailed = false;
-        for(int i = 0; i < lamps.Length; ++i)
-        {
-            float dot = Vector3.Dot(lamps[i].Transform.forward, (transform.position + doorCenterOffset - lamps[i].Transform.position).normalized);
-            float tValue = Mathf.InverseLerp(lamps[i].SensitivityRange.x, lamps[i].SensitivityRange.y, dot);
-            if (tValue < 0.5)                   // Lamp is not aligned correctly
-            {
-                anyLampFailed = true;
+        //bool anyLampFailed = false;
+        //for(int i = 0; i < lamps.Length; ++i)
+        //{
+        //    float dot = Vector3.Dot(lamps[i].Transform.forward, (GetTargetPosition() - lamps[i].Transform.position).normalized);
+        //    float tValue = Mathf.InverseLerp(lamps[i].SensitivityRange.x, lamps[i].SensitivityRange.y, dot);
+        //    if (tValue < 0.5)                   // Lamp is not aligned correctly
+        //    {
+        //        anyLampFailed = true;
 
-                if (lamps[i].activeSFXCue)
-                {
-                    // Fade cue out then set inactive
-                    lamps[i].activeSFXCue.FadeOut(lampActiveFadeTime);
-                    lamps[i].activeSFXCue = null;
-                }
-            }
-            else if (!lamps[i].activeSFXCue)    // Lamp is aligned correctly
-            {
-                // Start cue volume at zero then fade in
-                lamps[i].activeSFXCue = AudioManager.PlaySound(lampActiveSFX, lamps[i].Transform, lampActiveSFXSettings);
-                lamps[i].activeSFXCue.FadeIn(lampActiveSFXSettings.Volume, lampActiveFadeTime);
+        //        if (lamps[i].activeSFXCue)
+        //        {
+        //            // Fade cue out then set inactive
+        //            lamps[i].activeSFXCue.FadeOut(lampActiveFadeTime);
+        //            lamps[i].activeSFXCue = null;
+        //        }
+        //    }
+        //    else if (!lamps[i].activeSFXCue)    // Lamp is aligned correctly
+        //    {
+        //        // Start cue volume at zero then fade in
+        //        lamps[i].activeSFXCue = AudioManager.PlaySound(lampActiveSFX, lamps[i].Transform, lampActiveSFXSettings);
+        //        lamps[i].activeSFXCue.FadeIn(lampActiveSFXSettings.Volume, lampActiveFadeTime);
 
-                // Play on align sfx
-                AudioManager.PlaySound(onLampAlignSFX, transform.position + doorCenterOffset, onLampAlignSFXSettings);
-            }
+        //        // Play on align sfx
+        //        AudioManager.PlaySound(onLampAlignSFX, GetTargetPosition(), onLampAlignSFXSettings);
+        //    }
 
-            runeDoor.sharedMaterial.SetFloat(lamps[i].GetMaterialPropertyID(), tValue);
-            lamps[i].Particles.SensitiveActivate(tValue);
-        }
+        //    runeDoor.sharedMaterial.SetFloat(lamps[i].GetMaterialPropertyID(), tValue);
+        //    lamps[i].Particles.SensitiveActivate(tValue);
+        //}
 
-        if (anyLampFailed) return;
+        //if (anyLampFailed) return;
 
         OpenDoor();
     }
@@ -98,11 +98,10 @@ public class DoorMechanic : MonoBehaviour
         animator.SetBool("IsOpen", false);
     }
 
+    public Vector3 GetTargetPosition() => transform.position + doorCenterOffset;
+
     [ContextMenu("Play door explosion sound")]
-    private void PlayDoorExplosionSound()
-    {
-        AudioManager.PlaySound(doorExplosionSFX, transform.position + doorCenterOffset, doorExplosionSFXSettings);
-    }
+    private void PlayDoorExplosionSound() => AudioManager.PlaySound(doorExplosionSFX, GetTargetPosition(), doorExplosionSFXSettings);
 
     private void PlayDoorExplosion()
     {
@@ -140,7 +139,7 @@ public class DoorMechanic : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(transform.position + doorCenterOffset, 0.25f);
+        Gizmos.DrawSphere(GetTargetPosition(), 0.25f);
     }
 #endif
 }

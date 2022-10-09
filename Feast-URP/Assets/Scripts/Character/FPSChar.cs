@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActions

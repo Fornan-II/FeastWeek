@@ -34,9 +34,11 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
     private bool _isConnectedToTarget = true;
     private AudioCue _lampActiveCue;
 
+    #region Unity Methods
     private void Start()
     {
         _lampActiveCue = AudioManager.PlaySound(lampActiveSFX, lookTransform.transform.position, lampActiveSFXSettings);
+        target.AddConnectedLamp(this);
     }
 
     private void Update()
@@ -82,25 +84,27 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
         }
 
         // Check lamp's connection to target
-        if(_isConnectedToTarget)
+        if(_isConnectedToTarget && dot < alignmentCutoff)
         {
-            if(dot < alignmentCutoff)
-            {
-                _isConnectedToTarget = false;
-                AudioManager.PlaySound(onConnectionBrokenSFX, target.GetTargetPosition(), onConnectionBrokenSFXSettings);
-                _lampActiveCue.FadeOut(lampActiveSFXFadeOutDuration);
-                _lampActiveCue = null;
+            // Break connection
 
-                // Allow it to still be interactable?
-                interactable.IsInteractable = false;
-                ReturnControl();
-                // Have the look sensitivity of the FPSChar pawn be set to 0, then fade up back to default.
-                
-                MainCamera.Effects.ApplyScreenShake(0.03f);
-                // Particles?
-            }
+            _isConnectedToTarget = false;
+            target.RemoveConnectedLamp(this);
+            AudioManager.PlaySound(onConnectionBrokenSFX, target.GetTargetPosition(), onConnectionBrokenSFXSettings);
+            _lampActiveCue.FadeOut(lampActiveSFXFadeOutDuration);
+            _lampActiveCue = null;
+
+            // Allow it to still be interactable?
+            //interactable.IsInteractable = false;
+            ReturnControl();
+            // Have the look sensitivity of the FPSChar pawn be set to 0, then fade up back to default.
+
+            MainCamera.Effects.ApplyImpulse(lookTransform.position + Vector3.up, 0.25f);
+            MainCamera.Effects.ApplyScreenShake(0.1f, 7f, 1f);
+            // Particles?
         }
     }
+    #endregion
 
     #region Input
     protected override void ActivateInput()

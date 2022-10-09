@@ -4405,12 +4405,12 @@ MonoBehaviour:
   lookSpeed: 0.06
   lookInputDecay: 0.5
   clampAngle: 20
-  alignmentCutoff: 0.85
+  alignmentCutoff: 0.8
   sensitivityCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.85
+      time: 0.8
       value: 0.01
       inSlope: 0.3674378
       outSlope: 0.12657921
@@ -4421,11 +4421,11 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0.9
       value: 0.05
-      inSlope: 1.4496325
+      inSlope: 1.005827
       outSlope: 1.6420692
       tangentMode: 1
       weightedMode: 0
-      inWeight: 0.13272707
+      inWeight: 0.17462774
       outWeight: 0.26363724
     - serializedVersion: 3
       time: 1

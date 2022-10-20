@@ -17627,6 +17627,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1997804518}
+  - component: {fileID: 1997804520}
   - component: {fileID: 1997804517}
   - component: {fileID: 1997804519}
   m_Layer: 0
@@ -17655,7 +17656,6 @@ MonoBehaviour:
   lengthScaler: 0.9
   drag: 0.2
   useGravity: 1
-  lineRenderer: {fileID: 1997804519}
 --- !u!4 &1997804518
 Transform:
   m_ObjectHideFlags: 0
@@ -17768,6 +17768,20 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+--- !u!114 &1997804520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1997804516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca907ac183658a4419689d547387b6a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chain: {fileID: 1997804517}
+  lineRenderer: {fileID: 1997804519}
 --- !u!43 &2123456768
 Mesh:
   m_ObjectHideFlags: 0

@@ -51,7 +51,7 @@ public class Controller : MonoBehaviour
     private Pawn _cachedControlledPawn;
     private void OnValidate()
     {
-        if(UnityEditor.EditorApplication.isPlaying)
+        if(UnityEditor.EditorApplication.isPlaying && isActiveAndEnabled)
         {
             if (controlledPawn && controlledPawn.MyController != this)
                 controlledPawn.BecomeControlledBy(this);

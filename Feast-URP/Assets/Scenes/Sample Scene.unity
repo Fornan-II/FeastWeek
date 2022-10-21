@@ -17649,8 +17649,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f391633147b06ea449f2a34826adb099, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingPosition: {x: 0, y: 3, z: 7}
-  endingPosition: {x: 2, y: 3, z: 12}
+  startingPosition: {x: 0, y: 10, z: 7}
+  endingPosition: {x: 2, y: 10, z: 12}
+  fixedStartPosition: 1
+  fixedEndPosition: 0
   pointCount: 10
   stiffness: 5
   lengthScaler: 0.9

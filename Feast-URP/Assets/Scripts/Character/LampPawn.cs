@@ -10,6 +10,7 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
     [SerializeField] private DoorMechanic target;
     [SerializeField] private AudioSource rotationAudioSource;
     [SerializeField] private Interactable interactable;
+    [SerializeField] private GhostTether tether;
     [Header("Swiveling Settings")]
     [SerializeField] private float lookSpeed = 0.25f;
     [SerializeField] private float lookInputDecay = 0.07f;
@@ -93,6 +94,8 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
             AudioManager.PlaySound(onConnectionBrokenSFX, target.GetTargetPosition(), onConnectionBrokenSFXSettings);
             _lampActiveCue.FadeOut(lampActiveSFXFadeOutDuration);
             _lampActiveCue = null;
+
+            tether.BreakChain();
 
             // Allow it to still be interactable?
             //interactable.IsInteractable = false;

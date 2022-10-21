@@ -41,6 +41,8 @@ public class Chain : MonoBehaviour
     [Header("Chain Physics")]
     [SerializeField] protected Vector3 startingPosition;
     [SerializeField] protected Vector3 endingPosition;
+    [SerializeField] protected bool fixedStartPosition = true;
+    [SerializeField] protected bool fixedEndPosition = true;
     [SerializeField, Min(0)] protected int pointCount = 4;
     [SerializeField, Min(0)] protected float stiffness = 5;
     [SerializeField, Min(0)] protected float lengthScaler = 1.2f;
@@ -79,10 +81,15 @@ public class Chain : MonoBehaviour
 
         for (int i = 0; i < nodes.Length; ++i)
         {
+            bool usePhysics = true;
+            if (i == 0) usePhysics = !fixedStartPosition;
+            if (i == nodes.Length - 1) usePhysics = !fixedEndPosition;
+                
+
             nodes[i] = new Node()
             {
                 Position = startingPosition + deltaPos * i,
-                UsePhysics = i != 0 && i != pointCount - 1,
+                UsePhysics = usePhysics,
                 UseGravity = useGravity,
                 Drag = drag
             };

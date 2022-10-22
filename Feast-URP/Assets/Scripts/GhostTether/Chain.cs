@@ -1,14 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-using UnityEngine.Events;
 
 // https://twitter.com/HackTrout/status/1362008498444320770?s=20&t=i2afNUCHo24IFw0zLDmbdw
 
-public class Chain : MonoBehaviour
+[Serializable]
+public class Chain
 {
-    [System.Serializable]
-    protected class Node
+    [Serializable]
+    public class Node
     {
         public Vector3 Position = Vector3.zero;
         public bool UsePhysics = false;
@@ -40,59 +39,42 @@ public class Chain : MonoBehaviour
         }
     }
 
-    public int PointCount => pointCount;
-
-    [Header("Chain Physics")]
-    [SerializeField] protected Vector3 startingPosition;
-    [SerializeField] protected Vector3 endingPosition;
-    [SerializeField] protected bool fixedStartPosition = true;
-    [SerializeField] protected bool fixedEndPosition = true;
-    [SerializeField, Min(0)] protected int pointCount = 4;
-    [SerializeField, Min(0)] protected float stiffness = 5;
-    [SerializeField, Min(0)] protected float lengthScaler = 1.2f;
-    [SerializeField, Min(0)] protected float drag = 0f;
-    [SerializeField] protected bool useGravity = true;
-
-    protected Node[] nodes;
-    protected float targetLength;
+    public int PointCount => _pointCount;
+    public bool Initialized => _nodes != null;
     
-    protected event UnityAction<int, Vector3> OnNodePositionUpdate;
+    [SerializeField] public bool fixedStartPosition = true;
+    [SerializeField] public bool fixedEndPosition = true;
+    [SerializeField, Min(0)] public float stiffness = 5;
+    [SerializeField, Min(0)] public float lengthScaler = 1.2f;
+    [SerializeField, Min(0)] public float drag = 0f;
+    [SerializeField] public bool useGravity = true;
 
-    public void AddNodePositionListener(UnityAction<int, Vector3> listener) => OnNodePositionUpdate += listener;
-    public void RemoveNodePositionListener(UnityAction<int, Vector3> listener) => OnNodePositionUpdate -= listener;
-
-    public Vector3[] GetNodePositions()
+    protected int _pointCount;
+    protected Node[] _nodes;
+    protected float _targetLength;
+    
+    protected Action<int, Node> ModifyNodeAction;
+    
+    public virtual void Initialize(Vector3 startPosition, Vector3 endPosition, int pointCount)
     {
-        if (nodes == null) return null;
+        _pointCount = pointCount;
+        _nodes = new Node[_pointCount];
 
-        Vector3[] positions = new Vector3[pointCount];
-        for(int i = 0; i < pointCount; ++i)
-        {
-            positions[i] = nodes[i].Position;
-        }
+        Vector3 deltaPos = endPosition - startPosition;
+        _targetLength = deltaPos.magnitude / _pointCount;
+        deltaPos = deltaPos.normalized * _targetLength;
 
-        return positions;
-    }
-
-    #region Unity Methods
-    protected virtual void Awake()
-    {
-        nodes = new Node[pointCount];
-
-        Vector3 deltaPos = endingPosition - startingPosition;
-        targetLength = deltaPos.magnitude / pointCount;
-        deltaPos = deltaPos.normalized * targetLength;
-
-        for (int i = 0; i < nodes.Length; ++i)
+        // The same as RefreshNodeData, except for also setting position
+        for (int i = 0; i < _nodes.Length; ++i)
         {
             bool usePhysics = true;
             if (i == 0) usePhysics = !fixedStartPosition;
-            if (i == nodes.Length - 1) usePhysics = !fixedEndPosition;
-                
+            if (i == _nodes.Length - 1) usePhysics = !fixedEndPosition;
 
-            nodes[i] = new Node()
+
+            _nodes[i] = new Node()
             {
-                Position = startingPosition + deltaPos * i,
+                Position = startPosition + deltaPos * i,
                 UsePhysics = usePhysics,
                 UseGravity = useGravity,
                 Drag = drag
@@ -100,53 +82,76 @@ public class Chain : MonoBehaviour
         }
     }
 
-    protected virtual void FixedUpdate()
+    public virtual void InitializeFrom(Chain other, int startIndex = 0, int lastIndex = -1)
+    {
+        // TODO: Copy function
+    }
+
+    public virtual void RefreshNodeData()
+    {
+        for(int i = 0; i < _nodes.Length; ++i)
+        {
+            bool usePhysics = true;
+            if (i == 0) usePhysics = !fixedStartPosition;
+            if (i == _nodes.Length - 1) usePhysics = !fixedEndPosition;
+
+            _nodes[i].UsePhysics = usePhysics;
+            _nodes[i].UseGravity = useGravity;
+            _nodes[i].Drag = drag;
+        }
+    }
+
+    public virtual void ProcessPhysics(float deltaTime)
     {
         // Run physics on chain nodes
-        foreach (Node n in nodes)
+        foreach (Node n in _nodes)
         {
-            n.ProcessPhysics(Time.fixedDeltaTime);
+            n.ProcessPhysics(deltaTime);
         }
         
-        for (int i = 0; i < nodes.Length; ++i)
+        for (int i = 0; i < _nodes.Length; ++i)
         {
             // Apply chain forces to nodes
             // Checking the "chain" between the ith node and the node after
-            if (i + 1 < nodes.Length)
+            if (i + 1 < _nodes.Length)
             {
-                Vector3 deltaPos = nodes[i + 1].Position - nodes[i].Position;
-                float magnitude = (deltaPos.magnitude - targetLength * lengthScaler) * stiffness;
+                Vector3 deltaPos = _nodes[i + 1].Position - _nodes[i].Position;
+                float magnitude = (deltaPos.magnitude - _targetLength * lengthScaler) * stiffness;
 
-                nodes[i].ApplyForce(deltaPos.normalized * magnitude);
-                nodes[i + 1].ApplyForce(deltaPos.normalized * -magnitude);
+                _nodes[i].ApplyForce(deltaPos.normalized * magnitude);
+                _nodes[i + 1].ApplyForce(deltaPos.normalized * -magnitude);
             }
 
-            NodeModify(nodes[i]);
-
-            // Update renderer position
-            OnNodePositionUpdate(i, nodes[i].Position);
+            ModifyNodeAction?.Invoke(i, _nodes[i]);
         }
     }
-    #endregion
 
-    protected virtual void NodeModify(Node n) { }
+    public void SetModifyNodeAction(Action<int, Node> action) => ModifyNodeAction = action;
+    public void ClearModifyNodeAction() => ModifyNodeAction = null;
+
+    public Vector3[] GetNodePositions()
+    {
+        if (_nodes == null) return null;
+
+        Vector3[] positions = new Vector3[_pointCount];
+        for (int i = 0; i < _pointCount; ++i)
+        {
+            positions[i] = _nodes[i].Position;
+        }
+
+        return positions;
+    }
 
 #if UNITY_EDITOR
-    protected virtual void OnDrawGizmosSelected()
+    public virtual void DrawGizmos()
     {
-        if(nodes != null)
+        if(_nodes != null)
         {
             Gizmos.color = Color.blue;
-            foreach (Node n in nodes)
+            foreach (Node n in _nodes)
             {
                 Gizmos.DrawWireSphere(n.Position, 0.1f);
             }
-        }
-        else
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(startingPosition, 0.1f);
-            Gizmos.DrawWireSphere(endingPosition, 0.1f);
         }
     }
 #endif

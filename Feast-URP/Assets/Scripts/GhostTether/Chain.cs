@@ -33,7 +33,11 @@ public class Chain : MonoBehaviour
             Position += Velocity * deltaTime;
         }
 
-        public void ApplyForce(Vector3 force) => Velocity += force;
+        public void ApplyForce(Vector3 force)
+        {
+            if(UsePhysics)
+                Velocity += force;
+        }
     }
 
     public int PointCount => pointCount;

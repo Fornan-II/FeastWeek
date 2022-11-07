@@ -18,7 +18,7 @@ public class GhostTether : MonoBehaviour
     public void BreakChain()
     {
         _isBroken = true;
-        mainChain.fixedEndPosition = false;
+        mainChain.FixedEndPosition = false;
         mainChain.RefreshNodeData();
         // Change to be some middle node, and tether breaks roughly in half.
     }
@@ -56,13 +56,26 @@ public class GhostTether : MonoBehaviour
             mainChain.DrawGizmos();
         else if(tetherStart && tetherEnd)
         {
+            // Draw tether start and end points
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(tetherStart.position, 0.1f);
-            Gizmos.DrawWireSphere(tetherStart.position, 0.1f);
-        }
+            Gizmos.DrawWireSphere(tetherEnd.position, 0.1f);
 
-        Gizmos.color = Color.green;
-        Gizmos.DrawRay(transform.position, windVector);
+            // Draw vector
+            if (windVector != Vector3.zero)
+            {
+                Gizmos.color = Color.green;
+                Vector3 deltaPos = (tetherEnd.position - tetherStart.position) / mainChain.PointCount;
+                for (int i = 0; i < mainChain.PointCount; ++i)
+                {
+                    Vector3 pos = tetherStart.position + deltaPos * i;
+                    Gizmos.DrawRay(
+                        pos,
+                        windVector * Mathf.PerlinNoise(pos.z * windSampleScale, Time.timeSinceLevelLoad * windTimeScale)
+                        );
+                }
+            }
+        }
     }
 
     private void OnValidate()

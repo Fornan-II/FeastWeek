@@ -8257,18 +8257,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainChain:
-    fixedStartPosition: 1
-    fixedEndPosition: 1
+    FixedStartPosition: 1
+    FixedEndPosition: 1
     stiffness: 5
     lengthScaler: 0.5
-    drag: 1
-    useGravity: 0
+    Drag: 10
+    UseGravityOverride: 1
+    GravityOverride: {x: 1.1, y: 0.6, z: 0.1}
   chainVertexCount: 20
   tetherStart: {fileID: 0}
   tetherEnd: {fileID: 0}
   windTimeScale: 0.1
   windSampleScale: 5
-  windVector: {x: 1.1, y: 0.6, z: 0.1}
+  windVector: {x: 0, y: 0, z: 0}
   lineRenderer: {fileID: 4658981595436397336}
 --- !u!120 &4658981595436397336
 LineRenderer:

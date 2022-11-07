@@ -11,43 +11,47 @@ public class Chain
     {
         public Vector3 Position = Vector3.zero;
         public bool UsePhysics = false;
-        public bool UseGravity = false;
-        public float Drag = 0f;
 
         public Vector3 Velocity { get; private set; } = Vector3.zero;
+
+        public Node() { }
+
+        public Node(Vector3 position, bool usePhysics = true)
+        {
+            Position = position;
+            UsePhysics = usePhysics;
+        }
+
+        public Node(Node other)
+        {
+            Position = other.Position;
+            UsePhysics = other.UsePhysics;
+            Velocity = other.Velocity;
+        }
 
         public void ProcessPhysics(float deltaTime)
         {
             if (!UsePhysics) return;
-
-            if(Drag > 0f)
-            {
-                Velocity -= Util.LimitVector3(Velocity, Drag * deltaTime);
-            }
-            if(UseGravity)
-            {
-                Velocity += Physics.gravity * deltaTime;
-            }
-
             Position += Velocity * deltaTime;
         }
 
         public void ApplyForce(Vector3 force)
         {
-            if(UsePhysics)
-                Velocity += force;
+            if (!UsePhysics) return;
+            Velocity += force;
         }
     }
 
     public int PointCount => _pointCount;
     public bool Initialized => _nodes != null;
     
-    [SerializeField] public bool fixedStartPosition = true;
-    [SerializeField] public bool fixedEndPosition = true;
-    [SerializeField, Min(0)] public float stiffness = 5;
-    [SerializeField, Min(0)] public float lengthScaler = 1.2f;
-    [SerializeField, Min(0)] public float drag = 0f;
-    [SerializeField] public bool useGravity = true;
+    public bool FixedStartPosition = true;
+    public bool FixedEndPosition = true;
+    [Min(0)] public float stiffness = 5;
+    [Min(0)] public float lengthScaler = 1.2f;
+    [Min(0), Tooltip("Product of fluid density, cross sectional area, and drag coefficient.")] public float Drag = 0f;
+    public bool UseGravityOverride = false;
+    public Vector3 GravityOverride = Vector3.zero;
 
     protected int _pointCount;
     protected Node[] _nodes;
@@ -68,23 +72,32 @@ public class Chain
         for (int i = 0; i < _nodes.Length; ++i)
         {
             bool usePhysics = true;
-            if (i == 0) usePhysics = !fixedStartPosition;
-            if (i == _nodes.Length - 1) usePhysics = !fixedEndPosition;
+            if (i == 0) usePhysics = !FixedStartPosition;
+            if (i == _nodes.Length - 1) usePhysics = !FixedEndPosition;
 
 
             _nodes[i] = new Node()
             {
                 Position = startPosition + deltaPos * i,
-                UsePhysics = usePhysics,
-                UseGravity = useGravity,
-                Drag = drag
+                UsePhysics = usePhysics
             };
         }
     }
 
     public virtual void InitializeFrom(Chain other, int startIndex = 0, int lastIndex = -1)
     {
-        // TODO: Copy function
+        if(lastIndex < 0)
+        {
+            lastIndex = other.PointCount - 1;
+        }
+
+        _pointCount = lastIndex - startIndex + 1;
+        _nodes = new Node[_pointCount];
+
+        for(int i = 0; i < _nodes.Length; ++i)
+        {
+            _nodes[i] = new Node(other._nodes[i + startIndex]);
+        }
     }
 
     public virtual void RefreshNodeData()
@@ -92,18 +105,16 @@ public class Chain
         for(int i = 0; i < _nodes.Length; ++i)
         {
             bool usePhysics = true;
-            if (i == 0) usePhysics = !fixedStartPosition;
-            if (i == _nodes.Length - 1) usePhysics = !fixedEndPosition;
+            if (i == 0) usePhysics = !FixedStartPosition;
+            if (i == _nodes.Length - 1) usePhysics = !FixedEndPosition;
 
             _nodes[i].UsePhysics = usePhysics;
-            _nodes[i].UseGravity = useGravity;
-            _nodes[i].Drag = drag;
         }
     }
 
     public virtual void ProcessPhysics(float deltaTime)
     {
-        // Run physics on chain nodes
+        // Update positions of nodes seperately from force calculations
         foreach (Node n in _nodes)
         {
             n.ProcessPhysics(deltaTime);
@@ -112,7 +123,7 @@ public class Chain
         for (int i = 0; i < _nodes.Length; ++i)
         {
             // Apply chain forces to nodes
-            // Checking the "chain" between the ith node and the node after
+            // Checking the "chain" between the ith node and the node i + 1
             if (i + 1 < _nodes.Length)
             {
                 Vector3 deltaPos = _nodes[i + 1].Position - _nodes[i].Position;
@@ -122,7 +133,23 @@ public class Chain
                 _nodes[i + 1].ApplyForce(deltaPos.normalized * -magnitude);
             }
 
+            // Allow possible modifaction of node
             ModifyNodeAction?.Invoke(i, _nodes[i]);
+
+            // Apply gravity to node
+            if(UseGravityOverride && GravityOverride != Vector3.zero)
+            {
+                _nodes[i].ApplyForce(UseGravityOverride ? GravityOverride : Physics.gravity);
+            }
+
+            // Apply drag to node
+            if (Drag > 0f)
+            {
+                // Drag equation: https://en.wikipedia.org/wiki/Drag_(physics)
+                // Drag variable here is a combination of a few variables in actual equation:
+                // Fluid density, cross sectional area, and drag coefficient.
+                 _nodes[i].ApplyForce(_nodes[i].Velocity.normalized * -0.5f * Drag * _nodes[i].Velocity.sqrMagnitude * deltaTime);
+            }
         }
     }
 

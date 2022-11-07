@@ -16,7 +16,7 @@ public static class Util
         );
 
     public static Vector3 LimitVector3(Vector3 value, float limit) => value.sqrMagnitude > limit * limit ? value.normalized * limit : value;
-
+    
     public static float RandomInRange(Vector2 range) => Random.Range(range.x, range.y);
 
     public static float AnimationCurveLengthTime(AnimationCurve curve) => curve[curve.length - 1].time;

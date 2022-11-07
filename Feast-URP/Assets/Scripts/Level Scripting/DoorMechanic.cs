@@ -7,7 +7,7 @@ public class DoorMechanic : MonoBehaviour
 #pragma warning disable 0649
     [SerializeField] private Animator animator;
     [SerializeField] private MeshRenderer runeDoor;
-    [SerializeField] private Vector3 doorCenterOffset;
+    [SerializeField] private Transform doorCenterReference;
     [SerializeField] private float doorDissolveTime = 2.0f;
     [SerializeField] private AudioClip doorExplosionSFX;
     [SerializeField] private AudioCue.CueSettings doorExplosionSFXSettings = AudioCue.CueSettings.Default;
@@ -42,7 +42,7 @@ public class DoorMechanic : MonoBehaviour
         animator.SetBool("IsOpen", false);
     }
 
-    public Vector3 GetTargetPosition() => transform.position + doorCenterOffset;
+    public Vector3 GetTargetPosition() => doorCenterReference ? doorCenterReference.position : transform.position;
 
     [ContextMenu("Play door explosion sound")]
     private void PlayDoorExplosionSound() => AudioManager.PlaySound(doorExplosionSFX, GetTargetPosition(), doorExplosionSFXSettings);

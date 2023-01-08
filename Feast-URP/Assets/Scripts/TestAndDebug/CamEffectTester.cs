@@ -16,6 +16,8 @@ public class CamEffectTester : MonoBehaviour
     [Header("Screen Shake settings")]
     [SerializeField] private float ScreenShakeStrength = 1f;
     [SerializeField] private float ScreenShakeDuration = 0.5f;
+    [SerializeField] private bool UseCustomScreenShakeFrequency = false;
+    [SerializeField] private float ScreenShakeFrequency = 0.3f;
     [Header("Continuous Screen Shake settings")]
     [SerializeField] private float ContinuousScreenShakeStrength = 0.5f;
     [SerializeField] private float ScreenShakeProximity = 2f;
@@ -34,7 +36,10 @@ public class CamEffectTester : MonoBehaviour
             }
             if (TestShake)
             {
-                MainCamera.Effects.ApplyScreenShake(ScreenShakeStrength, ScreenShakeDuration);
+                if(UseCustomScreenShakeFrequency)
+                    MainCamera.Effects.ApplyScreenShake(ScreenShakeStrength, ScreenShakeFrequency, ScreenShakeDuration);
+                else
+                    MainCamera.Effects.ApplyScreenShake(ScreenShakeStrength, ScreenShakeDuration);
             }
         }
 

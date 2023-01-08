@@ -18,11 +18,22 @@ public class CameraShakeSphereTriggerVolume : SphereTriggerVolume
     [SerializeField] private ControllerRumbler controllerRumbler;
     [SerializeField] private AnimationCurve lowFreqRumbleCurve;
     [SerializeField] private AnimationCurve highFreqRumbleCurve;
+    [Header("Camera Noise")]
+    [SerializeField] private float nearBlobCameraNoise = 0.3f;
     private Song dangerMusicSong;
 
     private Action<float> _screenShakeEffect;
 
-    private float BlendedStrength() => Mathf.Max(Mathf.Epsilon, screenShakeStrength * Mathf.Pow(blendValue, screenShakeBlendExponent));
+    private float BlendedScreenShakeStrength() => Mathf.Max(Mathf.Epsilon, screenShakeStrength * Mathf.Pow(blendValue, screenShakeBlendExponent));
+    private float BlendedNoiseStrength()
+    {
+        Vector2 vecToCenter = Util.GetXZPosition(transform.position - MainCamera.Camera.transform.position).normalized;
+        Vector2 lookDir = Util.GetXZPosition(MainCamera.Camera.transform.forward).normalized;
+        float viewDot = Mathf.Clamp01(Vector2.Dot(
+            vecToCenter,
+            lookDir));
+        return Mathf.Lerp(MainCamera.Effects.DefaultCameraNoise, nearBlobCameraNoise, blendValue * blendValue * viewDot);
+    }
 
     private void OnDisable()
     {
@@ -35,19 +46,24 @@ public class CameraShakeSphereTriggerVolume : SphereTriggerVolume
 
     protected override void OnOverlapStart()
     {
-        _screenShakeEffect = MainCamera.Effects.ContinuousScreenShake(BlendedStrength());
+        _screenShakeEffect = MainCamera.Effects.ContinuousScreenShake(BlendedScreenShakeStrength());
+
         dangerMusicSong = musicManagerRef.PlaySongDirectly(dangerMusic, true);
         dangerMusicSong.SongCue.SetVolume(0f);
+
+        MainCamera.Effects.SetCameraNoise(BlendedNoiseStrength());
     }
 
     protected override void OnOverlap()
     {
-        _screenShakeEffect(BlendedStrength());
+        _screenShakeEffect(BlendedScreenShakeStrength());
 
         musicManagerRef.MixSongs(musicManagerRef.ActiveSongs[0], dangerMusicSong, dangerAudioCurve.Evaluate(blendValue));
 
         controllerRumbler.LowFrequencyRumble = lowFreqRumbleCurve.Evaluate(blendValue);
         controllerRumbler.HighFrequencyRumble = highFreqRumbleCurve.Evaluate(blendValue);
+
+        MainCamera.Effects.SetCameraNoise(BlendedNoiseStrength());
     }
 
     protected override void OnOverlapExit()
@@ -61,12 +77,30 @@ public class CameraShakeSphereTriggerVolume : SphereTriggerVolume
 
         controllerRumbler.LowFrequencyRumble = 0f;
         controllerRumbler.HighFrequencyRumble = 0f;
+
+        MainCamera.Effects.ResetCameraNoise();
     }
 
 #if UNITY_EDITOR
     private void OnValidate()
     {
         if (!controllerRumbler) controllerRumbler = GetComponent<ControllerRumbler>();
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (!MainCamera.IsValid()) return;
+
+        Vector3 camPos = MainCamera.Camera.transform.position;
+        Vector2 vecToCenter = Util.GetXZPosition(transform.position - camPos).normalized;
+        Vector2 lookDir = Util.GetXZPosition(MainCamera.Camera.transform.forward).normalized;
+        float viewDot = Mathf.Clamp01(Vector2.Dot(
+            vecToCenter,
+            lookDir ));
+        Gizmos.color = Color.blue;
+        Gizmos.DrawRay(camPos, Util.XZVector3(vecToCenter));
+        Gizmos.color = Color.Lerp(Color.black, Color.blue, viewDot);
+        Gizmos.DrawRay(camPos, Util.XZVector3(lookDir));
     }
 #endif
 }

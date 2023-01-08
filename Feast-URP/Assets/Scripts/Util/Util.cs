@@ -9,6 +9,8 @@ public static class Util
     public static Vector3 XZVector3(Vector2 value, float yValue) => new Vector3(value.x, yValue, value.y);
     public static Vector3 XZVector3(Vector2 value) => XZVector3(value, 0f);
 
+    public static Vector2 GetXZPosition(Vector3 value) => new Vector2(value.x, value.z);
+
     // https://www.xarg.org/2017/07/how-to-map-a-square-to-a-circle/
     public static Vector2 RemapSquareToCircle(Vector2 value) => new Vector2(
         value.x * Mathf.Sqrt(1f - value.y * value.y / 2f),

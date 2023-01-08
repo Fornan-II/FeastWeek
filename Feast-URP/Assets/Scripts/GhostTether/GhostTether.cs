@@ -4,83 +4,147 @@ using UnityEngine;
 
 public class GhostTether : MonoBehaviour
 {
+    [System.Serializable]
+    private struct FixedChainPoint
+    {
+        public int Index;
+        public Transform Point;
+    }
+
+    [Header("Chain Settings")]
     [SerializeField] private Chain mainChain;
     [SerializeField] private int chainVertexCount = 10;
-    [SerializeField] private Transform tetherStart;
-    [SerializeField] private Transform tetherEnd;
+    [SerializeField, Tooltip("The indices of this are expected to be in order from low to high. No, I will not be writing code to do this automatically.")]
+    private FixedChainPoint[] fixedPoints;
+    [Header("Wind Settings")]
     [SerializeField] private float windTimeScale = 1f;
     [SerializeField] private float windSampleScale = 1f;
     [SerializeField] private Vector3 windVector = new Vector3(1, 1, 0.2f);
-    [SerializeField] private LineRenderer lineRenderer;
+    [Header("Break Settings")]
+    [SerializeField] private float breakForce = 3f;
+    [Header("Visuals")]
+    [SerializeField] private LineRenderer lineRendererMain;
+    [SerializeField] private LineRenderer lineRendererSecondary;
 
     private bool _isBroken = false;
-
+    private Chain _secondaryChain;
+    
     public void BreakChain()
     {
+        // Cut chain in half
+        int cutIndex = GetCutIndex();
+        _secondaryChain = new Chain(mainChain, cutIndex);
+        mainChain = new Chain(mainChain, 0, cutIndex - 1);
+        _secondaryChain.SetModifyNodeAction(NodeModify_Secondary);
+
+        // Change stiffness and length scalar?
+
+        // Apply some physics for dramatic effect
+        Chain.Node nodeA = mainChain.GetNode(mainChain.PointCount - 1);
+        Chain.Node nodeB = _secondaryChain.GetNode(0);
+        Vector3 forceVector = (nodeB.Position - nodeA.Position).normalized * breakForce;
+        nodeA.ApplyForce(forceVector * -1);
+        nodeB.ApplyForce(forceVector);
+
+        // Update visuals
+        lineRendererMain.positionCount = mainChain.PointCount;
+        lineRendererMain.SetPositions(mainChain.GetNodePositions());
+        lineRendererSecondary.enabled = true;
+        lineRendererSecondary.positionCount = _secondaryChain.PointCount;
+        lineRendererSecondary.SetPositions(_secondaryChain.GetNodePositions());
+
+        // Finalize
         _isBroken = true;
-        mainChain.FixedEndPosition = false;
-        mainChain.RefreshNodeData();
-        // Change to be some middle node, and tether breaks roughly in half.
     }
 
     private void Start()
     {
-        mainChain.Initialize(tetherStart.position, tetherEnd.position, chainVertexCount);
-        mainChain.SetModifyNodeAction(NodeModify);
-        lineRenderer.positionCount = chainVertexCount;
-        lineRenderer.SetPositions(mainChain.GetNodePositions());
+        if(fixedPoints.Length < 2)
+        {
+            Debug.LogError("GhostTether failed to generate chain: fixedPoints length is less than 2.");
+            return;
+        }
+
+        // Init chain
+        mainChain.Initialize(fixedPoints[0].Point.position, fixedPoints[fixedPoints.Length - 1].Point.position, chainVertexCount);
+        mainChain.SetModifyNodeAction(NodeModify_Main);
+
+        // Init visuals
+        lineRendererMain.positionCount = chainVertexCount;
+        lineRendererMain.SetPositions(mainChain.GetNodePositions());
+        lineRendererSecondary.enabled = false;
     }
 
     private void FixedUpdate()
     {
         mainChain.ProcessPhysics(Time.fixedDeltaTime);
+        if (_isBroken)
+        {
+            _secondaryChain.ProcessPhysics(Time.fixedDeltaTime);
+        }
+
+        foreach(var fixedPoint in fixedPoints)
+        {
+            int cutIndex = GetCutIndex();
+
+            if(_isBroken && fixedPoint.Index >= cutIndex)
+            {
+                _secondaryChain.GetNode(fixedPoint.Index - cutIndex).Position = fixedPoint.Point.position;
+            }
+            else
+            {
+                mainChain.GetNode(fixedPoint.Index).Position = fixedPoint.Point.position;
+            }
+        }
     }
 
-    private void NodeModify(int i, Chain.Node n)
-    {
-        if (i == 0)
-            n.Position = tetherStart.position;
-        else if (i == mainChain.PointCount - 1 && !_isBroken)
-            n.Position = tetherEnd.position;
+    private int GetCutIndex() => chainVertexCount / 2;
 
+    private void NodeModify_Main(int i, Chain.Node n)
+    {
         Vector3 windForce = windVector * Mathf.PerlinNoise(n.Position.z * windSampleScale, Time.timeSinceLevelLoad * windTimeScale);
         n.ApplyForce(windForce);
 
-        lineRenderer.SetPosition(i, n.Position);
+        lineRendererMain.SetPosition(i, n.Position);
+    }
+
+    private void NodeModify_Secondary(int i, Chain.Node n)
+    {
+        Vector3 windForce = windVector * Mathf.PerlinNoise(n.Position.z * windSampleScale, Time.timeSinceLevelLoad * windTimeScale);
+        n.ApplyForce(windForce);
+
+        lineRendererSecondary.SetPosition(i, n.Position);
     }
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
         if(mainChain.Initialized)
+        {
             mainChain.DrawGizmos();
-        else if(tetherStart && tetherEnd)
+
+            if(_isBroken)
+            {
+                _secondaryChain.DrawGizmos();
+            }
+        }
+        else if(fixedPoints.Length >= 2)
         {
             // Draw tether start and end points
             Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(tetherStart.position, 0.1f);
-            Gizmos.DrawWireSphere(tetherEnd.position, 0.1f);
-
-            // Draw vector
-            if (windVector != Vector3.zero)
+            foreach (var fixedPoint in fixedPoints)
             {
-                Gizmos.color = Color.green;
-                Vector3 deltaPos = (tetherEnd.position - tetherStart.position) / mainChain.PointCount;
-                for (int i = 0; i < mainChain.PointCount; ++i)
-                {
-                    Vector3 pos = tetherStart.position + deltaPos * i;
-                    Gizmos.DrawRay(
-                        pos,
-                        windVector * Mathf.PerlinNoise(pos.z * windSampleScale, Time.timeSinceLevelLoad * windTimeScale)
-                        );
-                }
+                if(fixedPoint.Point)
+                    Gizmos.DrawWireSphere(fixedPoint.Point.position, 0.1f);
             }
         }
     }
 
-    private void OnValidate()
+    [ContextMenu("Break chain")]
+    private void EditorBreakChain()
     {
-        if (!lineRenderer) lineRenderer = GetComponent<LineRenderer>();
+        if (!UnityEditor.EditorApplication.isPlaying) return;
+        BreakChain();
     }
 #endif
 }

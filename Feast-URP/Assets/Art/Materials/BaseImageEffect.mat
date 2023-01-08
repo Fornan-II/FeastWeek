@@ -23,11 +23,20 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _UVNoise:
+        m_Texture: {fileID: 2800000, guid: 21be5f2d4869bf049826ae95934587d4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - _FogExp: 2
     - _FogFar: 50
     - _FogNear: 5
     - _InvertValue: 1
+    - _NoiseScale: 1
+    - _NoiseSpeed: 128
+    - _NoiseStrength: 0.002
+    - _NoiseStrengthBlack: 0.002
+    - _NoiseStrengthWhite: 0.0015
     - _Saturation: 0.2
     m_Colors:
     - _FadeColor: {r: 7.999999, g: 7.999999, b: 7.999999, a: 1}

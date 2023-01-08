@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: DoorRunes Backup
+  m_Shader: {fileID: -6465566751694194690, guid: a127b30d3ae3bea4abd5e9753e782f64, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - Texture2D_4F6DFC02:
+        m_Texture: {fileID: 2800000, guid: 013442fdade332549a6c0d7eb0cd9e9b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Vector1_376B3152: 10
+    - Vector1_774AF428: 0.5
+    - Vector1_9FABD55F: 10
+    - Vector1_F27EAB2C: 100
+    - Vector1_FB15DDDB: 0.02
+    - _Dissolve: 0
+    - _LimeContribution: 1
+    - _MagentaContribution: 1
+    m_Colors:
+    - Color_5250406D: {r: 20.320307, g: 12.067956, b: 2.750784, a: 1}
+    - Color_9D5DC64: {r: 2.3142083, g: 1.6434602, b: 4.4102983, a: 1}
+    - Color_FF70E09E: {r: 1.1535546, g: 10.204521, b: 7.2762675, a: 1}
+  m_BuildTextureStacks: []

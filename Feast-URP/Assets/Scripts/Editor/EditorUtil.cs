@@ -17,6 +17,18 @@ public static class EditorUtil
 
     [MenuItem("Tools/Misc/Fix lingering screen fade")]
     public static void FixLingeringScreenFade() => Shader.SetGlobalFloat("_ScreenFade", 0f);
+    
+    [MenuItem("Tools/Misc/Reset camera noise")]
+    public static void ResetCameraNoise()
+    {
+        if(MainCamera.IsValid())
+        {
+            MainCamera.Effects.ResetCameraNoise();
+            return;
+        }
+
+        Shader.SetGlobalFloat("_NoiseStrength", 0.002f);
+    }
 
     [MenuItem("Tools/Clear fog")]
     private static void ToggleFog()

@@ -3,6 +3,10 @@
     Properties
     {
 		[HideInInspector]_MainTex("Texture", 2D) = "white" {}
+		[NoScaleOffset]_UVNoise("UV Noise", 2D) = "bump" {}
+		//_NoiseStrength("Noise Strength", float) = 0.002
+		_NoiseScale("Noise Scale", float) = 0.1
+		_NoiseSpeed("Noise Speed", float) = 64
 		_Saturation("Saturation", Range(0.0, 1.0)) = 0.5
     }
     SubShader
@@ -43,12 +47,22 @@
 			fixed _InvertValue;
 			fixed4 _FadeColor;
 			float _ScreenFade;
+
+			sampler2D _UVNoise;
+			float _NoiseStrength;
+			float _NoiseScale;
+			float _NoiseSpeed;
 			float _Saturation;
 
-            fixed4 frag (v2f i) : SV_Target
-            {
-				fixed4 col = tex2D(_MainTex, i.uv);
-				float desaturated = col.r * 0.21f + col.g * 0.72 * col.b * 0.7;
+			fixed4 frag(v2f i) : SV_Target
+			{
+				//float2 offset = (2 * (tex2D(_UVNoise, i.uv * _NoiseScale + _NoiseSpeed * _Time.xx).rg) - 1) * _NoiseStrength;
+				float2 offset = tex2D(_UVNoise, i.uv * _NoiseScale + _NoiseSpeed * _Time.xx).rg;
+				float theta = offset.x * UNITY_TWO_PI;
+				offset = offset.y * float2(cos(theta), sin(theta)) * _NoiseStrength;
+				fixed4 col = tex2D(_MainTex, i.uv + offset);
+
+				float desaturated = col.r * 0.21f + col.g * 0.72f + col.b * 0.7f;
 				//Invert value
 				col =
 					(1 - _InvertValue) * col

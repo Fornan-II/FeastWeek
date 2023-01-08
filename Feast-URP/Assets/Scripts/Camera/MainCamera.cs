@@ -21,6 +21,8 @@ public class MainCamera : MonoBehaviour
 
     private Transform _cameraRoot;
 
+    public static bool IsValid() => _instance;
+
     public static void RequestView(Transform parent, Vector3 localPosition, Quaternion localRotation)
     {
         if (!_instance) return;

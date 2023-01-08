@@ -57,7 +57,36 @@ public class Chain
     protected Node[] _nodes;
     protected float _targetLength;
     
-    protected Action<int, Node> ModifyNodeAction;
+    protected Action<int, Node> _modifyNodeAction;
+
+    public Chain() { }
+
+    public Chain(Chain other, int startIndex = 0, int lastIndex = -1)
+    {
+        // Copy over chain properties
+        FixedStartPosition = other.FixedStartPosition;
+        FixedEndPosition = other.FixedEndPosition;
+        stiffness = other.stiffness;
+        lengthScaler = other.lengthScaler;
+        Drag = other.Drag;
+        UseGravityOverride = other.UseGravityOverride;
+        GravityOverride = other.GravityOverride;
+        _modifyNodeAction = other._modifyNodeAction;
+
+        // Copy over chain nodes
+        if (lastIndex < 0)
+        {
+            lastIndex = other.PointCount - 1;
+        }
+
+        _pointCount = lastIndex - startIndex + 1;
+        _nodes = new Node[_pointCount];
+
+        for (int i = 0; i < _nodes.Length; ++i)
+        {
+            _nodes[i] = new Node(other._nodes[i + startIndex]);
+        }
+    }
     
     public virtual void Initialize(Vector3 startPosition, Vector3 endPosition, int pointCount)
     {
@@ -81,22 +110,6 @@ public class Chain
                 Position = startPosition + deltaPos * i,
                 UsePhysics = usePhysics
             };
-        }
-    }
-
-    public virtual void InitializeFrom(Chain other, int startIndex = 0, int lastIndex = -1)
-    {
-        if(lastIndex < 0)
-        {
-            lastIndex = other.PointCount - 1;
-        }
-
-        _pointCount = lastIndex - startIndex + 1;
-        _nodes = new Node[_pointCount];
-
-        for(int i = 0; i < _nodes.Length; ++i)
-        {
-            _nodes[i] = new Node(other._nodes[i + startIndex]);
         }
     }
 
@@ -134,7 +147,7 @@ public class Chain
             }
 
             // Allow possible modifaction of node
-            ModifyNodeAction?.Invoke(i, _nodes[i]);
+            _modifyNodeAction?.Invoke(i, _nodes[i]);
 
             // Apply gravity to node
             if(UseGravityOverride && GravityOverride != Vector3.zero)
@@ -153,8 +166,10 @@ public class Chain
         }
     }
 
-    public void SetModifyNodeAction(Action<int, Node> action) => ModifyNodeAction = action;
-    public void ClearModifyNodeAction() => ModifyNodeAction = null;
+    public virtual Node GetNode(int index) => _nodes[index];
+
+    public void SetModifyNodeAction(Action<int, Node> action) => _modifyNodeAction = action;
+    public void ClearModifyNodeAction() => _modifyNodeAction = null;
 
     public Vector3[] GetNodePositions()
     {

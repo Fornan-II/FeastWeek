@@ -6,19 +6,16 @@ public class DoorMechanic : MonoBehaviour
 {
 #pragma warning disable 0649
     [SerializeField] private Animator animator;
-    [SerializeField] private MeshRenderer runeDoor;
+    [SerializeField] private GameObject doorBarrier;
     [SerializeField] private Transform doorCenterReference;
-    [SerializeField] private float doorDissolveTime = 2.0f;
+    [SerializeField] private ParticleSystem PassiveParticles;
+    [Header("Explosion")]
+    [SerializeField] private ParticleSystem ExplosionParticles;
     [SerializeField] private AudioClip doorExplosionSFX;
     [SerializeField] private AudioCue.CueSettings doorExplosionSFXSettings = AudioCue.CueSettings.Default;
 
     private List<LampPawn> _connectedLamps = new List<LampPawn>();
     private bool _doorHasOpened = false;
-
-    private void OnDestroy()
-    {
-        runeDoor.sharedMaterial.SetFloat("_Dissolve", 0f);
-    }
 
     public void AddConnectedLamp(LampPawn lamp) => _connectedLamps.Add(lamp);
     public void RemoveConnectedLamp(LampPawn lamp)
@@ -50,19 +47,20 @@ public class DoorMechanic : MonoBehaviour
     private void PlayDoorExplosion()
     {
         MainCamera.Effects.ApplyImpulse(transform.position, 0.25f);
-        MainCamera.Effects.ApplyScreenShake(0.25f);
-        StartCoroutine(DoorDissolve());
+        MainCamera.Effects.ApplyScreenShake(0.25f, 1f);
+        MainCamera.Effects.ApplyScreenShake(0.1f, 5, 2f);
+
+        PassiveParticles.Stop();
+        ExplosionParticles.Play();
+
+        StartCoroutine(FlashInvertedColor());
     }
 
-    private IEnumerator DoorDissolve()
+    private IEnumerator FlashInvertedColor()
     {
-        int shaderID = Shader.PropertyToID("_Dissolve");
-        for(float timer = 0.0f; timer < doorDissolveTime; timer += Time.deltaTime)
-        {
-            yield return null;
-            runeDoor.sharedMaterial.SetFloat(shaderID, timer / doorDissolveTime);
-        }
-        runeDoor.gameObject.SetActive(false);
+        MainCamera.Effects.SetColorInvert(true);
+        yield return new WaitForSecondsRealtime(0.1f);
+        MainCamera.Effects.SetColorInvert(false);
     }
 
 #if UNITY_EDITOR

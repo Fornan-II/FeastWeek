@@ -30,6 +30,7 @@ public class RaycastInteracter : MonoBehaviour
         if (_hadInteractable && !_targetedInteractable)
         {
             MsgBox.HideMessage();
+
             if(interactIcon)
                 interactIcon.enabled = false;
         }
@@ -39,7 +40,9 @@ public class RaycastInteracter : MonoBehaviour
                 ? "X to interact"
                 : "Left Mouse to interact"
                 , -1f);
-            interactIcon.enabled = true;
+
+            if(interactIcon)
+                interactIcon.enabled = true;
         }
     }
 

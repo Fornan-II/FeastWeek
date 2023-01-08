@@ -12,6 +12,8 @@ public class CameraFX
         public Quaternion rotation;
     }
 
+    public float DefaultCameraNoise => defaultCameraNoise;
+
     // Properties
     [Header("Fade")]
     [SerializeField, ColorUsage(false, true)] private Color defaultFadeColor = Color.magenta;
@@ -21,6 +23,8 @@ public class CameraFX
     [SerializeField] private float screenShakeExponent = 0.5f;
     [SerializeField] private float defaultCameraShakeFrequency = 18f;
     [SerializeField] private float cameraShakeRotationMultiplier = 5f;
+    [Header("Noise")]
+    [SerializeField] private float defaultCameraNoise = 0.003f;
 
     // Private members
     private MainCamera _mainCameraRef;
@@ -31,6 +35,7 @@ public class CameraFX
     {
         _mainCameraRef = mainCameraInstance;
         ResetFadeColorToDefault();
+        ResetCameraNoise();
     }
 
     #region Crossfading
@@ -61,13 +66,11 @@ public class CameraFX
         _activeFadeRoutine = null;
     }
     #endregion
+    
+    public void SetColorInvert(bool inverted) => Shader.SetGlobalFloat("_InvertValue", inverted ? 1 : 0);
 
-    #region Color Invert
-    public void SetColorInvert(bool inverted)
-    {
-        Shader.SetGlobalFloat("_InvertValue", inverted ? 1 : 0);
-    }
-    #endregion
+    public void SetCameraNoise(float value) => Shader.SetGlobalFloat("_NoiseStrength", value);
+    public void ResetCameraNoise() => SetCameraNoise(defaultCameraNoise);
 
     #region Transform Effects
     public void ApplyTransformEffects()

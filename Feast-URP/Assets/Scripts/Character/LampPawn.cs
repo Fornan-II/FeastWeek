@@ -96,11 +96,9 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
             _lampActiveCue = null;
 
             tether.BreakChain();
+            tether.AddTetherDissolveCompleteListener(ReturnControl);
 
-            // Allow it to still be interactable?
-            //interactable.IsInteractable = false;
-            ReturnControl();
-            // Have the look sensitivity of the FPSChar pawn be set to 0, then fade up back to default.
+            interactable.IsInteractable = false;
 
             MainCamera.Effects.ApplyImpulse(lookTransform.position + Vector3.up, 0.25f);
             MainCamera.Effects.ApplyScreenShake(0.1f, 7f, 1f);
@@ -174,11 +172,11 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
             Vector3 vecToTarget = (target.GetTargetPosition() - lookTransform.position).normalized;
             Vector3 tangentToTarget = Vector3.Cross(vecToTarget, Vector3.up);
             float dot = Vector3.Dot(lookTransform.forward, vecToTarget);
+            float theta = Mathf.Acos(alignmentCutoff);
 
             UnityEditor.Handles.color = Color.red;
-            UnityEditor.Handles.DrawWireArc(lookTransform.position + vecToTarget, vecToTarget, tangentToTarget, 360f, Mathf.Tan(Mathf.Acos(alignmentCutoff)));
-
-
+            UnityEditor.Handles.DrawWireArc(lookTransform.position + vecToTarget * Mathf.Cos(theta), vecToTarget, tangentToTarget, 360f, Mathf.Sin(theta));
+            
             Gizmos.color = dot >= alignmentCutoff ? Color.green : Color.blue;
             Gizmos.DrawRay(lookTransform.position, lookTransform.forward * 2f);
         }

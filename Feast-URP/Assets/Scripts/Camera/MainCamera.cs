@@ -23,27 +23,14 @@ public class MainCamera : MonoBehaviour
 
     public static bool IsValid() => _instance;
 
-    public static void RequestView(Transform parent, Vector3 localPosition, Quaternion localRotation)
+    public static void RequestView(ViewData view)
     {
         if (!_instance) return;
-        _instance._cameraRoot.SetParent(parent);
-        _instance._cameraRoot.localPosition = localPosition;
-        _instance._cameraRoot.localRotation = localRotation;
+        Util.MoveTransformToTarget(_instance._cameraRoot, view.Parent, true);
+        _instance.camera.fieldOfView = view.FieldOfView;
     }
 
-    public static void RequestView(Transform parent) => RequestView(parent, Vector3.zero, Quaternion.identity);
-
-    public static void RequestView(Vector3 position, Quaternion rotation)
-    {
-        if (!_instance) return;
-        _instance._cameraRoot.SetPositionAndRotation(position, rotation);
-    }
-
-    public static void SetFOV(float value)
-    {
-        if (!_instance) return;
-        _instance.camera.fieldOfView = value;
-    }
+    public static void RequestView(Transform parent) => RequestView(new ViewData(parent));
 
     #region Unity Methods
     private void Awake()

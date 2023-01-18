@@ -22,22 +22,28 @@ public class GhostTether : MonoBehaviour
     [SerializeField] private Vector3 windVector = new Vector3(1, 1, 0.2f);
     [Header("Break Settings")]
     [SerializeField] private float breakForce = 3f;
+    [SerializeField] private float breakDrag = 5f;
+    [SerializeField] private float breakLengthScaler = 1f;
+    [SerializeField] private AnimationCurve breakDissolve = AnimationCurve.Linear(0, 0, 1, 1);
     [Header("Visuals")]
-    [SerializeField] private LineRenderer lineRendererMain;
-    [SerializeField] private LineRenderer lineRendererSecondary;
+    [SerializeField] private Transform[] tetherBones;
+    [SerializeField] private Renderer tetherRenderer;
 
     private bool _isBroken = false;
     private Chain _secondaryChain;
-    
+    private event System.Action _OnTetherDissolveComplete;
+
     public void BreakChain()
     {
+        // Change chain properties for effect
+        mainChain.Drag = breakDrag;
+        mainChain.lengthScaler = breakLengthScaler;
+
         // Cut chain in half
         int cutIndex = GetCutIndex();
         _secondaryChain = new Chain(mainChain, cutIndex);
         mainChain = new Chain(mainChain, 0, cutIndex - 1);
         _secondaryChain.SetModifyNodeAction(NodeModify_Secondary);
-
-        // Change stiffness and length scalar?
 
         // Apply some physics for dramatic effect
         Chain.Node nodeA = mainChain.GetNode(mainChain.PointCount - 1);
@@ -47,15 +53,14 @@ public class GhostTether : MonoBehaviour
         nodeB.ApplyForce(forceVector);
 
         // Update visuals
-        lineRendererMain.positionCount = mainChain.PointCount;
-        lineRendererMain.SetPositions(mainChain.GetNodePositions());
-        lineRendererSecondary.enabled = true;
-        lineRendererSecondary.positionCount = _secondaryChain.PointCount;
-        lineRendererSecondary.SetPositions(_secondaryChain.GetNodePositions());
+        StartCoroutine(BreakAnimation());
 
         // Finalize
         _isBroken = true;
     }
+
+    public void AddTetherDissolveCompleteListener(System.Action listener) => _OnTetherDissolveComplete += listener;
+    public void RemoveTetherDissolveCompleteListener(System.Action listener) => _OnTetherDissolveComplete = listener;
 
     private void Start()
     {
@@ -66,13 +71,9 @@ public class GhostTether : MonoBehaviour
         }
 
         // Init chain
-        mainChain.Initialize(fixedPoints[0].Point.position, fixedPoints[fixedPoints.Length - 1].Point.position, chainVertexCount);
+        // We are assuming that fixedPoints is a sorted array, by index.
+        mainChain.Initialize(chainVertexCount, GenerateChainNode);
         mainChain.SetModifyNodeAction(NodeModify_Main);
-
-        // Init visuals
-        lineRendererMain.positionCount = chainVertexCount;
-        lineRendererMain.SetPositions(mainChain.GetNodePositions());
-        lineRendererSecondary.enabled = false;
     }
 
     private void FixedUpdate()
@@ -100,12 +101,46 @@ public class GhostTether : MonoBehaviour
 
     private int GetCutIndex() => chainVertexCount / 2;
 
+    private void GenerateChainNode(Chain.Node[] nodes)
+    {
+        // Assuming that there's always at least two fixed points
+        int nextFixedPoint = 1;
+
+        Vector3 segmentStart = fixedPoints[nextFixedPoint - 1].Point.position;
+        Vector3 segmentEnd = fixedPoints[nextFixedPoint].Point.position;
+        Vector3 deltaPos = (segmentEnd - segmentStart) / (fixedPoints[nextFixedPoint].Index - fixedPoints[nextFixedPoint - 1].Index);
+
+        for (int i = 0; i < nodes.Length; ++i)
+        {
+            nodes[i] = new Chain.Node(segmentStart + deltaPos * (i - fixedPoints[nextFixedPoint - 1].Index));
+
+            // Handle if we are at the end of this segment between fixed points
+            if (i == fixedPoints[nextFixedPoint].Index)
+            {
+                nodes[i].UsePhysics = false;
+
+                ++nextFixedPoint;
+                if(nextFixedPoint < fixedPoints.Length)
+                {
+                    segmentStart = fixedPoints[nextFixedPoint - 1].Point.position;
+                    segmentEnd = fixedPoints[nextFixedPoint].Point.position;
+                    deltaPos = (segmentEnd - segmentStart) / (fixedPoints[nextFixedPoint].Index - fixedPoints[nextFixedPoint - 1].Index);
+                }
+            }
+        }
+
+        // Fix UsePhysics not being set correctly for first fixed point
+        nodes[fixedPoints[0].Index].UsePhysics = false;
+    }
+
     private void NodeModify_Main(int i, Chain.Node n)
     {
         Vector3 windForce = windVector * Mathf.PerlinNoise(n.Position.z * windSampleScale, Time.timeSinceLevelLoad * windTimeScale);
         n.ApplyForce(windForce);
 
-        lineRendererMain.SetPosition(i, n.Position);
+        //lineRendererMain.SetPosition(i, n.Position);
+        tetherBones[i].position = n.Position;
+        tetherBones[i].up = n.Forward; // Using up instead of forward because that's how I made it on the mesh and I'm not fixing it
     }
 
     private void NodeModify_Secondary(int i, Chain.Node n)
@@ -113,7 +148,25 @@ public class GhostTether : MonoBehaviour
         Vector3 windForce = windVector * Mathf.PerlinNoise(n.Position.z * windSampleScale, Time.timeSinceLevelLoad * windTimeScale);
         n.ApplyForce(windForce);
 
-        lineRendererSecondary.SetPosition(i, n.Position);
+        i += GetCutIndex();
+        tetherBones[i].position = n.Position;
+        tetherBones[i].up = n.Forward; // Using up instead of forward because that's how I made it on the mesh and I'm not fixing it
+    }
+
+    private IEnumerator BreakAnimation()
+    {
+        Material tetherMat = tetherRenderer.material;
+        int tetherBreakID = Shader.PropertyToID("_TetherBreak");
+
+        for(float timer = 0.0f; timer < Util.AnimationCurveLengthTime(breakDissolve); timer += Time.deltaTime)
+        {
+            tetherMat.SetFloat(tetherBreakID, breakDissolve.Evaluate(timer));
+            yield return null;
+        }
+
+        _OnTetherDissolveComplete?.Invoke();
+        // Disable this object when animation complete, as gameobject will be invisible and no longer needed.
+        gameObject.SetActive(false);
     }
 
 #if UNITY_EDITOR

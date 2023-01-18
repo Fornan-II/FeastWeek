@@ -16,5 +16,9 @@ public class VehiclePawn : Pawn
         owner.MyController.TakeControlOf(this);
     }
 
-    public void ReturnControl() => MyController.TakeControlOf(_ownerPawn);
+    public void ReturnControl()
+    {
+        if(IsBeingControlled)
+            MyController.TakeControlOf(_ownerPawn);
+    }
 }

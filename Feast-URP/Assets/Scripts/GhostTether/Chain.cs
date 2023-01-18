@@ -10,6 +10,7 @@ public class Chain
     public class Node
     {
         public Vector3 Position = Vector3.zero;
+        public Vector3 Forward = Vector3.forward;
         public bool UsePhysics = false;
 
         public Vector3 Velocity { get; private set; } = Vector3.zero;
@@ -45,13 +46,16 @@ public class Chain
     public int PointCount => _pointCount;
     public bool Initialized => _nodes != null;
     
-    public bool FixedStartPosition = true;
-    public bool FixedEndPosition = true;
     [Min(0)] public float stiffness = 5;
     [Min(0)] public float lengthScaler = 1.2f;
     [Min(0), Tooltip("Product of fluid density, cross sectional area, and drag coefficient.")] public float Drag = 0f;
     public bool UseGravityOverride = false;
     public Vector3 GravityOverride = Vector3.zero;
+
+#if UNITY_EDITOR
+    [Header("DEBUG")]
+    [SerializeField] private int _debugSelectIndex = -1;
+#endif
 
     protected int _pointCount;
     protected Node[] _nodes;
@@ -64,8 +68,6 @@ public class Chain
     public Chain(Chain other, int startIndex = 0, int lastIndex = -1)
     {
         // Copy over chain properties
-        FixedStartPosition = other.FixedStartPosition;
-        FixedEndPosition = other.FixedEndPosition;
         stiffness = other.stiffness;
         lengthScaler = other.lengthScaler;
         Drag = other.Drag;
@@ -87,42 +89,34 @@ public class Chain
             _nodes[i] = new Node(other._nodes[i + startIndex]);
         }
     }
-    
-    public virtual void Initialize(Vector3 startPosition, Vector3 endPosition, int pointCount)
+
+    public virtual void Initialize(int pointCount, Action<Node[]> createNodeFunc)
     {
         _pointCount = pointCount;
         _nodes = new Node[_pointCount];
 
-        Vector3 deltaPos = endPosition - startPosition;
-        _targetLength = deltaPos.magnitude / _pointCount;
-        deltaPos = deltaPos.normalized * _targetLength;
-
-        // The same as RefreshNodeData, except for also setting position
-        for (int i = 0; i < _nodes.Length; ++i)
-        {
-            bool usePhysics = true;
-            if (i == 0) usePhysics = !FixedStartPosition;
-            if (i == _nodes.Length - 1) usePhysics = !FixedEndPosition;
-
-
-            _nodes[i] = new Node()
-            {
-                Position = startPosition + deltaPos * i,
-                UsePhysics = usePhysics
-            };
-        }
+        createNodeFunc(_nodes);
+        _targetLength = (_nodes[pointCount - 1].Position - _nodes[0].Position).magnitude / pointCount;
     }
 
-    public virtual void RefreshNodeData()
+    public virtual void InitializeLine(int pointCount, Vector3 startPosition, bool startIsFixed, Vector3 endPosition, bool endIsFixed)
     {
-        for(int i = 0; i < _nodes.Length; ++i)
-        {
-            bool usePhysics = true;
-            if (i == 0) usePhysics = !FixedStartPosition;
-            if (i == _nodes.Length - 1) usePhysics = !FixedEndPosition;
+        Vector3 deltaPos = (endPosition - startPosition) / pointCount;
 
-            _nodes[i].UsePhysics = usePhysics;
-        }
+        Initialize(pointCount, (Node[] nodes) =>
+        {
+            for(int i = 0; i < nodes.Length; ++i)
+            {
+                bool usePhysics = true;
+                if (i == 0) usePhysics = !startIsFixed;
+                if (i == pointCount - 1) usePhysics = !endIsFixed;
+
+                nodes[i] = new Node(
+                   startPosition + deltaPos * i,
+                   usePhysics
+               );
+            }
+        });
     }
 
     public virtual void ProcessPhysics(float deltaTime)
@@ -141,9 +135,28 @@ public class Chain
             {
                 Vector3 deltaPos = _nodes[i + 1].Position - _nodes[i].Position;
                 float magnitude = (deltaPos.magnitude - _targetLength * lengthScaler) * stiffness;
+                deltaPos.Normalize();
 
-                _nodes[i].ApplyForce(deltaPos.normalized * magnitude);
-                _nodes[i + 1].ApplyForce(deltaPos.normalized * -magnitude);
+                _nodes[i].ApplyForce(deltaPos * magnitude);
+                _nodes[i + 1].ApplyForce(deltaPos * -magnitude);
+
+#if UNITY_EDITOR
+                if(i == _debugSelectIndex)
+                {
+                    Debug.DrawRay(_nodes[i].Position, deltaPos * magnitude, Color.magenta);
+                }
+
+                if (i + 1 == _debugSelectIndex)
+                {
+                    Debug.DrawRay(_nodes[i + 1].Position, deltaPos * -magnitude, Color.magenta);
+                }
+#endif
+
+                _nodes[i].Forward = deltaPos;
+            }
+            else
+            {
+                _nodes[i].Forward = _nodes[i - 1].Forward;
             }
 
             // Allow possible modifaction of node
@@ -189,10 +202,16 @@ public class Chain
     {
         if(_nodes != null)
         {
-            Gizmos.color = Color.blue;
-            foreach (Node n in _nodes)
+            for (int i = 0; i < _nodes.Length; ++i)
             {
-                Gizmos.DrawWireSphere(n.Position, 0.1f);
+                Gizmos.color = i == _debugSelectIndex ? Color.cyan : Color.blue;
+                Gizmos.DrawWireSphere(_nodes[i].Position, 0.1f);
+                Gizmos.DrawRay(_nodes[i].Position, _nodes[i].Forward);
+
+                Gizmos.color = Color.green;
+                Gizmos.DrawRay(_nodes[i].Position, _nodes[i].Velocity);
+
+                UnityEditor.Handles.Label(_nodes[i].Position, i.ToString());
             }
         }
     }

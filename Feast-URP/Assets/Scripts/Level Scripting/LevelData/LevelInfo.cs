@@ -18,4 +18,12 @@ public class LevelInfo : MonoBehaviour
     {
         Active.Remove(this);
     }
+
+#if UNITY_EDITOR
+    [ContextMenu("Apply fog")]
+    private void ApplyFog()
+    {
+        fogData?.Apply();
+    }
+#endif
 }

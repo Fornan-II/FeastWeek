@@ -15,17 +15,17 @@ public class GhostWorld : MonoBehaviour
     [Header("End sequence part 1")]
     [SerializeField] private FPSChar playerCharacter;
     [SerializeField] private Transform forestGodFaceTransform;
-    [SerializeField] private ViewRequester endSequence1View;
+    [SerializeField] private CameraView endSequence1View;
     [SerializeField] private float maxCameraVelocity = 2.5f;
     [SerializeField] private float cameraSmoothing = 1f;
     [SerializeField] private AnimationCurve lookAtAnim;
     [Header("End sequence part 2")]
-    [SerializeField] private ViewRequester endSequence2View;
+    [SerializeField] private CameraView endSequence2View;
     [SerializeField] private RandomBlink godBlink;
     [SerializeField] private AnimationCurve eyeOpenAnim;
     [SerializeField] private AnimationCurve eyeCloseAnim;
     [Header("End sequence part 3")]
-    [SerializeField] private ViewRequester endSequence3View;
+    [SerializeField] private CameraView endSequence3View;
     [SerializeField] private GameObject forestGeometry;
     [SerializeField] private GameObject hallGeometry;
     [SerializeField] private Animator endSequence3Animator;

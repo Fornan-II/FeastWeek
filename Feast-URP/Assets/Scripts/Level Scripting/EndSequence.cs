@@ -15,7 +15,7 @@ public class EndSequence : MonoBehaviour
     [SerializeField] private float alembicBlobStartTime = 2.75f;
     [SerializeField] private Controller playerController;
     [SerializeField] private BlobDetection blobDetection;
-    [SerializeField] private ViewRequester deathView;
+    [SerializeField] private CameraView deathView;
     [SerializeField] private Animator deathAnimation;
     [SerializeField] private DoorMechanic castleDoor;
     [SerializeField] private AnimationCurve initialScreenshakeAnimation;

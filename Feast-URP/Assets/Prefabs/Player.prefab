@@ -145,7 +145,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 10
-      value: 0.33333334
+      value: 0.5
       inSlope: 0.09943391
       outSlope: 0.09943391
       tangentMode: 0
@@ -155,7 +155,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  timeCurveScaler: 1.6
+  timeCurveScaler: 2
 --- !u!114 &7507402167451724083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,6 +233,7 @@ MonoBehaviour:
   SetFOVEveryFrame: 0
   FieldOfView: 100
   setFOV: 1
+  blendSettings: {fileID: 0}
 --- !u!114 &6961860451848926185
 MonoBehaviour:
   m_ObjectHideFlags: 0

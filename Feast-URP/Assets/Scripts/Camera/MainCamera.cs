@@ -7,10 +7,14 @@ using UnityEngine.Rendering;
 public class MainCamera : MonoBehaviour
 {
 #pragma warning disable 0649
-    public static Transform RootTransform => _instance ? _instance._cameraRoot : null;
-    public static Camera Camera => _instance ? _instance.camera : null;
-    public static UniversalAdditionalCameraData CameraData => _instance ? _instance.cameraData : null;
-    public static CameraFX Effects => _instance ? _instance.cameraEffects : null;
+    public static Transform RootTransform => IsValid() ? _instance._cameraRoot : null;
+    public static Camera Camera => IsValid() ? _instance.camera : null;
+    public static UniversalAdditionalCameraData CameraData => IsValid() ? _instance.cameraData : null;
+    public static CameraFX Effects => IsValid() ? _instance.cameraEffects : null;
+    public static CameraView CurrentView => IsValid() ? _instance._currentView : null;
+
+    public static bool IsBlending => IsValid() && _instance._isBlending;
+    public static bool IsValid() => _instance;
 
     private static MainCamera _instance;
 
@@ -18,19 +22,46 @@ public class MainCamera : MonoBehaviour
     [SerializeField] private UniversalAdditionalCameraData cameraData;
     [SerializeField] private VolumeProfile basePostProcessing;
     [SerializeField] private CameraFX cameraEffects;
+    [SerializeField] private BlendOverrideCollection blendOverrides;
 
     private Transform _cameraRoot;
+    private CameraView _currentView;
+    private bool _isBlending;
 
-    public static bool IsValid() => _instance;
-
-    public static void RequestView(ViewData view)
+    public static void RequestView(CameraView view)
     {
-        if (!_instance) return;
-        Util.MoveTransformToTarget(_instance._cameraRoot, view.Parent, true);
-        _instance.camera.fieldOfView = view.FieldOfView;
-    }
+        if (!IsValid()) return;
 
-    public static void RequestView(Transform parent) => RequestView(new ViewData(parent));
+        // Handle null view case
+        if(!view)
+        {
+            RootTransform.SetParent(null);
+            _instance._currentView = null;
+            return;
+        }
+
+        // Figure out if blend needs to be overriden
+        ViewBlend blend;
+        if(!_instance.blendOverrides.TryGetBlendOverride(_instance._currentView, view, out blend))
+        {
+            blend = view.BlendSettings;
+        }
+
+        // Apply blend, if there is one
+        if(blend)
+        {
+            // Running coroutine on incoming view in case view gets unloaded during blend
+            _instance._isBlending = true;
+            view.StartCoroutine(blend.CreateBlend(view, () => _instance._isBlending = false));
+        }
+        else
+        {
+            Util.MoveTransformToTarget(RootTransform, view.transform, true);
+            _instance.camera.fieldOfView = view.FieldOfView;
+        }
+
+        _instance._currentView = view;
+    }
 
     #region Unity Methods
     private void Awake()
@@ -47,6 +78,7 @@ public class MainCamera : MonoBehaviour
             Util.MoveTransformToTarget(_cameraRoot, transform);
             transform.SetParent(_cameraRoot);
             cameraEffects.Init(this);
+            blendOverrides.Initialize();
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.playModeStateChanged += PlaymodeCleanup;
 #endif

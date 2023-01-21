@@ -8,6 +8,6 @@ public class DoorExplosionTest : MonoBehaviour
     void Start()
     {
         FindObjectOfType<IntroHelper>().gameObject.SetActive(false);
-        GetComponent<ViewRequester>().RequestView();
+        GetComponent<CameraView>().RequestView();
     }
 }

@@ -80,7 +80,7 @@ public class CameraFX
 
         foreach(var effect in _transformEffects)
         {
-            _mainCameraRef.transform.localPosition += effect.position;
+            _mainCameraRef.transform.position += effect.position;
             _mainCameraRef.transform.localRotation *= effect.rotation;
         }
     }

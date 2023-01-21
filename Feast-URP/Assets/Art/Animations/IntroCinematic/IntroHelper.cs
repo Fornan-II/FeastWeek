@@ -7,7 +7,7 @@ public class IntroHelper : Pawn, DefaultControls.IFPSCharacterActions
 {
 #pragma warning disable 0649
     [SerializeField] private FadeUI[] introPanels;
-    [SerializeField] private ViewRequester cameraView = null;
+    [SerializeField] private CameraView cameraView = null;
     [SerializeField] private Animator anim;
     [SerializeField] private Pawn playerPawn;
     [SerializeField] private Controller playerController;

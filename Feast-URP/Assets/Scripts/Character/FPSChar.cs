@@ -118,14 +118,13 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
 
         if(strength > 0f)
         {
-            MainCamera.Effects.ApplyImpulse(MainCamera.Camera.transform.position + Vector3.up, strength, strength * timeCurveScaler);
+            MainCamera.Effects.ApplyImpulse(MainCamera.RootTransform.position + Vector3.up, strength, strength * timeCurveScaler);
         }
         Debug.LogFormat("{0} => {1}", movementController.velocity.y, strength);
     }
     
     private void PlayerMovement()
     {
-        if (!IsBeingControlled) return;
         // Planar Movement
         Vector3 moveCalc = (transform.forward * _moveInput.y + transform.right * _moveInput.x) * moveSpeed * (_sprintInput && _isGrounded && _moveInput.y > 0 ? sprintMultiplier : 1f);
         moveCalc = Vector3.ProjectOnPlane(moveCalc, _groundNormal);
@@ -174,6 +173,9 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
 
     private void PlayerLook()
     {
+        // Don't allow look rotation while camera is blending
+        if (MainCamera.IsBlending) return;
+
         Vector2 lookCalc = _lookInput * lookSpeed;// * Time.deltaTime; // InputSystem mouse offsets are already time-scaled!
         transform.rotation *= Quaternion.Euler(0, lookCalc.x, 0);
         lookTransform.rotation *= Quaternion.Euler(-lookCalc.y, 0, 0);
@@ -181,6 +183,11 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
         {
             lookTransform.localRotation = Quaternion.RotateTowards(Quaternion.Euler(Vector3.forward), lookTransform.localRotation, 90f);
         }
+
+        // Ensure there is no roll rotation
+        Vector3 euler = lookTransform.rotation.eulerAngles;
+        euler.z = 0;
+        lookTransform.rotation = Quaternion.Euler(euler);
     }
 
     private void GroundCheck()

@@ -19,4 +19,6 @@ MonoBehaviour:
   - Assets/Art/Models/Planks/Plank_Segment.obj
   - Assets/Art/Models/ForestGod_Bones.fbx
   - Assets/Art/Models/Planks/Plank_Short.obj
-  modifiedAssetPaddingHash: aaf8cc2eecc12491ecc12491ecc12491695031eeecc12491
+  - Assets/Art/Models/Tether Tree 1.fbx
+  - Assets/Art/Models/Tether Tree 2.fbx
+  modifiedAssetPaddingHash: aaf8cc2eecc12491ecc12491ecc12491695031eeecc1249106a3ddde09b309ce

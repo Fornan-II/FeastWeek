@@ -49,7 +49,6 @@ public static class EditorUtil
 
     private static void InvisibleColliders(bool enabled)
     {
-
         MeshRenderer[] renderers = Resources.FindObjectsOfTypeAll<MeshRenderer>();
         Material probuilderInvisMaterial = AssetDatabase.LoadAssetAtPath<Material>("Packages/com.unity.probuilder/Content/Resources/Materials/Collider.mat");
         foreach (var r in renderers)
@@ -59,6 +58,21 @@ public static class EditorUtil
                 Undo.RecordObject(r.gameObject, $"{(enabled ? "Enable" : "Disable")} Invisible Colliders");
                 r.gameObject.SetActive(enabled);
             }
+        }
+    }
+
+    [MenuItem("Tools/Misc/SetRemoveOnPlay/Active")]
+    private static void SetRemoveOnPlayActive() => SetRemoveOnPlay(true);
+    [MenuItem("Tools/Misc/SetRemoveOnPlay/Inactive")]
+    private static void SetRemoveOnPlayInactive() => SetRemoveOnPlay(false);
+
+    private static void SetRemoveOnPlay(bool active)
+    {
+        RemoveOnPlay[] removeOnPlays = Resources.FindObjectsOfTypeAll<RemoveOnPlay>();
+        foreach(var rop in removeOnPlays)
+        {
+            Undo.RecordObject(rop.gameObject, $"Set RemoveOnPlay instances {(active ? "active" : "inactive")}");
+            rop.gameObject.SetActive(active);
         }
     }
 

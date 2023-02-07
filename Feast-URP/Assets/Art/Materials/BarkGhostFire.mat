@@ -32,6 +32,18 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - Texture2D_A8DDF907:
+        m_Texture: {fileID: 2800000, guid: 6046fd696560a0f4db3a947fb03360e0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_CAB918AE:
+        m_Texture: {fileID: 2800000, guid: dcf448ba2b92089428f9a2b2b997171b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_D8185D17:
+        m_Texture: {fileID: 2800000, guid: 7ab73ea0c98b8304a9a442990f61ae1e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BaseMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -62,8 +74,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Vector1_2E9870C8: -0.01
+    - Vector1_508F1E99: 0
     - Vector1_AD3C7339: 1
     - Vector1_B1CE6771: 0.01
+    - Vector1_F391452B: 1
+    - Vector1_F9D0E600: 0.5
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -83,10 +98,12 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Surface: 0
+    - _TreeStepEdge: -0.01
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
     - Color_551B97C2: {r: 7.999999, g: 7.999999, b: 7.999999, a: 1}
+    - Color_74D3AE4: {r: 0.63529414, g: 0.6784314, b: 0.74509805, a: 1}
     - Color_F4B6A77E: {r: 0, g: 0, b: 0, a: 1}
     - Vector2_D18F0A38: {r: 5, g: 0.5, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}

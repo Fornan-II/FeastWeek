@@ -21,7 +21,9 @@ MonoBehaviour:
   - Assets/Art/Models/Planks/Plank_Short.obj
   - Assets/Art/Models/Tether Tree 1.fbx
   - Assets/Art/Models/Tether Tree 2.fbx
-  modifiedAssetPaddingHash: aaf8cc2eecc12491ecc12491ecc12491695031eeecc1249106a3ddde09b309ce
+  - Assets/Art/Models/Props/Pot01.fbx
+  - Assets/Art/Models/Props/Crate.fbx
+  modifiedAssetPaddingHash: aaf8cc2eecc12491ecc12491ecc12491695031eeecc1249106a3ddde09b309ceecc124910838ed04
   modifiedMeshList: []
   modifiedMeshPaddingList: 
   modifiedAssets:
@@ -432,6 +434,14 @@ MonoBehaviour:
     - tree 2
     padding: a9000000
     unwrapper: 00000000
+  - meshName:
+    - Pot 01
+    padding: 00010000
+    unwrapper: 00000000
+  - meshName:
+    - Crate 01
+    padding: e3000000
+    unwrapper: 00000000
   assetList:
   - Assets/Bakery/examples/content/sponza/bush.FBX
   - Assets/Bakery/examples/content/floor_lamp.FBX
@@ -458,7 +468,11 @@ MonoBehaviour:
   - Assets/Art/Models/Dark Forest Tree.fbx
   - Assets/Art/Models/Tether Tree 1.fbx
   - Assets/Art/Models/Tether Tree 2.fbx
-  uvOverlapAssetList: 00000000ffffffff0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001010000000000000000000000000000010100000101000001010000
+  - Assets/Art/Models/Props/Crate.fbx
+  - Assets/Art/Models/Props/Pot02.fbx
+  - Assets/Art/Models/Props/Barrel.fbx
+  - Assets/Art/Models/Props/Pot01.fbx
+  uvOverlapAssetList: 00000000ffffffff000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101000000000000000000000000000001010000010100000101000000000000010100000000000001010000
   xatlasWarningShown: 0
   foundCompatibleSetup: 1
   gpuName: NVIDIA GeForce GTX 1650
@@ -543,5 +557,5 @@ MonoBehaviour:
   renderSettingsRTPVSceneView: 0
   renderSettingsRTPVWidth: 640
   renderSettingsRTPVHeight: 360
-  modifiedMeshPaddingArray: a9000000
+  modifiedMeshPaddingArray: e3000000
   modifiedMeshUnwrapperArray: 00000000

@@ -92,22 +92,23 @@ public class GhostWorld : MonoBehaviour
 
         // End sequence part 2
         endSequence2View.RequestView();
+        godLookAtTarget.Target = endSequence2View.transform;
         godBlink.enabled = false;
         godBlink.SetOpenness(1f);
 
         //yield return new WaitUntil(() => _endSequenceProgress >= 2);
         // Temp alternative to give forest god just a little bit of secondary motion until I get a proper animation for them
-        Transform target = new GameObject("~LookAtTarget").transform;
-        target.position = godLookAtTarget.Target.position;
-        godLookAtTarget.Target = target;
-        float targetSpeed = 1f;
+        //Transform target = new GameObject("~LookAtTarget").transform;
+        //target.position = godLookAtTarget.Target.position;
+        //godLookAtTarget.Target = target;
+        //float targetSpeed = 1f;
         while (_endSequenceProgress < 2)
         {
-            target.position = Vector3.MoveTowards(
-                target.position,
-                Vector3.zero,
-                targetSpeed * Time.deltaTime
-                );
+        //    target.position = Vector3.MoveTowards(
+        //        target.position,
+        //        Vector3.zero,
+        //        targetSpeed * Time.deltaTime
+        //        );
             yield return null;
         }
 
@@ -119,11 +120,11 @@ public class GhostWorld : MonoBehaviour
             MainCamera.Effects.ManuallySetScreenFade(1f - t);
 
             // Also temp
-            target.position = Vector3.MoveTowards(
-                target.position,
-                Vector3.zero,
-                targetSpeed * Time.deltaTime
-                );
+            //target.position = Vector3.MoveTowards(
+            //    target.position,
+            //    Vector3.zero,
+            //    targetSpeed * Time.deltaTime
+            //    );
 
             yield return null;
         }

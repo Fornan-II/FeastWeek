@@ -120,7 +120,7 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
         {
             MainCamera.Effects.ApplyImpulse(MainCamera.RootTransform.position + Vector3.up, strength, strength * timeCurveScaler);
         }
-        Debug.LogFormat("{0} => {1}", movementController.velocity.y, strength);
+        //Debug.LogFormat("{0} => {1}", movementController.velocity.y, strength);
     }
     
     private void PlayerMovement()

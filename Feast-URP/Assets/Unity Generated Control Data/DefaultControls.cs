@@ -40,7 +40,7 @@ public class @DefaultControls : IInputActionCollection, IDisposable
                     ""id"": ""ab42c502-0dc8-45b3-9eac-0e51e2bc13a3"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Press""
                 },
                 {
                     ""name"": ""Sprint"",

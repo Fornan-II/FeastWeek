@@ -21,4 +21,6 @@ MonoBehaviour:
   - Assets/Art/Models/Planks/Plank_Short.obj
   - Assets/Art/Models/Tether Tree 1.fbx
   - Assets/Art/Models/Tether Tree 2.fbx
-  modifiedAssetPaddingHash: aaf8cc2eecc12491ecc12491ecc12491695031eeecc1249106a3ddde09b309ce
+  - Assets/Art/Models/Props/Pot01.fbx
+  - Assets/Art/Models/Props/Crate.fbx
+  modifiedAssetPaddingHash: aaf8cc2eecc12491ecc12491ecc12491695031eeecc1249106a3ddde09b309ceecc124910838ed04

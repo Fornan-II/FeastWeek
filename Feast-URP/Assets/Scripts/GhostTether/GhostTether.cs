@@ -13,21 +13,25 @@ public class GhostTether : MonoBehaviour
 
     [Header("Chain Settings")]
     [SerializeField] private Chain mainChain;
-    [SerializeField] private int chainVertexCount = 10;
     [SerializeField, Tooltip("The indices of this are expected to be in order from low to high. No, I will not be writing code to do this automatically.")]
     private FixedChainPoint[] fixedPoints;
     [Header("Wind Settings")]
     [SerializeField] private float windTimeScale = 1f;
     [SerializeField] private float windSampleScale = 1f;
     [SerializeField] private Vector3 windVector = new Vector3(1, 1, 0.2f);
+    [SerializeField] private Vector2Int interiorOverrideIndexRange;
     [Header("Break Settings")]
+    [SerializeField] private int breakIndex;
     [SerializeField] private float breakForce = 3f;
     [SerializeField] private float breakDrag = 5f;
     [SerializeField] private float breakLengthScaler = 1f;
     [SerializeField] private AnimationCurve breakDissolve = AnimationCurve.Linear(0, 0, 1, 1);
+    [SerializeField] private AnimationCurve treeDissolve = AnimationCurve.Linear(0, -0.01f, 1, 0.95f);
+    [SerializeField] private float tetherBreakCompleteValue = 1.0f;
     [Header("Visuals")]
     [SerializeField] private Transform[] tetherBones;
     [SerializeField] private Renderer tetherRenderer;
+    [SerializeField] private Renderer treeRenderer;
 
     private bool _isBroken = false;
     private Chain _secondaryChain;
@@ -40,9 +44,8 @@ public class GhostTether : MonoBehaviour
         mainChain.lengthScaler = breakLengthScaler;
 
         // Cut chain in half
-        int cutIndex = GetCutIndex();
-        _secondaryChain = new Chain(mainChain, cutIndex);
-        mainChain = new Chain(mainChain, 0, cutIndex - 1);
+        _secondaryChain = new Chain(mainChain, breakIndex);
+        mainChain = new Chain(mainChain, 0, breakIndex - 1);
         _secondaryChain.SetModifyNodeAction(NodeModify_Secondary);
 
         // Apply some physics for dramatic effect
@@ -72,8 +75,11 @@ public class GhostTether : MonoBehaviour
 
         // Init chain
         // We are assuming that fixedPoints is a sorted array, by index.
-        mainChain.Initialize(chainVertexCount, GenerateChainNode);
+        mainChain.Initialize(tetherBones.Length, GenerateChainNode);
         mainChain.SetModifyNodeAction(NodeModify_Main);
+
+        // Init trees
+        treeRenderer.sharedMaterial.SetFloat("_TreeStepEdge", treeDissolve.Evaluate(0f));
     }
 
     private void FixedUpdate()
@@ -86,11 +92,9 @@ public class GhostTether : MonoBehaviour
 
         foreach(var fixedPoint in fixedPoints)
         {
-            int cutIndex = GetCutIndex();
-
-            if(_isBroken && fixedPoint.Index >= cutIndex)
+            if(_isBroken && fixedPoint.Index >= breakIndex)
             {
-                _secondaryChain.GetNode(fixedPoint.Index - cutIndex).Position = fixedPoint.Point.position;
+                _secondaryChain.GetNode(fixedPoint.Index - breakIndex).Position = fixedPoint.Point.position;
             }
             else
             {
@@ -98,8 +102,6 @@ public class GhostTether : MonoBehaviour
             }
         }
     }
-
-    private int GetCutIndex() => chainVertexCount / 2;
 
     private void GenerateChainNode(Chain.Node[] nodes)
     {
@@ -138,6 +140,11 @@ public class GhostTether : MonoBehaviour
         Vector3 windForce = windVector * Mathf.PerlinNoise(n.Position.z * windSampleScale, Time.timeSinceLevelLoad * windTimeScale);
         n.ApplyForce(windForce);
 
+        if(interiorOverrideIndexRange.x <= i && i < interiorOverrideIndexRange.y)
+        {
+            n.ApplyForce(-mainChain.GravityOverride + new Vector3(0, -windVector.y * 0.5f, 0));
+        }
+
         //lineRendererMain.SetPosition(i, n.Position);
         tetherBones[i].position = n.Position;
         tetherBones[i].up = n.Forward; // Using up instead of forward because that's how I made it on the mesh and I'm not fixing it
@@ -145,10 +152,16 @@ public class GhostTether : MonoBehaviour
 
     private void NodeModify_Secondary(int i, Chain.Node n)
     {
+        i += breakIndex;
+
         Vector3 windForce = windVector * Mathf.PerlinNoise(n.Position.z * windSampleScale, Time.timeSinceLevelLoad * windTimeScale);
         n.ApplyForce(windForce);
 
-        i += GetCutIndex();
+        if (interiorOverrideIndexRange.x <= i && i < interiorOverrideIndexRange.y)
+        {
+            n.ApplyForce(-mainChain.GravityOverride + new Vector3(0, -windVector.y * 0.5f, 0));
+        }
+
         tetherBones[i].position = n.Position;
         tetherBones[i].up = n.Forward; // Using up instead of forward because that's how I made it on the mesh and I'm not fixing it
     }
@@ -156,15 +169,34 @@ public class GhostTether : MonoBehaviour
     private IEnumerator BreakAnimation()
     {
         Material tetherMat = tetherRenderer.material;
+        Material treeMat = treeRenderer.material;
         int tetherBreakID = Shader.PropertyToID("_TetherBreak");
+        int treeEdgeID = Shader.PropertyToID("_TreeStepEdge");
+        bool hasBreakNotified = false;
 
-        for(float timer = 0.0f; timer < Util.AnimationCurveLengthTime(breakDissolve); timer += Time.deltaTime)
+        float duration = Mathf.Max(Util.AnimationCurveLengthTime(breakDissolve), Util.AnimationCurveLengthTime(treeDissolve));
+
+        for(float timer = 0.0f; timer < duration; timer += Time.deltaTime)
         {
-            tetherMat.SetFloat(tetherBreakID, breakDissolve.Evaluate(timer));
+            float tBreak = breakDissolve.Evaluate(timer);
+            tetherMat.SetFloat(tetherBreakID, tBreak);
+            treeMat.SetFloat(treeEdgeID, treeDissolve.Evaluate(timer));
+
+            if(!hasBreakNotified && tBreak >= tetherBreakCompleteValue)
+            {
+                // Some discrepency over timing of this events usage with changing design needs.
+                _OnTetherDissolveComplete?.Invoke();
+                hasBreakNotified = true;
+            }
+
             yield return null;
         }
 
-        _OnTetherDissolveComplete?.Invoke();
+        if(!hasBreakNotified)
+        {
+            _OnTetherDissolveComplete?.Invoke();
+        }
+        
         // Disable this object when animation complete, as gameobject will be invisible and no longer needed.
         gameObject.SetActive(false);
     }
@@ -172,23 +204,28 @@ public class GhostTether : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        if(mainChain.Initialized)
+        if(!UnityEditor.EditorApplication.isPlaying)
         {
-            mainChain.DrawGizmos();
-
-            if(_isBroken)
+            for (int i = 0; i < tetherBones.Length; ++i)
             {
-                _secondaryChain.DrawGizmos();
+                UnityEditor.Handles.Label(tetherBones[i].position, i.ToString());
             }
-        }
-        else if(fixedPoints.Length >= 2)
-        {
-            // Draw tether start and end points
+
+            // Draw tether fixed points
             Gizmos.color = Color.yellow;
             foreach (var fixedPoint in fixedPoints)
             {
-                if(fixedPoint.Point)
+                if (fixedPoint.Point)
                     Gizmos.DrawWireSphere(fixedPoint.Point.position, 0.1f);
+            }
+        }
+        else if (mainChain.Initialized)
+        {
+            mainChain.DrawGizmos();
+
+            if (_isBroken)
+            {
+                _secondaryChain.DrawGizmos();
             }
         }
     }
@@ -198,6 +235,21 @@ public class GhostTether : MonoBehaviour
     {
         if (!UnityEditor.EditorApplication.isPlaying) return;
         BreakChain();
+    }
+
+    [ContextMenu("Sort Fixed Points array")]
+    private void SortFixedPoints()
+    {
+        UnityEditor.Undo.RecordObject(this, "Sort fixed points array");
+        for(int i = 0; i < fixedPoints.Length; ++i)
+        {
+            for(int j = i - 1; j >= 0 && fixedPoints[j].Index > fixedPoints[j + 1].Index; --j)
+            {
+                FixedChainPoint temp = fixedPoints[j];
+                fixedPoints[j] = fixedPoints[j + 1];
+                fixedPoints[j + 1] = temp;
+            }
+        }
     }
 #endif
 }

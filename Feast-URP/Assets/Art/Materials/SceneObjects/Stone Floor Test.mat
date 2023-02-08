@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: StoneWall
+  m_Name: Stone Floor Test
   m_Shader: {fileID: -6465566751694194690, guid: b52d238de9a9a3d40ae555e78f1375a2, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4

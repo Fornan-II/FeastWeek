@@ -23,4 +23,10 @@ MonoBehaviour:
   - Assets/Art/Models/Tether Tree 2.fbx
   - Assets/Art/Models/Props/Pot01.fbx
   - Assets/Art/Models/Props/Crate.fbx
-  modifiedAssetPaddingHash: aaf8cc2e0ba3ddde0ba3ddde07a3ddde194efff0b05634b72009ecc097c6d890c8d15080be4608c8
+  - Assets/Art/Models/Props/Small Table.fbx
+  - Assets/Art/Models/Props/Large Table.fbx
+  - Assets/Art/Models/Props/Pot02.fbx
+  - Assets/Art/Models/Props/Barrel.fbx
+  - Assets/Art/Models/Props/Circular Table.fbx
+  - Assets/Art/Models/Props/Wheelbarrow.fbx
+  modifiedAssetPaddingHash: aaf8cc2e0ba3ddde0ba3ddde07a3ddde194efff0b05634b72009ecc097c6d890ecc12491ecc124915d39803323c5d890ecc124917c3980338cdb894bfa4dfff0

@@ -23,7 +23,13 @@ MonoBehaviour:
   - Assets/Art/Models/Tether Tree 2.fbx
   - Assets/Art/Models/Props/Pot01.fbx
   - Assets/Art/Models/Props/Crate.fbx
-  modifiedAssetPaddingHash: aaf8cc2e0ba3ddde0ba3ddde07a3ddde194efff0b05634b72009ecc097c6d890c8d15080be4608c8
+  - Assets/Art/Models/Props/Small Table.fbx
+  - Assets/Art/Models/Props/Large Table.fbx
+  - Assets/Art/Models/Props/Pot02.fbx
+  - Assets/Art/Models/Props/Barrel.fbx
+  - Assets/Art/Models/Props/Circular Table.fbx
+  - Assets/Art/Models/Props/Wheelbarrow.fbx
+  modifiedAssetPaddingHash: aaf8cc2e0ba3ddde0ba3ddde07a3ddde194efff0b05634b72009ecc097c6d890ecc12491ecc124915d39803323c5d890ecc124917c3980338cdb894bfa4dfff0
   modifiedMeshList: []
   modifiedMeshPaddingList: 
   modifiedAssets:
@@ -436,11 +442,35 @@ MonoBehaviour:
     unwrapper: 00000000
   - meshName:
     - Pot 01
-    padding: ad000000
+    padding: 00010000
     unwrapper: 00000000
   - meshName:
     - Crate 01
-    padding: 71000000
+    padding: 00010000
+    unwrapper: 00000000
+  - meshName:
+    - Cube
+    padding: 4b000000
+    unwrapper: 00000000
+  - meshName:
+    - Wide Table
+    padding: 2c000000
+    unwrapper: 00000000
+  - meshName:
+    - Pot 02
+    padding: 00010000
+    unwrapper: 00000000
+  - meshName:
+    - Barrel 01
+    padding: 41000000
+    unwrapper: 00000000
+  - meshName:
+    - Cylinder
+    padding: 4c000000
+    unwrapper: 00000000
+  - meshName:
+    - Wagon
+    padding: 26000000
     unwrapper: 00000000
   assetList:
   - Assets/Bakery/examples/content/sponza/bush.FBX
@@ -472,7 +502,11 @@ MonoBehaviour:
   - Assets/Art/Models/Props/Pot02.fbx
   - Assets/Art/Models/Props/Barrel.fbx
   - Assets/Art/Models/Props/Pot01.fbx
-  uvOverlapAssetList: 00000000ffffffff000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101000000000000000000000000000001010000010100000101000000000000010100000000000001010000
+  - Assets/Art/Models/Props/Small Table.fbx
+  - Assets/Art/Models/Props/Large Table.fbx
+  - Assets/Art/Models/Props/Circular Table.fbx
+  - Assets/Art/Models/Props/Wheelbarrow.fbx
+  uvOverlapAssetList: 00000000ffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010100000000000000000000000000000101000001010000010100000000000001010000000000000101000001010000010100000101000001010000
   xatlasWarningShown: 0
   foundCompatibleSetup: 1
   gpuName: NVIDIA GeForce GTX 1650
@@ -557,5 +591,5 @@ MonoBehaviour:
   renderSettingsRTPVSceneView: 0
   renderSettingsRTPVWidth: 640
   renderSettingsRTPVHeight: 360
-  modifiedMeshPaddingArray: 71000000
+  modifiedMeshPaddingArray: 26000000
   modifiedMeshUnwrapperArray: 00000000

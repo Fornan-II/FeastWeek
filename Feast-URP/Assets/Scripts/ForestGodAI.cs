@@ -18,11 +18,20 @@ public class ForestGodAI : StateMachine
     [SerializeField] private ForestGodState defaultState = ForestGodState.SIT;
     [SerializeField] private ForestGodState currentState = ForestGodState.NONE;
 
-    public void TriggerPlayerAggro()
+    public void SetState(ForestGodState newState, bool recalculateImmediately = false)
     {
-        currentState = ForestGodState.SEEK_PLAYER;
-        recalculateWhenReady = true;
+        currentState = newState;
+        if(recalculateImmediately)
+        {
+            RecalculateState();
+        }
+        else
+        {
+            recalculateWhenReady = true;
+        }
     }
+
+    public void TriggerPlayerAggro() => SetState(ForestGodState.SEEK_PLAYER);
 
     #region StateMachine overrides
     protected override void RecalculateState()

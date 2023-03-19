@@ -10,6 +10,7 @@ public class GhostWorld : MonoBehaviour
     [SerializeField] private float musicFadeInDuration = 1f;
     [SerializeField] private AudioClip primaryAmbientMusic;
     [Header("End sequence general")]
+    [SerializeField] private ForestGodAI forestGodAI;
     [SerializeField] private LookAtTarget godLookAtTarget;
     [SerializeField] private AudioClip endSequenceMusic;
     [Header("End sequence part 1")]
@@ -28,6 +29,7 @@ public class GhostWorld : MonoBehaviour
     [SerializeField] private CameraView endSequence3View;
     [SerializeField] private GameObject forestGeometry;
     [SerializeField] private GameObject hallGeometry;
+    [SerializeField] private Transform forestGodFinalPosition;
     [SerializeField] private Animator endSequence3Animator;
     [Header("End sequence part 4")]
     [SerializeField] private float finalFadeOutDuration = 10f;
@@ -57,7 +59,9 @@ public class GhostWorld : MonoBehaviour
     private IEnumerator EndAnimation()
     {
         // End sequence part 1
-        if(PauseManager.Instance)
+        forestGodAI.TriggerPlayerAggro();
+
+        if (PauseManager.Instance)
             PauseManager.Instance.PausingAllowed = false;
         playerCharacter.MyController.ReleaseControl();
 
@@ -132,6 +136,9 @@ public class GhostWorld : MonoBehaviour
         // End sequence part 3
         forestGeometry.SetActive(false);
         hallGeometry.SetActive(true);
+
+        Util.MoveTransformToTarget(forestGodAI.transform, forestGodFinalPosition);
+        forestGodAI.SetState(ForestGodAI.ForestGodState.SIT, true);
 
         endSequence3View.RequestView();
         godLookAtTarget.Target = endSequence3View.transform;

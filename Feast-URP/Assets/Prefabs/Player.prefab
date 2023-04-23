@@ -232,7 +232,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SetFOVEveryFrame: 0
   FieldOfView: 100
-  setFOV: 1
   blendSettings: {fileID: 0}
 --- !u!114 &6961860451848926185
 MonoBehaviour:
@@ -248,7 +247,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1843
   interactRange: 1.5
   interactIcon: {fileID: 0}
 --- !u!1 &6838422858601821986

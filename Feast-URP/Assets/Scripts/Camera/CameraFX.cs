@@ -14,6 +14,11 @@ public class CameraFX
 
     public float DefaultCameraNoise => defaultCameraNoise;
 
+    public float CameraNoise { get; private set; } = 0.003f;
+    public float NoisePulseStrength { get; private set; } = 0;
+    public float NoisePulseSpeed { get; private set; } = 1;
+    public float NoisePulseExponent { get; private set; } = 1;
+
     // Properties
     [Header("Fade")]
     [SerializeField, ColorUsage(false, true)] private Color defaultFadeColor = Color.magenta;
@@ -36,6 +41,12 @@ public class CameraFX
         _mainCameraRef = mainCameraInstance;
         ResetFadeColorToDefault();
         ResetCameraNoise();
+    }
+
+    public void Update(float deltaTime)
+    {
+        ApplyTransformEffects();
+        ApplyCameraNoisePulse();
     }
 
     #region Crossfading
@@ -69,8 +80,16 @@ public class CameraFX
     
     public void SetColorInvert(bool inverted) => Shader.SetGlobalFloat("_InvertValue", inverted ? 1 : 0);
 
-    public void SetCameraNoise(float value) => Shader.SetGlobalFloat("_NoiseStrength", value);
+    public void SetCameraNoise(float value)
+    {
+        CameraNoise = value;
+        Shader.SetGlobalFloat("_NoiseStrength", value);
+    }
     public void ResetCameraNoise() => SetCameraNoise(defaultCameraNoise);
+
+    public void SetCameraNoisePulseStrength(float strength) => NoisePulseStrength = strength;
+    public void SetCameraNoisePulseSpeed(float speed) => NoisePulseSpeed = speed;
+    public void SetCameraNoisePulseExponent(float exponent) => NoisePulseExponent = exponent;
 
     #region Transform Effects
     public void ApplyTransformEffects()
@@ -133,6 +152,14 @@ public class CameraFX
 
     public Action<float> ContinuousScreenShake(float initialStrength) => ContinuousScreenShake(initialStrength, defaultCameraShakeFrequency);
 
+    // Oh wow that's uh... real "creative" of you there
+
+    /// <summary>
+    /// Apply a sceen shake to the camera as long as strength is above 0
+    /// </summary>
+    /// <param name="initialStrength"></param>
+    /// <param name="frequency"></param>
+    /// <returns>Action handle that can set screen shake strength on demand</returns>
     public Action<float> ContinuousScreenShake(float initialStrength, float frequency)
     {
         float strength = initialStrength;
@@ -158,4 +185,14 @@ public class CameraFX
         return (float value) => strength = value;
     }
     #endregion
+
+    private void ApplyCameraNoisePulse()
+    {
+        if(NoisePulseStrength > 0f)
+        {
+            float value = NoisePulseStrength * Mathf.Pow(Mathf.PerlinNoise(Time.time * NoisePulseSpeed, 0f), NoisePulseExponent);
+
+            Shader.SetGlobalFloat("_NoiseStrength", CameraNoise + value);
+        }
+    }
 }

@@ -8,7 +8,7 @@ public class SphereTriggerVolume : BaseTriggerVolume
     [SerializeField] private float innerRadius = 1.0f;
 
     /// <summary>
-    /// A 0 to 1 value indicating camera's position between radii
+    /// A 0 to 1 value indicating camera's position between radii. Set during Unity Update() call before overlap calls.
     /// </summary>
     protected float blendValue;
 

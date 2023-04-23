@@ -6,7 +6,12 @@ public abstract class BaseTriggerVolume : MonoBehaviour
 {
     public bool IsOverlapping { get; private set; }
     private bool _wasOverlapping = false;
-    
+
+    private void OnDisable()
+    {
+        OnOverlapExit();
+    }
+
     protected virtual void Update()
     {
         IsOverlapping = IsMainCameraWithin();

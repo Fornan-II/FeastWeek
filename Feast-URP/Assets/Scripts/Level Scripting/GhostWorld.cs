@@ -5,6 +5,10 @@ using UnityEngine;
 public class GhostWorld : MonoBehaviour
 {
     [SerializeField] private MusicManager musicManagerRef;
+    [SerializeField] private GhostWorldHelper ghostWorldHelper;
+    [SerializeField] private float cameraNoisePulseStrength = 0;
+    [SerializeField] private float cameraNoisePulseSpeed = 1;
+    [SerializeField] private float cameraNoisePulseExponent = 1;
     [Header("Intro")]
     [SerializeField] private float cameraFadeInDuration = 7f;
     [SerializeField] private float musicFadeInDuration = 1f;
@@ -20,11 +24,13 @@ public class GhostWorld : MonoBehaviour
     [SerializeField] private float maxCameraVelocity = 2.5f;
     [SerializeField] private float cameraSmoothing = 1f;
     [SerializeField] private AnimationCurve lookAtAnim;
+    [SerializeField] private AnimationCurve noiseAnimPart1;
     [Header("End sequence part 2")]
     [SerializeField] private CameraView endSequence2View;
     [SerializeField] private RandomBlink godBlink;
     [SerializeField] private AnimationCurve eyeOpenAnim;
     [SerializeField] private AnimationCurve eyeCloseAnim;
+    [SerializeField] private AnimationCurve noiseAnimPart2;
     [Header("End sequence part 3")]
     [SerializeField] private CameraView endSequence3View;
     [SerializeField] private GameObject forestGeometry;
@@ -35,9 +41,7 @@ public class GhostWorld : MonoBehaviour
     [SerializeField] private float finalFadeOutDuration = 10f;
     [SerializeField, ColorUsage(false, true)] private Color fadeColor;
     [SerializeField] private float blackOutLingerTime = 7f;
-
-    //bool _endAnimStarted = false;
-    //bool _endAnimReadyToEnd = false;
+    
     int _endSequenceProgress = -1;
 
     private void Start()
@@ -45,6 +49,14 @@ public class GhostWorld : MonoBehaviour
         MainCamera.Effects.SetFadeColor(Color.black);
         MainCamera.Effects.CrossFade(cameraFadeInDuration, false);
         musicManagerRef.FadeInNewSong(primaryAmbientMusic, musicFadeInDuration, true);
+        SetCameraPulseSettings();
+    }
+
+    private void SetCameraPulseSettings()
+    {
+        MainCamera.Effects.SetCameraNoisePulseStrength(cameraNoisePulseStrength);
+        MainCamera.Effects.SetCameraNoisePulseSpeed(cameraNoisePulseSpeed);
+        MainCamera.Effects.SetCameraNoisePulseExponent(cameraNoisePulseExponent);
     }
 
     public void StartEndAnimation()
@@ -75,6 +87,10 @@ public class GhostWorld : MonoBehaviour
 
         Quaternion initRotation = MainCamera.RootTransform.rotation;
 
+        MainCamera.Effects.SetCameraNoisePulseStrength(0f);
+        MainCamera.Effects.SetCameraNoisePulseSpeed(0f);
+        MainCamera.Effects.SetCameraNoisePulseExponent(0f);
+
         float timer = 0.0f;
         PlayEndMusic();
         
@@ -90,6 +106,8 @@ public class GhostWorld : MonoBehaviour
             Vector3 vecToTarget = forestGodFaceTransform.position - endSequence1View.transform.position;
             endSequence1View.transform.rotation = Quaternion.Slerp(initRotation, Quaternion.LookRotation(vecToTarget), lookAtAnim.Evaluate(timer));
 
+            MainCamera.Effects.SetCameraNoise(noiseAnimPart1.Evaluate(timer));
+
             yield return null;
             timer += Time.deltaTime;
         }
@@ -99,21 +117,13 @@ public class GhostWorld : MonoBehaviour
         godLookAtTarget.Target = endSequence2View.transform;
         godBlink.enabled = false;
         godBlink.SetOpenness(1f);
+        float noiseTimer = 0.0f;
 
-        //yield return new WaitUntil(() => _endSequenceProgress >= 2);
-        // Temp alternative to give forest god just a little bit of secondary motion until I get a proper animation for them
-        //Transform target = new GameObject("~LookAtTarget").transform;
-        //target.position = godLookAtTarget.Target.position;
-        //godLookAtTarget.Target = target;
-        //float targetSpeed = 1f;
         while (_endSequenceProgress < 2)
         {
-        //    target.position = Vector3.MoveTowards(
-        //        target.position,
-        //        Vector3.zero,
-        //        targetSpeed * Time.deltaTime
-        //        );
+            MainCamera.Effects.SetCameraNoise(noiseAnimPart2.Evaluate(noiseTimer));
             yield return null;
+            noiseTimer += Time.deltaTime;
         }
 
         // Close god's eyes
@@ -123,14 +133,10 @@ public class GhostWorld : MonoBehaviour
             godBlink.SetOpenness(t);
             MainCamera.Effects.ManuallySetScreenFade(1f - t);
 
-            // Also temp
-            //target.position = Vector3.MoveTowards(
-            //    target.position,
-            //    Vector3.zero,
-            //    targetSpeed * Time.deltaTime
-            //    );
-
+            MainCamera.Effects.SetCameraNoise(noiseAnimPart2.Evaluate(noiseTimer));
+            
             yield return null;
+            noiseTimer += Time.deltaTime;
         }
 
         // End sequence part 3
@@ -147,22 +153,30 @@ public class GhostWorld : MonoBehaviour
         godBlink.SetOpenness(1f);
         godBlink.enabled = true;
 
-        // Default MainCamera clip planes are different too allow player to get really close to things
+        // Default MainCamera clip planes are different to allow player to get really close to things
         // Setting it to a farther distance for cutscene.
         MainCamera.Camera.nearClipPlane = 0.3f;
         MainCamera.Camera.farClipPlane = 1000f;
         MainCamera.Effects.ManuallySetScreenFade(0f);
 
-        yield return new WaitUntil(() => _endSequenceProgress >= 3);
+        while(_endSequenceProgress < 3)
+        {
+            MainCamera.Effects.SetCameraNoise(ghostWorldHelper.NoiseStrengthProxy);
+            yield return null;
+        }
 
         // End sequence part 4
         MainCamera.Effects.SetFadeColor(fadeColor);
         MainCamera.Effects.CrossFade(finalFadeOutDuration, true);
-        yield return new WaitForSeconds(finalFadeOutDuration + blackOutLingerTime);
+        for(timer = 0.0f; timer < finalFadeOutDuration + blackOutLingerTime; timer += Time.deltaTime)
+        {
+            MainCamera.Effects.SetCameraNoise(ghostWorldHelper.NoiseStrengthProxy);
+            yield return null;
+        }
         // Fade out audio?
         if (PauseManager.Instance)
             PauseManager.Instance.PausingAllowed = true;
-        GlobalData.HasCompletedGame = true;
+        GameManager.Instance.SetGameCompleted();
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
 
@@ -174,4 +188,14 @@ public class GhostWorld : MonoBehaviour
         endMusic.AddSongEvent(6.858f, () => _endSequenceProgress = 1);
         endMusic.AddSongEvent(12.479f - 0.75f, () => _endSequenceProgress = 2);
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (!UnityEditor.EditorApplication.isPlaying || _endSequenceProgress >= 0) return;
+
+        if(MainCamera.IsValid())
+            SetCameraPulseSettings();
+    }
+#endif
 }

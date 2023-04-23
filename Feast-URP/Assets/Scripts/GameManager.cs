@@ -1,9 +1,11 @@
 ﻿using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
+    #region Singleton Management
     private static GameManager _instance;
     public static GameManager Instance
     {
@@ -23,21 +25,11 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(_instance.gameObject);
 
         _instance.SetupControls();
+
+        if (!_instance.LoadSaveData())
+            _instance._activeSaveData = new SaveData();
     }
 
-    public enum ControlSchemeType
-    {
-        INVALID,
-        KEYBOARD_MOUSE,
-        GAMEPAD
-    }
-
-    public DefaultControls Controls { get; private set; }
-    public ControlSchemeType ActiveControlScheme { get; private set; } = ControlSchemeType.INVALID;
-    public event Action OnControlSchemeChanged;
-
-    private InputDevice _lastUsedDevice;
-    
     private void OnDestroy()
     {
         foreach (var map in Controls.asset.actionMaps)
@@ -47,6 +39,21 @@ public class GameManager : MonoBehaviour
 
         _instance = null;
     }
+    #endregion
+
+    public enum ControlSchemeType
+    {
+        INVALID,
+        KEYBOARD_MOUSE,
+        GAMEPAD
+    }
+
+    #region Controls
+    public DefaultControls Controls { get; private set; }
+    public ControlSchemeType ActiveControlScheme { get; private set; } = ControlSchemeType.INVALID;
+    public event Action OnControlSchemeChanged;
+
+    private InputDevice _lastUsedDevice;
 
     public bool UsingGamepadControls() => ActiveControlScheme == ControlSchemeType.GAMEPAD;
 
@@ -131,4 +138,51 @@ public class GameManager : MonoBehaviour
 #endif
         }
     }
+    #endregion
+
+    public void SetGameCompleted()
+    {
+        GlobalData.HasCompletedGame = true;
+        _activeSaveData.GameFinished = true;
+        SaveSaveData();
+    }
+
+    #region Save Data
+    [Serializable]
+    private class SaveData
+    {
+        public bool GameFinished = false;
+
+        //Could track ghost encounters. Have an index corresponding to each encounter, mark as true when it happens.
+        //public bool[] Encounters = new bool[3];
+    }
+
+    private const string _saveDataFileName = "SaveData";
+    private string GetSaveDataFilePath() => Path.Combine(Application.persistentDataPath, _saveDataFileName);
+
+    private SaveData _activeSaveData;
+
+    private bool LoadSaveData()
+    {
+        if (!File.Exists(GetSaveDataFilePath())) return false;
+
+        SaveData loadedData = JsonUtility.FromJson<SaveData>(File.ReadAllText(GetSaveDataFilePath()));
+
+        if (loadedData == null) return false;
+
+        _activeSaveData = loadedData;
+        return true;
+    }
+
+    private void SaveSaveData()
+    {
+        if (_activeSaveData == null) return;
+
+        using (StreamWriter saveFile = File.CreateText(GetSaveDataFilePath()))
+        {
+            saveFile.Write(JsonUtility.ToJson(_activeSaveData));
+        }
+            
+    }
+    #endregion
 }

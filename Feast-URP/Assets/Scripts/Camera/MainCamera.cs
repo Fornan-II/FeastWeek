@@ -87,7 +87,7 @@ public class MainCamera : MonoBehaviour
 
     private void Update()
     {
-        Effects.ApplyTransformEffects();
+        Effects.Update(Time.deltaTime);
     }
 
     private void OnDestroy()
@@ -116,6 +116,9 @@ public class MainCamera : MonoBehaviour
         Effects.ResetFadeColorToDefault();
         Effects.CrossFade(0f, false);
         Effects.SetColorInvert(false);
+
+        // Clean up noise
+        Effects.ResetCameraNoise();
     }
 
     private void OnValidate()

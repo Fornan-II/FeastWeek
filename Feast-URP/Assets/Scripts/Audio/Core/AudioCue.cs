@@ -177,9 +177,10 @@ public class AudioCue : MonoBehaviour
     public void SetClip(AudioClip clip) => Source.clip = clip;
     public void ResetClip() => Source.clip = null;
 
-    public void SetVolume(float value)
+    public void SetVolume(float value, bool saveToSettings = true)
     {
-        _settings.Volume = value;
+        if(saveToSettings)
+            _settings.Volume = value;
         _source.volume = value;
     }
 

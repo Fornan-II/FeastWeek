@@ -21,6 +21,7 @@ public class EndSequence : MonoBehaviour
     [SerializeField] private AnimationCurve initialScreenshakeAnimation;
     [SerializeField] private AnimationCurve onBlobDetectedAudioFilterCurve;
     [SerializeField] private float musicFadeOutTime = 2f;
+    [SerializeField] private ParticleSystem ambientParticles;
 
     private bool _hasBeenActivated = false;
     private bool _deathBlobCollided = false;
@@ -57,6 +58,9 @@ public class EndSequence : MonoBehaviour
 
     private IEnumerator Anim()
     {
+        ambientParticles.gameObject.SetActive(true);
+        // For some reason .Play() just doesn't seem to work? Seems like a common Unity bug, somehow?
+
         musicManager.StopImmediately();
         musicManager.FadeInNewSong(
             deathBlobMusic,

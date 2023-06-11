@@ -3,6 +3,7 @@ using UnityEngine.Rendering.Universal;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine.ProBuilder;
+using System.Collections.Generic;
 
 public static class EditorUtil
 {
@@ -223,5 +224,22 @@ public static class EditorUtil
 
         MeshRenderer meshRenderer = newMesh.AddComponent<MeshRenderer>();
         meshRenderer.sharedMaterial = sourceParticles.sharedMaterial;
+    }
+
+    [MenuItem("Tools/Misc/Select all unknown surface types")]
+    private static void SelectAllUnknownSurfaceTypes()
+    {
+        FootstepSurface[] surfaces = GameObject.FindObjectsOfType<FootstepSurface>();
+        List<Object> unknownSurfaces = new List<Object>(surfaces.Length);
+
+        for(int i = 0; i < surfaces.Length; ++i)
+        {
+            if (surfaces[i].GetSurfaceType() == FootstepSurface.SurfaceType.UNKNOWN)
+            {
+                unknownSurfaces.Add(surfaces[i].gameObject);
+            }
+        }
+
+        Selection.objects = unknownSurfaces.ToArray();
     }
 }

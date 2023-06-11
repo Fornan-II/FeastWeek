@@ -215,7 +215,7 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
                     _groundTransform = hitInfo.transform;
                     if(_groundTransform.TryGetComponent(out FootstepSurface surface))
                     {
-                        _groundSurfaceType = surface.Type;
+                        _groundSurfaceType = surface.GetSurfaceType(hitInfo);
                     }
                     else
                     {

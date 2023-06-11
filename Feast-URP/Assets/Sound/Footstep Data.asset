@@ -28,3 +28,12 @@ MonoBehaviour:
     - {fileID: 8300000, guid: fb2d6e5a670392547a40308c70c464a0, type: 3}
     - {fileID: 8300000, guid: c99ddfe0c4ebbe14d8a003dd42fdf51c, type: 3}
     - {fileID: 8300000, guid: 46f323bdef15184488f36483a7512811, type: 3}
+  - SurfaceType: 3
+    FootstepSound:
+    - {fileID: 8300000, guid: 0c9401ebf5d0ca64eb9da882c3efe078, type: 3}
+    - {fileID: 8300000, guid: 2a0b97856cd73e9459f078c12079f677, type: 3}
+    - {fileID: 8300000, guid: 810f1bb2e4a70b047acb6526aa7fb4f8, type: 3}
+    - {fileID: 8300000, guid: f23049ae5e62b204e8853e46d7bc53da, type: 3}
+    - {fileID: 8300000, guid: 02b2664ee72c17f4cb21727014f69b8d, type: 3}
+    - {fileID: 8300000, guid: fdfbc4ffa0bc71f469755c0c395d157e, type: 3}
+    - {fileID: 8300000, guid: 4631f1797fcab66459ca0a2e7ce7349e, type: 3}

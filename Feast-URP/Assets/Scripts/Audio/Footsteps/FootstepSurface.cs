@@ -9,9 +9,11 @@ public class FootstepSurface : MonoBehaviour
         DIRT,
         STONE,
         WOOD,
+        GLASS,
         UNKNOWN
     }
 
-    [SerializeField] private SurfaceType type = SurfaceType.UNKNOWN;
-    public SurfaceType Type => type;
+    [SerializeField] protected SurfaceType _surfaceType = SurfaceType.UNKNOWN;
+    public virtual SurfaceType GetSurfaceType() => _surfaceType;
+    public virtual SurfaceType GetSurfaceType(RaycastHit hitInfo) => GetSurfaceType();
 }

@@ -31,6 +31,8 @@ public class CameraNoiseVolume : SphereTriggerVolume
 
     protected override void OnOverlapExit()
     {
+        if (!MainCamera.IsValid()) return;
+
         MainCamera.Effects.SetCameraNoisePulseStrength ( _startingNoisePulseStrength );
         MainCamera.Effects.SetCameraNoisePulseSpeed    ( _startingNoisePulseSpeed    );
         MainCamera.Effects.SetCameraNoisePulseExponent ( _startingNoisePulseExponent );

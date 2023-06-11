@@ -21,6 +21,8 @@ public static class Util
     
     public static float RandomInRange(Vector2 range) => Random.Range(range.x, range.y);
 
+    public static bool IndexIsInRange(int index, int arrayLength) => 0 <= index && index < arrayLength;
+
     public static float AnimationCurveLengthTime(AnimationCurve curve) => curve[curve.length - 1].time;
 
     public static float RoundToPlaces(float value, int decimalPlaces = 0)

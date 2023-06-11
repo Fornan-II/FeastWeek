@@ -11,6 +11,7 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
     [SerializeField] private AudioSource rotationAudioSource;
     [SerializeField] private Interactable interactable;
     [SerializeField] private GhostTether tether;
+    [SerializeField] private ParticleSystem passiveParticles;
     [Header("Swiveling Settings")]
     [SerializeField] private float lookSpeed = 0.25f;
     [SerializeField] private float lookInputDecay = 0.07f;
@@ -24,21 +25,27 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
     [SerializeField] private float minSwivelVolume = 0.0001f;
     [Header("Audio - Alignment")]
     [SerializeField] private AudioClip lampActiveSFX;
+    [SerializeField] private AudioClip lampActiveDistortSFX;
     [SerializeField] private AudioCue.CueSettings lampActiveSFXSettings = AudioCue.CueSettings.Default;
     [SerializeField] private float lampActiveSFXFadeOutDuration = 0.7f;
+    [SerializeField] private ADSRCurve alignmentSFXADSR;
     [Header("Audio - Connection Broken")]
     [SerializeField] private AudioClip onConnectionBrokenSFX;
     [SerializeField] private AudioCue.CueSettings onConnectionBrokenSFXSettings = AudioCue.CueSettings.Default;
+    [SerializeField] private ParticleSystem onConnectionBrokenParticles;
 
     private Vector2 _lookInput;
     private float _swivelSmoothVelocity = 0.0f;
     private bool _isConnectedToTarget = true;
     private AudioCue _lampActiveCue;
+    private AudioCue _lampActiveDistortCue;
 
     #region Unity Methods
     private void Start()
     {
         _lampActiveCue = AudioManager.PlaySound(lampActiveSFX, lookTransform.transform.position, lampActiveSFXSettings);
+        _lampActiveDistortCue = AudioManager.PlaySound(lampActiveDistortSFX, lookTransform.transform.position, lampActiveSFXSettings);
+        _lampActiveDistortCue.SetVolume(0f, false);
         target.AddConnectedLamp(this);
     }
 
@@ -47,22 +54,22 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
         // Handle swivel audio
         if (IsBeingControlled || rotationAudioSource.volume > 0)
         {
-            float newVolume = Mathf.SmoothDamp(rotationAudioSource.volume, swivelVolumeCurve.Evaluate(_lookInput.sqrMagnitude), ref _swivelSmoothVelocity, swivelSmoothing);
+            float newSwivelVolume = Mathf.SmoothDamp(rotationAudioSource.volume, swivelVolumeCurve.Evaluate(_lookInput.sqrMagnitude), ref _swivelSmoothVelocity, swivelSmoothing);
 
             // SmoothDamp doesn't seem to converge to 0 so let's help it out
-            if (newVolume < minSwivelVolume)
-                newVolume = 0f;
+            if (newSwivelVolume < minSwivelVolume)
+                newSwivelVolume = 0f;
 
-            if (newVolume > 0 && rotationAudioSource.volume <= 0f)
+            if (newSwivelVolume > 0 && rotationAudioSource.volume <= 0f)
             {
                 rotationAudioSource.Play();
             }
-            else if (newVolume <= 0 && rotationAudioSource.volume > 0f)
+            else if (newSwivelVolume <= 0 && rotationAudioSource.volume > 0f)
             {
                 rotationAudioSource.Pause();
             }
 
-            rotationAudioSource.volume = newVolume;
+            rotationAudioSource.volume = newSwivelVolume;
         }
 
         // Check that this is being controlled and that the game is not paused
@@ -77,7 +84,10 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
 
             if (_isConnectedToTarget)
             {
-                lookCalc *= sensitivityCurve.Evaluate(dot);
+                //lookCalc *= sensitivityCurve.Evaluate(dot);
+                float dotFactor = sensitivityCurve.Evaluate(dot);
+                lookCalc *= dotFactor;
+                AudioCueEffects.Mix(_lampActiveCue, _lampActiveDistortCue, dotFactor);
             }
 
             lookTransform.rotation *= Quaternion.Euler(-lookCalc.y, lookCalc.x, 0);
@@ -91,9 +101,12 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
 
             _isConnectedToTarget = false;
             target.RemoveConnectedLamp(this);
-            AudioManager.PlaySound(onConnectionBrokenSFX, target.GetTargetPosition(), onConnectionBrokenSFXSettings);
+            AudioManager.PlaySound(onConnectionBrokenSFX, lookTransform.transform.position, onConnectionBrokenSFXSettings);
             _lampActiveCue.FadeOut(lampActiveSFXFadeOutDuration);
+            _lampActiveDistortCue.FadeOut(lampActiveSFXFadeOutDuration);
             _lampActiveCue = null;
+            _lampActiveDistortCue = null;
+            passiveParticles.Stop();
 
             tether.BreakChain();
             tether.AddTetherDissolveCompleteListener(ReturnControl);
@@ -102,7 +115,8 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
 
             MainCamera.Effects.ApplyImpulse(lookTransform.position + Vector3.up, 0.25f);
             MainCamera.Effects.ApplyScreenShake(0.1f, 7f, 1f);
-            // Particles?
+
+            onConnectionBrokenParticles.Play();
         }
     }
     #endregion

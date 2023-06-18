@@ -119,15 +119,16 @@ public class IntroHelper : Pawn, DefaultControls.IFPSCharacterActions
     private IEnumerator FPS_Tutorial()
     {
         yield return new WaitForSeconds(1f);
-        MsgBox.ShowMessage(GameManager.Instance.UsingGamepadControls()
+        MsgBox toolTip = MsgBox.GetInstance(MsgBox.MsgBoxType.ToolTip);
+        toolTip.ShowMessage(GameManager.Instance.UsingGamepadControls()
             ? "Left stick to move"
             : "WASD to move"
-            , 3f);
+            , 3f );
 
         yield return new WaitForSeconds(4f);
-        MsgBox.ShowMessage(GameManager.Instance.UsingGamepadControls()
+        toolTip.ShowMessage(GameManager.Instance.UsingGamepadControls()
             ? "Right stick to look"
             : "Mouse to look"
-            , 3f);
+            , 3f );
     }
 }

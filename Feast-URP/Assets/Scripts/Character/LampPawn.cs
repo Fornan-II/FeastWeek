@@ -149,7 +149,7 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
     #region Pawn/Controller control
     public override UnityAction BecomeControlledBy(Controller controller)
     {
-        MsgBox.ShowMessage(GameManager.Instance.UsingGamepadControls()
+        MsgBox.GetInstance(MsgBox.MsgBoxType.ToolTip).ShowMessage(GameManager.Instance.UsingGamepadControls()
             ? "Right stick to control"
             : "Mouse to control",
             3f);

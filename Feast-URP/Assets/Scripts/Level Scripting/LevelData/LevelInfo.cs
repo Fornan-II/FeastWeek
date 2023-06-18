@@ -13,7 +13,7 @@ public class LevelInfo : MonoBehaviour
 
         fogData?.Apply();
     }
-
+    
     private void OnDestroy()
     {
         Active.Remove(this);

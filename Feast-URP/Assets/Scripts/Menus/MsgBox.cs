@@ -6,19 +6,32 @@ using TMPro;
 public class MsgBox : MonoBehaviour
 {
 #pragma warning disable 0649
-    private static MsgBox _instance;
+    public enum MsgBoxType
+    {
+        ToolTip,
+        GhostMsg
+    }
+
+    private static Dictionary<MsgBoxType, MsgBox> _instances = new Dictionary<MsgBoxType, MsgBox>();
 
     public bool IsShowingMessage { get; private set; }
 
+    [SerializeField] private MsgBoxType myType;
     [SerializeField] private FadeUI fader = null;
     [SerializeField] private TextMeshProUGUI text;
     
     private float _timeLeftUntilFadeOut = -1f;
 
-    public static void ShowMessage(string message, float displayTime) => _instance?.Internal_ShowMessage(message, displayTime);
-    public static void HideMessage() => _instance?.Internal_HideMessage();
+    public static MsgBox GetInstance(MsgBoxType type)
+    {
+        if(_instances.TryGetValue(type, out MsgBox instance))
+        {
+            return instance;
+        }
+        return null;
+    }
 
-    private void Internal_ShowMessage(string message, float displayTime)
+    public void ShowMessage(string message, float displayTime)
     {
         if (IsShowingMessage)
         {
@@ -39,25 +52,25 @@ public class MsgBox : MonoBehaviour
         IsShowingMessage = true;
     }
 
-    private void Internal_HideMessage()
+    public void HideMessage()
     {
         fader.FadeOut(() => IsShowingMessage = false);
     }
 
     private void Awake()
     {
-        if (_instance)
+        if (GetInstance(myType))
             Destroy(gameObject);
         else
-            _instance = this;
-        // Already DontDestroyOnLoad because this is attached to PauseManager
+            _instances[myType] = this;
+        
         if (!IsShowingMessage) text.text = "";
     }
 
     private void OnDestroy()
     {
-        if (_instance == this)
-            _instance = null;
+        if (GetInstance(myType) == this)
+            _instances[myType] = null;
     }
 
     private void Update()

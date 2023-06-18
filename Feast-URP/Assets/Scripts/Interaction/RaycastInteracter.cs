@@ -7,12 +7,20 @@ public class RaycastInteracter : MonoBehaviour
     [SerializeField] private LayerMask interactMask = Physics.AllLayers;
     [SerializeField] private float interactRange = 1.5f;
     [SerializeField] private UnityEngine.UI.Image interactIcon;
+    [SerializeField] private Sprite interactSprite;
+    [SerializeField] private Sprite listenSprite;
 
     public bool CanInteract => _targetedInteractable;
 
     private Interactable _targetedInteractable;
+    private MsgBox _toolTipInstance;
 
     public void TryInteract(Pawn interacter) => _targetedInteractable?.Interact(interacter);
+
+    private void Start()
+    {
+        _toolTipInstance = MsgBox.GetInstance(MsgBox.MsgBoxType.ToolTip);
+    }
 
     private void FixedUpdate()
     {
@@ -29,18 +37,36 @@ public class RaycastInteracter : MonoBehaviour
 
         if (_hadInteractable && !_targetedInteractable)
         {
-            MsgBox.HideMessage();
+            _toolTipInstance.HideMessage();
 
             if(interactIcon)
                 interactIcon.enabled = false;
         }
         else if (!_hadInteractable && _targetedInteractable)
         {
-            MsgBox.ShowMessage(GameManager.Instance.UsingGamepadControls()
-                ? "X to interact"
-                : "Left Mouse to interact"
-                , -1f);
+            // Detection of interactable type that gets Tooltip message to show, and shows relevant interact icon
 
+            if (_targetedInteractable.GetType() == typeof(GhostDialogue))
+            {
+                _toolTipInstance.ShowMessage(GameManager.Instance.UsingGamepadControls()
+                    ? "X to listen"
+                    : "Left Mouse to listen"
+                    , -1f);
+
+                if (interactIcon)
+                  interactIcon.sprite = listenSprite;
+            }
+            else
+            {
+                _toolTipInstance.ShowMessage(GameManager.Instance.UsingGamepadControls()
+                    ? "X to interact"
+                    : "Left Mouse to interact"
+                    , -1f);
+
+                if (interactIcon)
+                  interactIcon.sprite = interactSprite;
+            }
+            
             if(interactIcon)
                 interactIcon.enabled = true;
         }
@@ -50,7 +76,7 @@ public class RaycastInteracter : MonoBehaviour
     {
         if(_targetedInteractable)
         {
-            MsgBox.HideMessage();
+            _toolTipInstance.HideMessage();
             if(interactIcon)
                 interactIcon.enabled = false;
             _targetedInteractable = null;

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GhostManager : MonoBehaviour
 {
@@ -61,23 +62,26 @@ public class GhostManager : MonoBehaviour
     #endregion
 
     #region Collection Spawning
-    public void SpawnCollection(Transform[] spawnLocations, float maxDelay) => StartCoroutine(SpawnWithDelayCollection(spawnLocations, maxDelay));
+    public void SpawnCollection(Transform[] spawnLocations, float maxDelay, UnityAction<GhostAI> spawnedGhostAction = null) => StartCoroutine(SpawnWithDelayCollection(spawnLocations, maxDelay, spawnedGhostAction));
 
-    private IEnumerator SpawnWithDelayCollection(Transform[] spawnLocations, float maxDelay)
+    private IEnumerator SpawnWithDelayCollection(Transform[] spawnLocations, float maxDelay, UnityAction<GhostAI> spawnedGhostAction)
     {
         foreach (var t in spawnLocations)
         {
-            SpawnGhost(t.position, t.rotation);
+            GhostAI spawnedGhost = SpawnGhost(t.position, t.rotation);
+            spawnedGhostAction?.Invoke(spawnedGhost);
+
             yield return new WaitForSeconds(Random.Range(0, maxDelay));
         }
     }
 
-    public void DespawnCollection(GhostAI[] ghosts, float maxDelay) => StartCoroutine(DespawnWithDelayCollection(ghosts, maxDelay));
+    public void DespawnCollection(GhostAI[] ghosts, float maxDelay, UnityAction<GhostAI> despawnedGhostAction = null) => StartCoroutine(DespawnWithDelayCollection(ghosts, maxDelay, despawnedGhostAction));
 
-    private IEnumerator DespawnWithDelayCollection(GhostAI[] ghosts, float maxDelay)
+    private IEnumerator DespawnWithDelayCollection(GhostAI[] ghosts, float maxDelay, UnityAction<GhostAI> despawnedGhostAction)
     {
         foreach (var g in ghosts)
         {
+            despawnedGhostAction?.Invoke(g);
             DespawnGhost(g);
             yield return new WaitForSeconds(Random.Range(0, maxDelay));
         }

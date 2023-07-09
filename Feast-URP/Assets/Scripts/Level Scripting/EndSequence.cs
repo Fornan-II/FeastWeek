@@ -22,6 +22,9 @@ public class EndSequence : MonoBehaviour
     [SerializeField] private AnimationCurve onBlobDetectedAudioFilterCurve;
     [SerializeField] private float musicFadeOutTime = 2f;
     [SerializeField] private ParticleSystem ambientParticles;
+    [SerializeField] private Transform[] ghostSpawns;
+    [SerializeField] private float maxGhostSpawnDelay = 1f;
+    [SerializeField] private GhostQuest quest;
 
     private bool _hasBeenActivated = false;
     private bool _deathBlobCollided = false;
@@ -72,6 +75,10 @@ public class EndSequence : MonoBehaviour
         PauseManager.Instance.PausingAllowed = false;
 
         StartCoroutine(RunScreenShakeCoroutine(initialScreenshakeAnimation));
+
+        // Spawn some ghosts outside
+        GhostManager.Instance.SpawnCollection(ghostSpawns, maxGhostSpawnDelay, (GhostAI g) => { g.SetQuest(quest); });
+
 
         bool directorStarted = false;
         float animLength = Util.AnimationCurveLengthTime(ghostBonesAnimation);

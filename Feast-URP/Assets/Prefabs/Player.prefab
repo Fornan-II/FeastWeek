@@ -251,7 +251,7 @@ MonoBehaviour:
   interactRange: 1.5
   interactIcon: {fileID: 0}
   interactSprite: {fileID: 21300000, guid: 96c7d99db2fd49398ed1209e4a96357d, type: 3}
-  listenSprite: {fileID: 21300000, guid: fc90868c843cc8c488a947d168b524bb, type: 3}
+  listenSprite: {fileID: 21300000, guid: e2eb8d50c3fc47e4c8dc4c97a4fc463f, type: 3}
 --- !u!1 &6838422858601821986
 GameObject:
   m_ObjectHideFlags: 0

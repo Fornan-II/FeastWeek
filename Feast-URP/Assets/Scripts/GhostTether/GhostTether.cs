@@ -68,74 +68,33 @@ public class GhostTether : MonoBehaviour
 
     public Chain.Node GetNearestChainNode(Vector3 position)
     {
-        int nearestFixedPointIndex = -1;
-
-        for (int i = 0; i < fixedPoints.Length; ++i)
-        {
-            _GetNearestFixedPointDistances[i] = (fixedPoints[i].Point.position - position).sqrMagnitude;
-            if (nearestFixedPointIndex < 0 || _GetNearestFixedPointDistances[i] < _GetNearestFixedPointDistances[nearestFixedPointIndex])
-            {
-                nearestFixedPointIndex = i;
-            }
-        }
-
         if (_isBroken)
         {
-            // TO DO
-            // For checking adjacent indices, make sure to check that fixedPoint indices are of the same chain.
-            // If they aren't in the same chain, you can just pick one of those ends.
-        }
-        else
-        {
-            int guessStartingIndex = 0;
-            int guessLastIndex = mainChain.PointCount - 1;
+            float mainStartSqrDistance = (mainChain.GetNode(0).Position).sqrMagnitude;
+            float mainEndSqrDistance = (mainChain.GetNode(mainChain.PointCount - 1).Position).sqrMagnitude;
+            float secondaryStartSqrDistance = (_secondaryChain.GetNode(0).Position).sqrMagnitude;
+            float secondaryEndSqrDistance = (_secondaryChain.GetNode(_secondaryChain.PointCount - 1).Position).sqrMagnitude;
 
-            // If end node is nearest, that's it
-            // Actually no
-            // Have to check what index it is?
-            if(nearestFixedPointIndex - 1 < 0)
+            // Gotta find the least of these four distances
+            // That decides which chain is closer
+
+            if( ( mainStartSqrDistance < secondaryStartSqrDistance && mainStartSqrDistance < secondaryEndSqrDistance )
+                || ( mainEndSqrDistance < secondaryStartSqrDistance && mainEndSqrDistance < secondaryEndSqrDistance ))
             {
-                if(fixedPoints[nearestFixedPointIndex].Index == guessStartingIndex)
-                {
-                    return mainChain.GetNode(fixedPoints[nearestFixedPointIndex].Index);
-                }
-                else
-                {
-                    guessLastIndex = fixedPoints[nearestFixedPointIndex].Index;
-                }
-            }
-            else if(nearestFixedPointIndex + 1 >= fixedPoints.Length)
-            {
-                if(fixedPoints[nearestFixedPointIndex].Index == guessLastIndex)
-                {
-                    return mainChain.GetNode(fixedPoints[nearestFixedPointIndex].Index);
-                }
-                else
-                {
-                    guessStartingIndex = fixedPoints[nearestFixedPointIndex].Index;
-                }
-            }
-            else if(_GetNearestFixedPointDistances[nearestFixedPointIndex - 1] < _GetNearestFixedPointDistances[nearestFixedPointIndex + 1])
-            {
-                guessStartingIndex = fixedPoints[nearestFixedPointIndex - 1].Index;
-                guessLastIndex = fixedPoints[nearestFixedPointIndex].Index;
+                return mainChain.GetNearestNode(position);
             }
             else
             {
-                guessStartingIndex = fixedPoints[nearestFixedPointIndex].Index;
-                guessLastIndex = fixedPoints[nearestFixedPointIndex + 1].Index;
+                return _secondaryChain.GetNearestNode(position);
             }
-
-            Debug.DrawLine(position, mainChain.GetNode(guessStartingIndex).Position, Color.magenta);
-            Debug.DrawLine(position, mainChain.GetNode(guessLastIndex).Position, Color.magenta);
-
-            int index = GuessNearestChainNode(position, mainChain, guessStartingIndex, guessLastIndex);
         }
-
-        return null;
+        else
+        {
+            return mainChain.GetNearestNode(position);
+        }
     }
 
-
+    // Unused, not even sure if it works
     private int GuessNearestChainNode(Vector3 position, Chain chain, int startingIndex, int lastIndex)
     {
         // SDF based on sdCapsule from https://iquilezles.org/articles/distfunctions/

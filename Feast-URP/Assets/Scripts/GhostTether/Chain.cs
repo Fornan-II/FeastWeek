@@ -197,6 +197,23 @@ public class Chain
         return positions;
     }
 
+    public Node GetNearestNode(Vector3 position)
+    {
+        int nearestIndex = 0;
+        float nearestSqrDistance = (_nodes[0].Position - position).sqrMagnitude;
+        for (int i = 1; i < _nodes.Length; ++i)
+        {
+            float sqrDistance = (_nodes[i].Position - position).sqrMagnitude;
+            if(sqrDistance < nearestSqrDistance)
+            {
+                nearestIndex = i;
+                nearestSqrDistance = sqrDistance;
+            }
+        }
+
+        return _nodes[nearestIndex];
+    }
+
 #if UNITY_EDITOR
     public virtual void DrawGizmos()
     {

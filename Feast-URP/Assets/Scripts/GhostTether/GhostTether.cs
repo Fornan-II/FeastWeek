@@ -36,6 +36,7 @@ public class GhostTether : MonoBehaviour
     private bool _isBroken = false;
     private Chain _secondaryChain;
     private event System.Action _OnTetherDissolveComplete;
+    private float[] _GetNearestFixedPointDistances;
 
     public void BreakChain()
     {
@@ -65,6 +66,92 @@ public class GhostTether : MonoBehaviour
     public void AddTetherDissolveCompleteListener(System.Action listener) => _OnTetherDissolveComplete += listener;
     public void RemoveTetherDissolveCompleteListener(System.Action listener) => _OnTetherDissolveComplete = listener;
 
+    public Chain.Node GetNearestChainNode(Vector3 position)
+    {
+        int nearestFixedPointIndex = -1;
+
+        for (int i = 0; i < fixedPoints.Length; ++i)
+        {
+            _GetNearestFixedPointDistances[i] = (fixedPoints[i].Point.position - position).sqrMagnitude;
+            if (nearestFixedPointIndex < 0 || _GetNearestFixedPointDistances[i] < _GetNearestFixedPointDistances[nearestFixedPointIndex])
+            {
+                nearestFixedPointIndex = i;
+            }
+        }
+
+        if (_isBroken)
+        {
+            // TO DO
+            // For checking adjacent indices, make sure to check that fixedPoint indices are of the same chain.
+            // If they aren't in the same chain, you can just pick one of those ends.
+        }
+        else
+        {
+            int guessStartingIndex = 0;
+            int guessLastIndex = mainChain.PointCount - 1;
+
+            // If end node is nearest, that's it
+            // Actually no
+            // Have to check what index it is?
+            if(nearestFixedPointIndex - 1 < 0)
+            {
+                if(fixedPoints[nearestFixedPointIndex].Index == guessStartingIndex)
+                {
+                    return mainChain.GetNode(fixedPoints[nearestFixedPointIndex].Index);
+                }
+                else
+                {
+                    guessLastIndex = fixedPoints[nearestFixedPointIndex].Index;
+                }
+            }
+            else if(nearestFixedPointIndex + 1 >= fixedPoints.Length)
+            {
+                if(fixedPoints[nearestFixedPointIndex].Index == guessLastIndex)
+                {
+                    return mainChain.GetNode(fixedPoints[nearestFixedPointIndex].Index);
+                }
+                else
+                {
+                    guessStartingIndex = fixedPoints[nearestFixedPointIndex].Index;
+                }
+            }
+            else if(_GetNearestFixedPointDistances[nearestFixedPointIndex - 1] < _GetNearestFixedPointDistances[nearestFixedPointIndex + 1])
+            {
+                guessStartingIndex = fixedPoints[nearestFixedPointIndex - 1].Index;
+                guessLastIndex = fixedPoints[nearestFixedPointIndex].Index;
+            }
+            else
+            {
+                guessStartingIndex = fixedPoints[nearestFixedPointIndex].Index;
+                guessLastIndex = fixedPoints[nearestFixedPointIndex + 1].Index;
+            }
+
+            Debug.DrawLine(position, mainChain.GetNode(guessStartingIndex).Position, Color.magenta);
+            Debug.DrawLine(position, mainChain.GetNode(guessLastIndex).Position, Color.magenta);
+
+            int index = GuessNearestChainNode(position, mainChain, guessStartingIndex, guessLastIndex);
+        }
+
+        return null;
+    }
+
+
+    private int GuessNearestChainNode(Vector3 position, Chain chain, int startingIndex, int lastIndex)
+    {
+        // SDF based on sdCapsule from https://iquilezles.org/articles/distfunctions/
+        // Thanks Inigo!
+        Vector3 pa = position - chain.GetNode(startingIndex).Position;
+        Vector3 ba = chain.GetNode(lastIndex).Position - chain.GetNode(startingIndex).Position;
+        float h = Mathf.Clamp01(Vector3.Dot(pa, ba) / Vector3.Dot(ba, ba));
+
+        Vector3 nearestPoint = chain.GetNode(startingIndex).Position + ba * h;
+        Debug.DrawLine(chain.GetNode(startingIndex).Position, chain.GetNode(lastIndex).Position, Color.blue);
+        Util.DebugDrawPoint(nearestPoint, Color.yellow);
+
+        return Mathf.FloorToInt(h * (lastIndex - startingIndex));
+    }
+
+    #region Unity Methods
     private void Start()
     {
         if(fixedPoints.Length < 2)
@@ -77,6 +164,9 @@ public class GhostTether : MonoBehaviour
         // We are assuming that fixedPoints is a sorted array, by index.
         mainChain.Initialize(tetherBones.Length, GenerateChainNode);
         mainChain.SetModifyNodeAction(NodeModify_Main);
+
+        // Init memory for GetNearest calculations
+        _GetNearestFixedPointDistances = new float[fixedPoints.Length];
 
         // Init trees
         treeRenderer.sharedMaterial.SetFloat("_TreeStepEdge", treeDissolve.Evaluate(0f));
@@ -102,6 +192,7 @@ public class GhostTether : MonoBehaviour
             }
         }
     }
+    #endregion
 
     private void GenerateChainNode(Chain.Node[] nodes)
     {

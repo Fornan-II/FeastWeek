@@ -46,7 +46,7 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
         _lampActiveCue = AudioManager.PlaySound(lampActiveSFX, lookTransform.transform.position, lampActiveSFXSettings);
         _lampActiveDistortCue = AudioManager.PlaySound(lampActiveDistortSFX, lookTransform.transform.position, lampActiveSFXSettings);
         _lampActiveDistortCue.SetVolume(0f, false);
-        target.AddConnectedLamp(this);
+        target?.AddConnectedLamp(this);
     }
 
     private void Update()

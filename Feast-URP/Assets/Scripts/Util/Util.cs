@@ -95,4 +95,24 @@ public static class Util
         if (setTargetAsParent)
             transform.SetParent(target);
     }
+
+    public static void DebugDrawPoint(Vector3 pos, Color color, float duration = 0.0f)
+    {
+#if UNITY_EDITOR
+        if(duration <= 0.0f)
+        {
+            Debug.DrawRay(pos + new Vector3(-0.05f, -0.05f, -0.05f), new Vector3(0.1f, 0.1f, 0.1f), color);
+            Debug.DrawRay(pos + new Vector3(0.05f, -0.05f, -0.05f), new Vector3(-0.1f, 0.1f, 0.1f), color);
+            Debug.DrawRay(pos + new Vector3(-0.05f, 0.05f, -0.05f), new Vector3(0.1f, -0.1f, 0.1f), color);
+            Debug.DrawRay(pos + new Vector3(0.05f, 0.05f, -0.05f), new Vector3(-0.1f, -0.1f, 0.1f), color);
+        }
+        else
+        {
+            Debug.DrawRay(pos - new Vector3(-0.05f, -0.05f, -0.05f), new Vector3( 0.1f,  0.1f, 0.1f), color, duration);
+            Debug.DrawRay(pos - new Vector3( 0.05f, -0.05f, -0.05f), new Vector3(-0.1f,  0.1f, 0.1f), color, duration);
+            Debug.DrawRay(pos - new Vector3(-0.05f,  0.05f, -0.05f), new Vector3( 0.1f, -0.1f, 0.1f), color, duration);
+            Debug.DrawRay(pos - new Vector3( 0.05f,  0.05f, -0.05f), new Vector3(-0.1f, -0.1f, 0.1f), color, duration);
+        }
+#endif
+    }
 }

@@ -32,6 +32,8 @@ public class GhostTether : MonoBehaviour
     [SerializeField] private Transform[] tetherBones;
     [SerializeField] private Renderer tetherRenderer;
     [SerializeField] private Renderer treeRenderer;
+    [Header("Audio")]
+    [SerializeField] private AudioCue.CueSettings tetherCueSettings;
 
     private bool _isBroken = false;
     private Chain _secondaryChain;

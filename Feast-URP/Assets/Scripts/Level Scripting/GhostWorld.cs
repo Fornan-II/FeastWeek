@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GhostWorld : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField] private MusicManager musicManagerRef;
     [SerializeField] private GhostWorldHelper ghostWorldHelper;
     [SerializeField] private float cameraNoisePulseStrength = 0;

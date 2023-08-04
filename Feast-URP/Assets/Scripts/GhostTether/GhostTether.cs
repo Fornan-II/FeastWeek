@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GhostTether : MonoBehaviour
 {
+#pragma warning disable 0649
+
     [System.Serializable]
     private struct FixedChainPoint
     {
@@ -290,7 +292,7 @@ public class GhostTether : MonoBehaviour
     }
 
     [ContextMenu("Sort Fixed Points array")]
-    private void SortFixedPoints()
+    private void EditorSortFixedPoints()
     {
         UnityEditor.Undo.RecordObject(this, "Sort fixed points array");
         for(int i = 0; i < fixedPoints.Length; ++i)

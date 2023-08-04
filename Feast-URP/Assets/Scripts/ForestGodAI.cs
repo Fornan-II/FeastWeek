@@ -11,6 +11,7 @@ public class ForestGodAI : StateMachine
         SEEK_PLAYER
     }
 
+#pragma warning disable 0649
     [Header("Components")]
     [SerializeField] private Animator anim;
     [SerializeField] private LookAtTarget lookAt;
@@ -75,7 +76,7 @@ public class ForestGodAI : StateMachine
             yield return null;
         }
 
-        _activeState = null;
+        // _activeState = null;
     }
     #endregion
 }

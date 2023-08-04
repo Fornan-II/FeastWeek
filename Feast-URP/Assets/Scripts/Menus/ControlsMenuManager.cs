@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ControlsMenuManager : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField] private GameObject GamepadControls;
     [SerializeField] private GameObject KeyboardMouseControls;
 

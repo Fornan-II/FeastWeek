@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GhostWorldHelper : MonoBehaviour
 {
+#pragma warning disable 0649
     [HideInInspector] public float NoiseStrengthProxy;
 
     [SerializeField] private GhostWorld ghostWorldScript;

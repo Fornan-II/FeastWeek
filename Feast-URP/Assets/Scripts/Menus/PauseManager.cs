@@ -12,6 +12,7 @@ public class PauseManager : MonoBehaviour, DefaultControls.IGlobalActions
     public bool PausingAllowed = false;
     public bool IsPaused => _isPaused;
 
+#pragma warning disable 0649
     [SerializeField] private FadeUI PauseInterface;
     [SerializeField] private UnityEngine.Rendering.Volume PostProcessingVolume;
     [SerializeField] private float PostProcessingFadeSpeed = 0.3f;

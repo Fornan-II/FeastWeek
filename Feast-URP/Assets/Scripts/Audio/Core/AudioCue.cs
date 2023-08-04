@@ -126,7 +126,7 @@ public class AudioCue : MonoBehaviour
 
     private void Update()
     {
-        if (!Source.isPlaying)
+        if (!IsPlaying)
         {
             OnFinishedPlaying?.Invoke();
             OnFinishedPlaying = null;
@@ -201,7 +201,7 @@ public class AudioCue : MonoBehaviour
     {
         SetVolume(initial);
 
-        // Using unscaledDeltaTime because AudioSources are not affected by Time.timeScale
+        // Using unscaledDeltaTime because AudioSources should not be affected by Time.timeScale
         for (float timer = 0.0f; timer < duration; timer += Time.unscaledDeltaTime)
         {
             yield return null;

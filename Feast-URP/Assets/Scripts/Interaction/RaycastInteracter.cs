@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class RaycastInteracter : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField] private LayerMask interactMask = Physics.AllLayers;
     [SerializeField] private float interactRange = 1.5f;
     [SerializeField] private UnityEngine.UI.Image interactIcon;

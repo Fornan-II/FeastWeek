@@ -14,7 +14,6 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
     [SerializeField] private ParticleSystem passiveParticles;
     [Header("Swiveling Settings")]
     [SerializeField] private float lookSpeed = 0.25f;
-    [SerializeField] private float lookInputDecay = 0.07f;
     [SerializeField] private float clampAngle = 60f;
     [Header("Alignment Settings")]
     [SerializeField] private float alignmentCutoff = 0.85f;

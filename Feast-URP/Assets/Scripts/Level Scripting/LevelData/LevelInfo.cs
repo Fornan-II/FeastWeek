@@ -5,6 +5,7 @@ public class LevelInfo : MonoBehaviour
 {
     public static List<LevelInfo> Active { get; private set; } = new List<LevelInfo>(1);
 
+#pragma warning disable 0649
     [SerializeField] private FogData fogData;
 
     private void Awake()

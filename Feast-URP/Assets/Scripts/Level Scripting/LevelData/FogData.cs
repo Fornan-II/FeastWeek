@@ -12,6 +12,7 @@ public class FogData : ScriptableObject
     //public float FogEndDistance => fogEndDistance;
     //public float FogExponent => fogExponent;
 
+#pragma warning disable 0649
     [SerializeField,ColorUsage(true,true)] private Color fogColor;
     [SerializeField] private float fogStartDistance;
     [SerializeField] private float fogEndDistance;

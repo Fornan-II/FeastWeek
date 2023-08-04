@@ -28,6 +28,7 @@ public class GhostDialogueManager : MonoBehaviour
     }
     #endregion
 
+#pragma warning disable 0649
     [SerializeField] private TextAsset rawDialogueOptions;
     [SerializeField] private float messageDuration = 3f;
 

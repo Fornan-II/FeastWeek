@@ -5,6 +5,7 @@ using UnityEngine;
 [Serializable]
 public class BlendOverrideCollection
 {
+#pragma warning disable 0649
     [Serializable]
     public struct BlendOverride
     {

@@ -8,6 +8,7 @@ public class CameraView : MonoBehaviour
     public Quaternion Rotation => transform.rotation;
     public ViewBlend BlendSettings => blendSettings;
 
+#pragma warning disable 0649
     [Header("Field Of View")]
     public bool SetFOVEveryFrame = false;
     public float FieldOfView = 100;

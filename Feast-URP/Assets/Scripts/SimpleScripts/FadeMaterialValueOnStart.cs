@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class FadeMaterialValueOnStart : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private AnimationCurve materialValueFade;
     [SerializeField] private string materialProperty;

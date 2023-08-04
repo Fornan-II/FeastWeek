@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class TerrainFootstepSurface : FootstepSurface
 {
+#pragma warning disable 0649
     [SerializeField] private Mesh terrainMesh;
 
     // https://docs.unity3d.com/ScriptReference/RaycastHit-triangleIndex.html

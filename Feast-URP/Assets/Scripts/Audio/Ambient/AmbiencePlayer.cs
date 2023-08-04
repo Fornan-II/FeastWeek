@@ -4,34 +4,36 @@ using UnityEngine;
 
 public class AmbiencePlayer : MonoBehaviour
 {
+    public ModifierSet BlendFactor = new ModifierSet(1f, ModifierSet.CalculateMode.MIN);
+
 #pragma warning disable 0649
     [Header("Main Settings")]
     [SerializeField] protected float fadeInTime = -1f;
-    [SerializeField] protected AudioSource source;
-    [SerializeField] protected float volume = 0.4f;
+    [SerializeField] protected AudioClip ambienceSFX;
+    [SerializeField] protected AudioCue.CueSettings ambienceSFXSettings = AudioCue.CueSettings.Default;
     [SerializeField] protected AnimationCurve volumeBlend = AnimationCurve.Linear(0f, 0f, 1f, 1f);
     [Header("Low Pass Filter")]
-    [SerializeField] protected AudioLowPassFilter lowPassFilter;
     [SerializeField] protected float cutOffFrequency;
     [SerializeField] protected AnimationCurve lowPassBlend = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
-    public ModifierSet BlendFactor = new ModifierSet(1f, ModifierSet.CalculateMode.MIN);
+    protected AudioCue _activeAmbienceSFX;
+    protected AudioLowPassFilter _lowPassFilter;
 
     public virtual void SetBlend(float value)
     {
-        if (lowPassFilter)
-        {
-            lowPassFilter.cutoffFrequency = cutOffFrequency * lowPassBlend.Evaluate(value * BlendFactor.Value);
-        }
+        _lowPassFilter.cutoffFrequency = cutOffFrequency * lowPassBlend.Evaluate(value * BlendFactor.Value);
 
-        source.volume = volume * volumeBlend.Evaluate(value * BlendFactor.Value);
+        _activeAmbienceSFX.SetVolume(ambienceSFXSettings.Volume * volumeBlend.Evaluate(value * BlendFactor.Value));
     }
 
-    public virtual void StartAudio() => source.Play();
-    public virtual void StopAudio() => source.Stop();
+    public virtual void StartAudio() => _activeAmbienceSFX.Play();
+    public virtual void StopAudio() => _activeAmbienceSFX.Stop(false);
 
-    protected IEnumerator Start()
+    protected virtual IEnumerator Start()
     {
+        _activeAmbienceSFX = AudioManager.PlaySound(ambienceSFX, transform, ambienceSFXSettings);
+        _lowPassFilter = _activeAmbienceSFX.gameObject.AddComponent<AudioLowPassFilter>();
+
         SetBlend(0f);
 
         // Fade-in audio
@@ -48,12 +50,4 @@ public class AmbiencePlayer : MonoBehaviour
 
         BlendFactor.RemoveModifier(instanceID);
     }
-
-#if UNITY_EDITOR
-    protected virtual void OnValidate()
-    {
-        if (!source) source = GetComponent<AudioSource>();
-        if (!lowPassFilter) lowPassFilter = GetComponent<AudioLowPassFilter>();
-    }
-#endif
 }

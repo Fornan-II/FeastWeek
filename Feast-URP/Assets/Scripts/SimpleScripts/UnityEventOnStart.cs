@@ -4,6 +4,7 @@ using UnityEngine.Events;
 
 public class UnityEventOnStart : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField] private float OnStartDelay = 0f;
     [SerializeField] private UnityEvent OnStart;
     [SerializeField] private UnityEvent OnEnabled;

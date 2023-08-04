@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class DeathBlobTriggerVolume : SphereTriggerVolume
 {
+#pragma warning disable 0649
     [SerializeField] private float screenShakeStrength = 0.25f;
     [SerializeField] private float screenShakeBlendExponent = 1f;
 

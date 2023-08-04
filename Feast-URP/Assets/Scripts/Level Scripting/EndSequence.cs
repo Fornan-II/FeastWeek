@@ -22,7 +22,6 @@ public class EndSequence : MonoBehaviour
     [SerializeField] private AnimationCurve onBlobDetectedAudioFilterCurve;
     [SerializeField] private float musicFadeOutTime = 2f;
     [SerializeField] private ParticleSystem ambientParticles;
-    [SerializeField] private float maxGhostSpawnDelay = 1f;
 
     private bool _hasBeenActivated = false;
     private bool _deathBlobCollided = false;

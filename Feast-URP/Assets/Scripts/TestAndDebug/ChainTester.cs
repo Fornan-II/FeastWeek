@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ChainTester : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField] private GhostTether tether;
 
     private void Update()

@@ -55,6 +55,6 @@ public class AmbiencePlayer : MonoBehaviour, ITriggerListener
         BlendFactor.RemoveModifier(instanceID);
     }
 
-    private void OnEnable() => triggerVolume.AddListener(this);
-    private void OnDisable() => triggerVolume.RemoveListener(this);
+    protected virtual void OnEnable() => triggerVolume.AddListener(this);
+    protected virtual void OnDisable() => triggerVolume.RemoveListener(this);
 }

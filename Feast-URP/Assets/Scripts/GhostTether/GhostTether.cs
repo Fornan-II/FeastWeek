@@ -36,6 +36,7 @@ public class GhostTether : MonoBehaviour
     [SerializeField] private Renderer treeRenderer;
     [Header("Audio")]
     [SerializeField] private AudioCue.CueSettings tetherCueSettings;
+    [SerializeField] private Vector2Int getNearestValidIndexRange;
 
     private bool _isBroken = false;
     private Chain _secondaryChain;
@@ -74,27 +75,56 @@ public class GhostTether : MonoBehaviour
     {
         if (_isBroken)
         {
-            float mainStartSqrDistance = (mainChain.GetNode(0).Position).sqrMagnitude;
-            float mainEndSqrDistance = (mainChain.GetNode(mainChain.PointCount - 1).Position).sqrMagnitude;
-            float secondaryStartSqrDistance = (_secondaryChain.GetNode(0).Position).sqrMagnitude;
-            float secondaryEndSqrDistance = (_secondaryChain.GetNode(_secondaryChain.PointCount - 1).Position).sqrMagnitude;
+            Vector2Int mainSearchRange = new Vector2Int(
+                getNearestValidIndexRange.x,
+                Mathf.Min(getNearestValidIndexRange.y, breakIndex - 1)
+                );
+            Vector2Int secondarySearchRange = new Vector2Int(
+                Mathf.Max(getNearestValidIndexRange.x - breakIndex, 0),
+                Mathf.Min(getNearestValidIndexRange.y - breakIndex, _secondaryChain.PointCount - 1)
+                );
 
-            // Gotta find the least of these four distances
-            // That decides which chain is closer
+            bool mainIsSearchable = mainSearchRange.x <= mainSearchRange.y;
+            bool secondaryIsSearchable = secondarySearchRange.x <= secondarySearchRange.y;
 
-            if( ( mainStartSqrDistance < secondaryStartSqrDistance && mainStartSqrDistance < secondaryEndSqrDistance )
-                || ( mainEndSqrDistance < secondaryStartSqrDistance && mainEndSqrDistance < secondaryEndSqrDistance ))
+            if(mainIsSearchable && secondaryIsSearchable)
             {
-                return mainChain.GetNearestNode(position);
+                float mainStartSqrDistance = (mainChain.GetNode(mainSearchRange.x).Position).sqrMagnitude;
+                float mainEndSqrDistance = (mainChain.GetNode(mainSearchRange.y).Position).sqrMagnitude;
+                float secondaryStartSqrDistance = (_secondaryChain.GetNode(secondarySearchRange.x).Position).sqrMagnitude;
+                float secondaryEndSqrDistance = (_secondaryChain.GetNode(secondarySearchRange.y).Position).sqrMagnitude;
+
+                // Gotta find the least of these four distances
+                // That decides which chain is closer
+
+                if ((mainStartSqrDistance < secondaryStartSqrDistance && mainStartSqrDistance < secondaryEndSqrDistance)
+                    || (mainEndSqrDistance < secondaryStartSqrDistance && mainEndSqrDistance < secondaryEndSqrDistance))
+                {
+
+                    return mainChain.GetNearestNode(position, mainSearchRange.x, mainSearchRange.y);
+                }
+                else
+                {
+                    return _secondaryChain.GetNearestNode(position, secondarySearchRange.x, secondarySearchRange.y);
+                }
+            }
+            else if(mainIsSearchable && !secondaryIsSearchable)
+            {
+                return mainChain.GetNearestNode(position, mainSearchRange.x, mainSearchRange.y);
+            }
+            else if(!mainIsSearchable && secondaryIsSearchable)
+            {
+                return _secondaryChain.GetNearestNode(position, secondarySearchRange.x, secondarySearchRange.y);
             }
             else
             {
-                return _secondaryChain.GetNearestNode(position);
+                Debug.LogError("Something has gone horribly wrong with the search range in GetNearestChainNode.");
+                return null;
             }
         }
         else
         {
-            return mainChain.GetNearestNode(position);
+            return mainChain.GetNearestNode(position, getNearestValidIndexRange.x, getNearestValidIndexRange.y);
         }
     }
 

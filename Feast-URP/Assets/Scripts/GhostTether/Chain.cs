@@ -197,11 +197,13 @@ public class Chain
         return positions;
     }
 
-    public Node GetNearestNode(Vector3 position)
+    public Node GetNearestNode(Vector3 position) => GetNearestNode(position, 0, PointCount - 1);
+
+    public Node GetNearestNode(Vector3 position, int firstIndex, int lastIndex)
     {
-        int nearestIndex = 0;
-        float nearestSqrDistance = (_nodes[0].Position - position).sqrMagnitude;
-        for (int i = 1; i < _nodes.Length; ++i)
+        int nearestIndex = firstIndex;
+        float nearestSqrDistance = (_nodes[nearestIndex].Position - position).sqrMagnitude;
+        for (int i = firstIndex + 1; i <= lastIndex; ++i)
         {
             float sqrDistance = (_nodes[i].Position - position).sqrMagnitude;
             if(sqrDistance < nearestSqrDistance)

@@ -23,6 +23,8 @@ public class SphereTriggerVolume : BaseTriggerVolume
 
     private void OnDrawGizmosSelected()
     {
+        if (!isActiveAndEnabled) return;
+
         Gizmos.color = IsOverlapping ? Color.green : Color.yellow;
         Gizmos.matrix = transform.localToWorldMatrix;
         Gizmos.DrawWireSphere(Vector3.zero, radius);

@@ -18856,6 +18856,7 @@ MonoBehaviour:
     MinDistance: 0
     MaxDistance: 0
     Is3D: 0
+  getNearestValidIndexRange: {x: 10, y: 30}
 --- !u!1 &5790581725766503745
 GameObject:
   m_ObjectHideFlags: 0

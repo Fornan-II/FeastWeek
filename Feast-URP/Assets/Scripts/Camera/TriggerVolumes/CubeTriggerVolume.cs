@@ -31,6 +31,8 @@ public class CubeTriggerVolume : BaseTriggerVolume
 #if UNITY_EDITOR
     private void OnValidate()
     {
+        if (!isActiveAndEnabled) return;
+
         halfExtents.x = Mathf.Max(halfExtents.x, 0f);
         halfExtents.y = Mathf.Max(halfExtents.y, 0f);
         halfExtents.z = Mathf.Max(halfExtents.z, 0f);

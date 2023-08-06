@@ -7,18 +7,16 @@ public class GhostTetherAudio : AmbiencePlayer
 #pragma warning disable 0649
     [SerializeField] private GhostTether tether;
     [SerializeField] private AudioClip distantAmbienceSFX;
-    [SerializeField] private AnimationCurve distanceBlend;
     [SerializeField] private AnimationCurve distanceMix;
 
     private AudioCue _activeDistantAmbienceSFX;
     private AudioLowPassFilter _distantLowPassFilter;
-    private float _cachedDistanceToCamera;
     private bool _audioActive = false;
 
     protected override IEnumerator Start()
     {
-        _activeAmbienceSFX = AudioManager.PlaySound(distantAmbienceSFX, transform, ambienceSFXSettings);
-        _distantLowPassFilter = _activeAmbienceSFX.gameObject.AddComponent<AudioLowPassFilter>();
+        _activeDistantAmbienceSFX = AudioManager.PlaySound(distantAmbienceSFX, transform, ambienceSFXSettings);
+        _distantLowPassFilter = _activeDistantAmbienceSFX.gameObject.AddComponent<AudioLowPassFilter>();
 
         return base.Start();
     }
@@ -27,59 +25,33 @@ public class GhostTetherAudio : AmbiencePlayer
     {
         // Make work for an arbitrary number of tethers, as opposed to one.
         // There are two tethers!
-        // Replace basic AudioSource with AudioCue
 
-        if(!MainCamera.IsValid())
-        {
-            if(_audioActive)
-            {
-                StopAudio();
-                _audioActive = false;
-            }
-
-            return;
-        }
+        if (!MainCamera.IsValid()) return;
 
         Chain.Node tetherNode = tether.GetNearestChainNode(MainCamera.RootTransform.position);
         transform.position = tetherNode.Position;
-
-        _cachedDistanceToCamera = transform.InverseTransformPoint(MainCamera.RootTransform.position).magnitude;
-
-        if(_cachedDistanceToCamera <= Util.AnimationCurveLengthTime(distanceBlend))
-        {
-            SetBlend(distanceBlend.Evaluate(_cachedDistanceToCamera));
-
-            if(!_audioActive)
-            {
-                StartAudio();
-                _audioActive = true;
-            }
-        }
-        else if(_audioActive)
-        {
-            StopAudio();
-            _audioActive = false;
-        }
     }
 
-    public override void SetBlend(float value)
+    public override void OnOverlap()
     {
-        base.SetBlend(value);
+        base.OnOverlap();
 
+        _activeDistantAmbienceSFX.SetVolume(_activeAmbienceSFX.Settings.Volume);
         _distantLowPassFilter.cutoffFrequency = _lowPassFilter.cutoffFrequency;
-        AudioCueEffects.Mix(_activeAmbienceSFX, _activeDistantAmbienceSFX, distanceMix.Evaluate(_cachedDistanceToCamera));
+
+        AudioCueEffects.Mix(_activeDistantAmbienceSFX, _activeAmbienceSFX, distanceMix.Evaluate(triggerVolume.BlendValue));
     }
 
-    public override void StartAudio()
+    public override void OnOverlapStart()
     {
-        base.StartAudio();
+        base.OnOverlapStart();
         _activeDistantAmbienceSFX.Play();
     }
 
-    public override void StopAudio()
+    public override void OnOverlapExit()
     {
-        base.StopAudio();
-        _activeDistantAmbienceSFX.Stop(false);
+        base.OnOverlapExit();
+        _activeDistantAmbienceSFX.Pause();
     }
 
 #if UNITY_EDITOR
@@ -87,7 +59,6 @@ public class GhostTetherAudio : AmbiencePlayer
     {
         Gizmos.color = _audioActive ? Color.green : Color.yellow;
         Gizmos.matrix = transform.localToWorldMatrix;
-        Gizmos.DrawWireSphere(Vector3.zero, Util.AnimationCurveLengthTime(distanceBlend));
     }
 #endif
 }

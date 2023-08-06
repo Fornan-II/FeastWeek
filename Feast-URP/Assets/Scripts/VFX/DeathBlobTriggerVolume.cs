@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DeathBlobTriggerVolume : SphereTriggerVolume
+public class DeathBlobTriggerVolume : SphereTriggerVolume, ITriggerListener
 {
 #pragma warning disable 0649
     [SerializeField] private float screenShakeStrength = 0.25f;
@@ -25,7 +25,7 @@ public class DeathBlobTriggerVolume : SphereTriggerVolume
 
     private Action<float> _screenShakeEffect;
 
-    private float BlendedScreenShakeStrength() => Mathf.Max(Mathf.Epsilon, screenShakeStrength * Mathf.Pow(blendValue, screenShakeBlendExponent));
+    private float BlendedScreenShakeStrength() => Mathf.Max(Mathf.Epsilon, screenShakeStrength * Mathf.Pow(BlendValue, screenShakeBlendExponent));
     private float BlendedNoiseStrength()
     {
         Vector2 vecToCenter = Util.GetXZPosition(transform.position - MainCamera.Camera.transform.position).normalized;
@@ -33,11 +33,18 @@ public class DeathBlobTriggerVolume : SphereTriggerVolume
         float viewDot = Mathf.Clamp01(Vector2.Dot(
             vecToCenter,
             lookDir));
-        return Mathf.Lerp(MainCamera.Effects.DefaultCameraNoise, nearBlobCameraNoise, blendValue * blendValue * viewDot);
+        return Mathf.Lerp(MainCamera.Effects.DefaultCameraNoise, nearBlobCameraNoise, BlendValue * BlendValue * viewDot);
+    }
+
+    private void OnEnable()
+    {
+        AddListener(this);
     }
 
     private void OnDisable()
     {
+        RemoveListener(this);
+
         if (_screenShakeEffect != null)
         {
             _screenShakeEffect(0f);
@@ -45,7 +52,7 @@ public class DeathBlobTriggerVolume : SphereTriggerVolume
         }
     }
 
-    protected override void OnOverlapStart()
+    public void OnOverlapStart()
     {
         _screenShakeEffect = MainCamera.Effects.ContinuousScreenShake(BlendedScreenShakeStrength());
 
@@ -55,19 +62,19 @@ public class DeathBlobTriggerVolume : SphereTriggerVolume
         MainCamera.Effects.SetCameraNoise(BlendedNoiseStrength());
     }
 
-    protected override void OnOverlap()
+    public void OnOverlap()
     {
         _screenShakeEffect(BlendedScreenShakeStrength());
 
-        musicManagerRef.MixSongs(musicManagerRef.ActiveSongs[0], dangerMusicSong, dangerAudioCurve.Evaluate(blendValue));
+        musicManagerRef.MixSongs(musicManagerRef.ActiveSongs[0], dangerMusicSong, dangerAudioCurve.Evaluate(BlendValue));
 
-        controllerRumbler.LowFrequencyRumble = lowFreqRumbleCurve.Evaluate(blendValue);
-        controllerRumbler.HighFrequencyRumble = highFreqRumbleCurve.Evaluate(blendValue);
+        controllerRumbler.LowFrequencyRumble = lowFreqRumbleCurve.Evaluate(BlendValue);
+        controllerRumbler.HighFrequencyRumble = highFreqRumbleCurve.Evaluate(BlendValue);
 
         MainCamera.Effects.SetCameraNoise(BlendedNoiseStrength());
     }
 
-    protected override void OnOverlapExit()
+    public void OnOverlapExit()
     {
         _screenShakeEffect(0f);
         _screenShakeEffect = null;

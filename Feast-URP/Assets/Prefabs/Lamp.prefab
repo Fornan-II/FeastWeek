@@ -14814,7 +14814,6 @@ MonoBehaviour:
   tether: {fileID: 2841611167520308591}
   passiveParticles: {fileID: 2434337014525028480}
   lookSpeed: 0.06
-  lookInputDecay: 0.5
   clampAngle: 20
   alignmentCutoff: 0.8
   sensitivityCurve:
@@ -14932,7 +14931,7 @@ MonoBehaviour:
       m_RotationOrder: 4
   onConnectionBrokenSFX: {fileID: 8300000, guid: 017da89a49f5898469a92f70f69092f1, type: 3}
   onConnectionBrokenSFXSettings:
-    Group: 0
+    Group: 1
     Loop: 0
     Volume: 1
     PitchRange: {x: 1, y: 1}
@@ -18849,6 +18848,14 @@ MonoBehaviour:
   - {fileID: 2831602865027696349}
   tetherRenderer: {fileID: 3359492494297051753}
   treeRenderer: {fileID: 0}
+  tetherCueSettings:
+    Group: 0
+    Loop: 0
+    Volume: 0
+    PitchRange: {x: 0, y: 0}
+    MinDistance: 0
+    MaxDistance: 0
+    Is3D: 0
 --- !u!1 &5790581725766503745
 GameObject:
   m_ObjectHideFlags: 0

@@ -23,7 +23,7 @@ public static class Util
 
     public static bool IndexIsInRange(int index, int arrayLength) => 0 <= index && index < arrayLength;
 
-    public static float AnimationCurveLengthTime(AnimationCurve curve) => curve[curve.length - 1].time;
+    public static float AnimationCurveLengthTime(AnimationCurve curve) => curve.length > 0 ? curve[curve.length - 1].time : 0f;
 
     public static float RoundToPlaces(float value, int decimalPlaces = 0)
     {

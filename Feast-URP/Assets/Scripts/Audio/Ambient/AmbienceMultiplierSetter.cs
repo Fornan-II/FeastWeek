@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AmbienceMultiplierSetter : CubeTriggerVolume
+public class AmbienceMultiplierSetter : CubeTriggerVolume, ITriggerListener
 {
 #pragma warning disable 0649
     [SerializeField] private AmbiencePlayer targetAmbience;
@@ -15,12 +15,17 @@ public class AmbienceMultiplierSetter : CubeTriggerVolume
         _cachedInstanceID = GetInstanceID();
     }
 
-    protected override void OnOverlap()
+    private void OnEnable() => AddListener(this);
+    private void OnDisable() => RemoveListener(this);
+
+    public void OnOverlapStart() { }
+
+    public void OnOverlap()
     {
-        targetAmbience.BlendFactor.SetModifier(_cachedInstanceID, 1f - Mathf.Lerp(blendRemap.x, blendRemap.y, blendValue));
+        targetAmbience.BlendFactor.SetModifier(_cachedInstanceID, 1f - Mathf.Lerp(blendRemap.x, blendRemap.y, BlendValue));
     }
 
-    protected override void OnOverlapExit()
+    public void OnOverlapExit()
     {
         targetAmbience.BlendFactor.RemoveModifier(_cachedInstanceID);
     }

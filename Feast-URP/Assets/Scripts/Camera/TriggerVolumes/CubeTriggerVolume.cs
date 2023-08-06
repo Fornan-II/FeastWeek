@@ -7,8 +7,6 @@ public class CubeTriggerVolume : BaseTriggerVolume
     [SerializeField] private Vector3 halfExtents = Vector3.one * 0.5f;
     [SerializeField] private Vector3 innerHalfExtents = Vector3.one * 0.5f;
 
-    protected float blendValue;
-
     protected override bool IsMainCameraWithin()
     {
         Vector3 cameraLocalPosition = transform.InverseTransformPoint(MainCamera.RootTransform.position);
@@ -16,12 +14,12 @@ public class CubeTriggerVolume : BaseTriggerVolume
         cameraLocalPosition.y = Mathf.Abs(cameraLocalPosition.y);
         cameraLocalPosition.z = Mathf.Abs(cameraLocalPosition.z);
 
-        blendValue = Mathf.Min(
+        BlendValue = Mathf.Min(
             Mathf.Clamp01(Mathf.InverseLerp(halfExtents.x, innerHalfExtents.x, cameraLocalPosition.x)),
             Mathf.Clamp01(Mathf.InverseLerp(halfExtents.y, innerHalfExtents.y, cameraLocalPosition.y))
             );
-        blendValue = Mathf.Min(
-            blendValue,
+        BlendValue = Mathf.Min(
+            BlendValue,
             Mathf.Clamp01(Mathf.InverseLerp(halfExtents.z, innerHalfExtents.z, cameraLocalPosition.z))
             );
         // Calling Mathf.Min twice with 2 parameters instead of once with 3 parameters because C# params allocates a little bit of garbage.

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraNoiseVolume : SphereTriggerVolume
+public class CameraNoiseVolume : SphereTriggerVolume, ITriggerListener
 {
     // Currently having multiple camera noise effects at once is not supported.
     // For now there are no instances in the game of this, so it's fine.
@@ -15,21 +15,35 @@ public class CameraNoiseVolume : SphereTriggerVolume
     private float _startingNoisePulseSpeed    = 1;
     private float _startingNoisePulseExponent = 1;
 
-    protected override void OnOverlapStart()
+    private void OnEnable()
     {
+        AddListener(this);
+    }
+
+    private void OnDisable()
+    {
+        RemoveListener(this);
+    }
+
+    public void OnOverlapStart()
+    {
+        if (!MainCamera.IsValid()) return;
+
         _startingNoisePulseStrength = MainCamera.Effects.NoisePulseStrength;
         _startingNoisePulseSpeed    = MainCamera.Effects.NoisePulseSpeed;
         _startingNoisePulseExponent = MainCamera.Effects.NoisePulseExponent;
     }
 
-    protected override void OnOverlap()
+    public void OnOverlap()
     {
-        MainCamera.Effects.SetCameraNoisePulseStrength ( Mathf.Lerp(_startingNoisePulseStrength, noisePulseStrength, blendValue ));
-        MainCamera.Effects.SetCameraNoisePulseSpeed    ( Mathf.Lerp(_startingNoisePulseSpeed,    noisePulseSpeed,    blendValue ));
-        MainCamera.Effects.SetCameraNoisePulseExponent ( Mathf.Lerp(_startingNoisePulseExponent, noisePulseExponent, blendValue ));
+        if (!MainCamera.IsValid()) return;
+
+        MainCamera.Effects.SetCameraNoisePulseStrength ( Mathf.Lerp(_startingNoisePulseStrength, noisePulseStrength, BlendValue ));
+        MainCamera.Effects.SetCameraNoisePulseSpeed    ( Mathf.Lerp(_startingNoisePulseSpeed,    noisePulseSpeed,    BlendValue ));
+        MainCamera.Effects.SetCameraNoisePulseExponent ( Mathf.Lerp(_startingNoisePulseExponent, noisePulseExponent, BlendValue ));
     }
 
-    protected override void OnOverlapExit()
+    public void OnOverlapExit()
     {
         if (!MainCamera.IsValid()) return;
 

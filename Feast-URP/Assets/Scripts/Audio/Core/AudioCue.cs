@@ -94,6 +94,7 @@ public class AudioCue : MonoBehaviour
     protected Coroutine _activeFadeRoutine;
     public AudioSource Source => _source;
     public bool IsPlaying => _source.isPlaying;
+    public bool IsPaused { get; protected set; } = false;
     public bool IsFading => _activeFadeRoutine != null;
 
 
@@ -126,7 +127,7 @@ public class AudioCue : MonoBehaviour
 
     private void Update()
     {
-        if (!IsPlaying)
+        if (!IsPlaying && !IsPaused)
         {
             OnFinishedPlaying?.Invoke();
             OnFinishedPlaying = null;
@@ -166,14 +167,31 @@ public class AudioCue : MonoBehaviour
         }
     }
 
-    public void Play() => Source.Play();
-    public void Stop(bool setInactive = true)
+    public void Play()
+    {
+        if(IsPaused)
+        {
+            Source.UnPause();
+            IsPaused = false;
+        }
+        else
+        {
+            Source.Play();
+        }
+    }
+
+    public void Pause()
+    {
+        Source.Pause();
+        IsPaused = true;
+    }
+
+    public void Stop()
     {
         Source.Stop();
-
-        if (setInactive)
-            SetInactive();
+        SetInactive();
     }
+
     public void SetClip(AudioClip clip) => Source.clip = clip;
     public void ResetClip() => Source.clip = null;
 

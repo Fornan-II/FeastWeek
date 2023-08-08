@@ -4,32 +4,51 @@ using UnityEngine;
 
 public class CubeTriggerVolume : BaseTriggerVolume
 {
-    [SerializeField] private Vector3 halfExtents = Vector3.one * 0.5f;
-    [SerializeField] private Vector3 innerHalfExtents = Vector3.one * 0.5f;
+    [SerializeField] protected Vector3 halfExtents = Vector3.one * 0.5f;
+    [SerializeField] protected Vector3 innerHalfExtents = Vector3.one * 0.5f;
+    
+    protected float GetCubeBlendValue(Vector3 localPosition)
+    {
+        localPosition.x = Mathf.Abs(localPosition.x);
+        localPosition.y = Mathf.Abs(localPosition.y);
+        localPosition.z = Mathf.Abs(localPosition.z);
+
+        // ternary checks to avoid divide by zero edge case
+        Vector3 blendVector = new Vector3(
+            halfExtents.x != innerHalfExtents.x ? Mathf.InverseLerp(halfExtents.x, innerHalfExtents.x, localPosition.x) : 1f,
+            halfExtents.y != innerHalfExtents.y ? Mathf.InverseLerp(halfExtents.y, innerHalfExtents.y, localPosition.y) : 1f,
+            halfExtents.z != innerHalfExtents.z ? Mathf.InverseLerp(halfExtents.z, innerHalfExtents.z, localPosition.z) : 1f
+            );
+
+        // Calling Mathf.Min twice with 2 parameters instead of once with 3 parameters because C# params allocates a little bit of garbage.
+        // The amount is minor; but considering this is called every frame, it doesn't hurt to avoid allocating unnecessary garbage.
+        float blendValue = Mathf.Min(blendVector.x, blendVector.y);
+        blendValue = Mathf.Min(blendValue, blendVector.z);
+
+        return blendValue;
+    }
 
     protected override bool IsMainCameraWithin()
     {
         Vector3 cameraLocalPosition = transform.InverseTransformPoint(MainCamera.RootTransform.position);
+
+        BlendValue = GetCubeBlendValue(cameraLocalPosition);
+
         cameraLocalPosition.x = Mathf.Abs(cameraLocalPosition.x);
         cameraLocalPosition.y = Mathf.Abs(cameraLocalPosition.y);
         cameraLocalPosition.z = Mathf.Abs(cameraLocalPosition.z);
 
-        BlendValue = Mathf.Min(
-            Mathf.Clamp01(Mathf.InverseLerp(halfExtents.x, innerHalfExtents.x, cameraLocalPosition.x)),
-            Mathf.Clamp01(Mathf.InverseLerp(halfExtents.y, innerHalfExtents.y, cameraLocalPosition.y))
-            );
-        BlendValue = Mathf.Min(
-            BlendValue,
-            Mathf.Clamp01(Mathf.InverseLerp(halfExtents.z, innerHalfExtents.z, cameraLocalPosition.z))
-            );
-        // Calling Mathf.Min twice with 2 parameters instead of once with 3 parameters because C# params allocates a little bit of garbage.
-        // The amount is minor; but considering this is called every frame, it doesn't hurt to avoid allocating unnecessary garbage.
-
         return cameraLocalPosition.x < halfExtents.x && cameraLocalPosition.y < halfExtents.y && cameraLocalPosition.z < halfExtents.z;
     }
 
+    public void CopyFrom(CubeTriggerVolume other)
+    {
+        halfExtents = other.halfExtents;
+        innerHalfExtents = other.innerHalfExtents;
+    }
+
 #if UNITY_EDITOR
-    private void OnValidate()
+    protected virtual void OnValidate()
     {
         if (!isActiveAndEnabled) return;
 
@@ -41,12 +60,48 @@ public class CubeTriggerVolume : BaseTriggerVolume
         innerHalfExtents.z = Mathf.Max(innerHalfExtents.z, 0f);
     }
 
-    private void OnDrawGizmosSelected()
+    [SerializeField, Min(0)] private int Editor_BlendGizmoCount = 3;
+    protected virtual void OnDrawGizmosSelected()
     {
-        Gizmos.color = IsOverlapping ? Color.green : Color.yellow;
         Gizmos.matrix = transform.localToWorldMatrix;
-        Gizmos.DrawWireCube(Vector3.zero, halfExtents * 2f);
-        Gizmos.DrawWireCube(Vector3.zero, innerHalfExtents * 2f);
+        
+        if(IsOverlapping)
+        {
+            Gizmos.color = Color.Lerp(Color.yellow, Color.green, BlendValue);
+            Gizmos.DrawWireCube(Vector3.zero, transform.InverseTransformPoint(MainCamera.RootTransform.position) * 2f);
+        }
+
+        // Always show bounds
+        int divCount = Mathf.Max(2, Editor_BlendGizmoCount);
+        Vector3 delta = (halfExtents - innerHalfExtents) / (divCount - 1);
+        for (int div = 0; div < divCount; ++div)
+        {
+            Vector3 offset = innerHalfExtents + delta * div;
+            Color col = Color.Lerp(Color.yellow, Color.green, GetCubeBlendValue(offset));
+            col.a = (div == 0 || div == divCount - 1) ? 1f : 0.5f;
+            Gizmos.color = col;
+            Gizmos.DrawWireCube(Vector3.zero, offset * 2f);
+        }
+
+        // Earlier debug code for visualizing the actual value distribution for blend.
+        //
+        //int gridDensity = 3;
+        //Vector3 delta = (halfExtents - innerHalfExtents) / (gridDensity - 1);
+        //
+        //for (float x = 0; x < gridDensity; ++x)
+        //{
+        //    for (float y = 0; y < gridDensity; ++y)
+        //    {
+        //        for (float z = 0; z < gridDensity; ++z)
+        //        {
+        //            Vector3 localDelta = new Vector3(x * delta.x, y * delta.y, z * delta.z);
+        //
+        //            Vector3 pos = localDelta + halfExtents;
+        //            float value = GetCubeBlendValue(pos);
+        //            Util.DebugDrawPoint(transform.TransformPoint(pos), new Color(0f, value, value));
+        //        }
+        //    }
+        //}
     }
 #endif
 }

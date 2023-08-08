@@ -5,6 +5,7 @@ using UnityEngine;
 public class AmbienceMultiplierSetter : CubeTriggerVolume, ITriggerListener
 {
 #pragma warning disable 0649
+    [SerializeReference] private BaseTriggerVolume triggerVolume;
     [SerializeField] private AmbiencePlayer[] targetAmbience;
     [SerializeField] private Vector2 blendRemap = new Vector2(0f, 1f);
 
@@ -15,8 +16,8 @@ public class AmbienceMultiplierSetter : CubeTriggerVolume, ITriggerListener
         _cachedInstanceID = GetInstanceID();
     }
 
-    private void OnEnable() => AddListener(this);
-    private void OnDisable() => RemoveListener(this);
+    private void OnEnable() => triggerVolume.AddListener(this);
+    private void OnDisable() => triggerVolume.RemoveListener(this);
 
     public void OnOverlapStart() { }
 
@@ -24,7 +25,7 @@ public class AmbienceMultiplierSetter : CubeTriggerVolume, ITriggerListener
     {
         foreach(var ambience in targetAmbience)
         {
-            ambience.BlendFactor.SetModifier(_cachedInstanceID, 1f - Mathf.Lerp(blendRemap.x, blendRemap.y, BlendValue));
+            ambience.BlendFactor.SetModifier(_cachedInstanceID, 1f - Mathf.Lerp(blendRemap.x, blendRemap.y, triggerVolume.BlendValue));
         }
     }
 
@@ -35,4 +36,18 @@ public class AmbienceMultiplierSetter : CubeTriggerVolume, ITriggerListener
             ambience.BlendFactor.RemoveModifier(_cachedInstanceID);
         }
     }
+
+#if UNITY_EDITOR
+    [UnityEditor.MenuItem("Tools/Misc/Convert AmbienceMultiplierSetters")]
+    private static void EDITOR_ConvertOld()
+    {
+        AmbienceMultiplierSetter[] allAMS = FindObjectsOfType<AmbienceMultiplierSetter>();
+        foreach(var ams in allAMS)
+        {
+            UnityEditor.Undo.RecordObject(ams.gameObject, $"Updating AmbienceMultiplierSetter {ams.GetInstanceID()}");
+            CubeTriggerVolume ctv = ams.gameObject.AddComponent<CubeTriggerVolume>();
+            ctv.CopyFrom(ams);
+        }
+    }
+#endif
 }

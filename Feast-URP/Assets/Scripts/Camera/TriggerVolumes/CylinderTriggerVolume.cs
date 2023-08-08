@@ -66,6 +66,16 @@ public class CylinderTriggerVolume : BaseTriggerVolume
 
         DrawCylinderGizmo(radius, height, IsOverlapping ? Color.green : Color.yellow);
         DrawCylinderGizmo(innerRadius, innerHeight, IsOverlapping ? Color.green : Color.yellow);
+
+        if(IsOverlapping)
+        {
+            Vector3 pos = transform.InverseTransformPoint(MainCamera.RootTransform.position);
+            DrawCylinderGizmo(
+                Util.GetXZPosition(pos).magnitude,
+                Mathf.Abs(pos.y),
+                Color.Lerp(Color.yellow, Color.green, BlendValue)
+                );
+        }
     }
 #endif
 }

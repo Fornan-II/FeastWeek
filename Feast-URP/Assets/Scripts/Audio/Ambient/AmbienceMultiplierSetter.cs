@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AmbienceMultiplierSetter : CubeTriggerVolume, ITriggerListener
+public class AmbienceMultiplierSetter : MonoBehaviour, ITriggerListener
 {
 #pragma warning disable 0649
     [SerializeReference] private BaseTriggerVolume triggerVolume;
@@ -36,18 +36,4 @@ public class AmbienceMultiplierSetter : CubeTriggerVolume, ITriggerListener
             ambience.BlendFactor.RemoveModifier(_cachedInstanceID);
         }
     }
-
-#if UNITY_EDITOR
-    [UnityEditor.MenuItem("Tools/Misc/Convert AmbienceMultiplierSetters")]
-    private static void EDITOR_ConvertOld()
-    {
-        AmbienceMultiplierSetter[] allAMS = FindObjectsOfType<AmbienceMultiplierSetter>();
-        foreach(var ams in allAMS)
-        {
-            UnityEditor.Undo.RecordObject(ams.gameObject, $"Updating AmbienceMultiplierSetter {ams.GetInstanceID()}");
-            CubeTriggerVolume ctv = ams.gameObject.AddComponent<CubeTriggerVolume>();
-            ctv.CopyFrom(ams);
-        }
-    }
-#endif
 }

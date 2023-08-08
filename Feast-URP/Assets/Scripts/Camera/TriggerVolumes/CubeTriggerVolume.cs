@@ -41,12 +41,6 @@ public class CubeTriggerVolume : BaseTriggerVolume
         return cameraLocalPosition.x < halfExtents.x && cameraLocalPosition.y < halfExtents.y && cameraLocalPosition.z < halfExtents.z;
     }
 
-    public void CopyFrom(CubeTriggerVolume other)
-    {
-        halfExtents = other.halfExtents;
-        innerHalfExtents = other.innerHalfExtents;
-    }
-
 #if UNITY_EDITOR
     protected virtual void OnValidate()
     {

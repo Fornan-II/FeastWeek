@@ -118,7 +118,7 @@ public class MainCamera : MonoBehaviour
         Effects.SetColorInvert(false);
 
         // Clean up noise
-        Effects.ResetCameraNoise();
+        Effects.ResetCameraNoiseModifiers();
     }
 
     private void OnValidate()

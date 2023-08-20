@@ -58,8 +58,6 @@ public class DeathBlobTriggerVolume : SphereTriggerVolume, ITriggerListener
 
         dangerMusicSong = musicManagerRef.PlaySongDirectly(dangerMusic, true);
         dangerMusicSong.SongCue.SetVolume(0f);
-
-        MainCamera.Effects.SetCameraNoise(BlendedNoiseStrength());
     }
 
     public void OnOverlap()
@@ -71,7 +69,7 @@ public class DeathBlobTriggerVolume : SphereTriggerVolume, ITriggerListener
         controllerRumbler.LowFrequencyRumble = lowFreqRumbleCurve.Evaluate(BlendValue);
         controllerRumbler.HighFrequencyRumble = highFreqRumbleCurve.Evaluate(BlendValue);
 
-        MainCamera.Effects.SetCameraNoise(BlendedNoiseStrength());
+        MainCamera.Effects.ApplyCameraNoise(GetInstanceID(), BlendedNoiseStrength());
     }
 
     public void OnOverlapExit()
@@ -86,7 +84,7 @@ public class DeathBlobTriggerVolume : SphereTriggerVolume, ITriggerListener
         controllerRumbler.LowFrequencyRumble = 0f;
         controllerRumbler.HighFrequencyRumble = 0f;
 
-        MainCamera.Effects.ResetCameraNoise();
+        MainCamera.Effects.RemoveCameraNoise(GetInstanceID());
     }
 
 #if UNITY_EDITOR

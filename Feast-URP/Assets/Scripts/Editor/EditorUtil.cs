@@ -24,7 +24,7 @@ public static class EditorUtil
     {
         if(MainCamera.IsValid())
         {
-            MainCamera.Effects.ResetCameraNoise();
+            MainCamera.Effects.ResetCameraNoiseModifiers();
             return;
         }
 

@@ -12,12 +12,10 @@ public class CameraFX
         public Quaternion rotation;
     }
 
-    public float DefaultCameraNoise => defaultCameraNoise;
-
-    public float CameraNoise { get; private set; } = 0.003f;
-    public float NoisePulseStrength { get; private set; } = 0;
-    public float NoisePulseSpeed { get; private set; } = 1;
-    public float NoisePulseExponent { get; private set; } = 1;
+    public float DefaultCameraNoise => cameraNoise.BaseValue;
+    public float DefaultCameraNoisePulseStrength => noisePulseStrength.BaseValue;
+    public float DefaultCameraNoisePulseSpeed => noisePulseSpeed.BaseValue;
+    public float DefaultCameraNoisePulseExponent => noisePulseExponent.BaseValue;
 
     // Properties
     [Header("Fade")]
@@ -29,7 +27,10 @@ public class CameraFX
     [SerializeField] private float defaultCameraShakeFrequency = 18f;
     [SerializeField] private float cameraShakeRotationMultiplier = 5f;
     [Header("Noise")]
-    [SerializeField] private float defaultCameraNoise = 0.003f;
+    [SerializeField] private ModifierSet cameraNoise = new ModifierSet(0.003f, ModifierSet.CalculateMode.MAX);
+    [SerializeField] private ModifierSet noisePulseStrength = new ModifierSet(0, ModifierSet.CalculateMode.MAX);
+    [SerializeField] private ModifierSet noisePulseSpeed = new ModifierSet(1, ModifierSet.CalculateMode.MAX);
+    [SerializeField] private ModifierSet noisePulseExponent = new ModifierSet(1, ModifierSet.CalculateMode.MAX);
 
     // Private members
     private MainCamera _mainCameraRef;
@@ -40,13 +41,12 @@ public class CameraFX
     {
         _mainCameraRef = mainCameraInstance;
         ResetFadeColorToDefault();
-        ResetCameraNoise();
     }
 
     public void Update(float deltaTime)
     {
         ApplyTransformEffects();
-        ApplyCameraNoisePulse();
+        ApplyCameraNoise();
     }
 
     #region Crossfading
@@ -80,16 +80,37 @@ public class CameraFX
     
     public void SetColorInvert(bool inverted) => Shader.SetGlobalFloat("_InvertValue", inverted ? 1 : 0);
 
-    public void SetCameraNoise(float value)
+    public void ApplyCameraNoise(int sourceID, float value)
     {
-        CameraNoise = value;
-        Shader.SetGlobalFloat("_NoiseStrength", value);
+        cameraNoise.SetModifier(sourceID, value);
+        Shader.SetGlobalFloat("_NoiseStrength", cameraNoise.Value);
     }
-    public void ResetCameraNoise() => SetCameraNoise(defaultCameraNoise);
+    public void RemoveCameraNoise(int sourceID)
+    {
+        cameraNoise.RemoveModifier(sourceID);
+        Shader.SetGlobalFloat("_NoiseStrength", cameraNoise.Value);
+    }
+    public void ResetCameraNoiseModifiers()
+    {
+        cameraNoise.ClearModifiers();
+        Shader.SetGlobalFloat("_NoiseStrength", cameraNoise.Value);
+    }
 
-    public void SetCameraNoisePulseStrength(float strength) => NoisePulseStrength = strength;
-    public void SetCameraNoisePulseSpeed(float speed) => NoisePulseSpeed = speed;
-    public void SetCameraNoisePulseExponent(float exponent) => NoisePulseExponent = exponent;
+
+    public void ApplyCameraNoisePulse(int sourceID, float strength, float speed, float exponent)
+    {
+        noisePulseStrength.SetModifier(sourceID, strength);
+        noisePulseSpeed.SetModifier(sourceID, speed);
+        noisePulseExponent.SetModifier(sourceID, exponent);
+    }
+
+    public void RemoveCameraNoisePulse(int sourceID)
+    {
+        noisePulseStrength.RemoveModifier(sourceID);
+        noisePulseSpeed.RemoveModifier(sourceID);
+        noisePulseExponent.RemoveModifier(sourceID);
+        Shader.SetGlobalFloat("_NoiseStrength", cameraNoise.Value);
+    }
 
     #region Transform Effects
     public void ApplyTransformEffects()
@@ -186,13 +207,13 @@ public class CameraFX
     }
     #endregion
 
-    private void ApplyCameraNoisePulse()
+    private void ApplyCameraNoise()
     {
-        if(NoisePulseStrength > 0f)
+        if(noisePulseStrength.Value > 0 && noisePulseExponent.Value > 0f)
         {
-            float value = NoisePulseStrength * Mathf.Pow(Mathf.PerlinNoise(Time.time * NoisePulseSpeed, 0f), NoisePulseExponent);
+            float value = noisePulseStrength.Value * Mathf.Pow(Mathf.PerlinNoise(Time.time * noisePulseSpeed.Value, 0f), noisePulseExponent.Value);
 
-            Shader.SetGlobalFloat("_NoiseStrength", CameraNoise + value);
+            Shader.SetGlobalFloat("_NoiseStrength", cameraNoise.Value + value);
         }
     }
 }

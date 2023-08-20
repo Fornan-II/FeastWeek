@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GhostWorld : MonoBehaviour
 {
+    public bool IsEndSequenceInProgress() => _endSequenceProgress >= 0;
+
 #pragma warning disable 0649
     [SerializeField] private MusicManager musicManagerRef;
     [SerializeField] private GhostWorldHelper ghostWorldHelper;
@@ -55,9 +57,12 @@ public class GhostWorld : MonoBehaviour
 
     private void SetCameraPulseSettings()
     {
-        MainCamera.Effects.SetCameraNoisePulseStrength(cameraNoisePulseStrength);
-        MainCamera.Effects.SetCameraNoisePulseSpeed(cameraNoisePulseSpeed);
-        MainCamera.Effects.SetCameraNoisePulseExponent(cameraNoisePulseExponent);
+        MainCamera.Effects.ApplyCameraNoisePulse(GetInstanceID(), cameraNoisePulseStrength, cameraNoisePulseSpeed, cameraNoisePulseExponent);
+    }
+
+    private void OnDestroy()
+    {
+        MainCamera.Effects?.RemoveCameraNoisePulse(GetInstanceID());
     }
 
     public void StartEndAnimation()
@@ -88,9 +93,7 @@ public class GhostWorld : MonoBehaviour
 
         Quaternion initRotation = MainCamera.RootTransform.rotation;
 
-        MainCamera.Effects.SetCameraNoisePulseStrength(0f);
-        MainCamera.Effects.SetCameraNoisePulseSpeed(0f);
-        MainCamera.Effects.SetCameraNoisePulseExponent(0f);
+        MainCamera.Effects.RemoveCameraNoisePulse(GetInstanceID());
 
         float timer = 0.0f;
         PlayEndMusic();
@@ -107,7 +110,7 @@ public class GhostWorld : MonoBehaviour
             Vector3 vecToTarget = forestGodFaceTransform.position - endSequence1View.transform.position;
             endSequence1View.transform.rotation = Quaternion.Slerp(initRotation, Quaternion.LookRotation(vecToTarget), lookAtAnim.Evaluate(timer));
 
-            MainCamera.Effects.SetCameraNoise(noiseAnimPart1.Evaluate(timer));
+            MainCamera.Effects.ApplyCameraNoise(GetInstanceID(), noiseAnimPart1.Evaluate(timer));
 
             yield return null;
             timer += Time.deltaTime;
@@ -122,7 +125,7 @@ public class GhostWorld : MonoBehaviour
 
         while (_endSequenceProgress < 2)
         {
-            MainCamera.Effects.SetCameraNoise(noiseAnimPart2.Evaluate(noiseTimer));
+            MainCamera.Effects.ApplyCameraNoise(GetInstanceID(), noiseAnimPart2.Evaluate(noiseTimer));
             yield return null;
             noiseTimer += Time.deltaTime;
         }
@@ -134,7 +137,7 @@ public class GhostWorld : MonoBehaviour
             godBlink.SetOpenness(t);
             MainCamera.Effects.ManuallySetScreenFade(1f - t);
 
-            MainCamera.Effects.SetCameraNoise(noiseAnimPart2.Evaluate(noiseTimer));
+            MainCamera.Effects.ApplyCameraNoise(GetInstanceID(), noiseAnimPart2.Evaluate(noiseTimer));
             
             yield return null;
             noiseTimer += Time.deltaTime;
@@ -162,7 +165,7 @@ public class GhostWorld : MonoBehaviour
 
         while(_endSequenceProgress < 3)
         {
-            MainCamera.Effects.SetCameraNoise(ghostWorldHelper.NoiseStrengthProxy);
+            MainCamera.Effects.ApplyCameraNoise(GetInstanceID(), ghostWorldHelper.NoiseStrengthProxy);
             yield return null;
         }
 
@@ -171,7 +174,7 @@ public class GhostWorld : MonoBehaviour
         MainCamera.Effects.CrossFade(finalFadeOutDuration, true);
         for(timer = 0.0f; timer < finalFadeOutDuration + blackOutLingerTime; timer += Time.deltaTime)
         {
-            MainCamera.Effects.SetCameraNoise(ghostWorldHelper.NoiseStrengthProxy);
+            MainCamera.Effects.ApplyCameraNoise(GetInstanceID(), ghostWorldHelper.NoiseStrengthProxy);
             yield return null;
         }
         // Fade out audio?

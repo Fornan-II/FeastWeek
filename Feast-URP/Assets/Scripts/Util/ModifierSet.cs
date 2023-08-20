@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class ModifierSet
 {
+    [System.Serializable]
     public enum CalculateMode
     {
         MULTIPLY,
@@ -12,16 +14,19 @@ public class ModifierSet
         MAX
     }
 
-    public float BaseValue { get; protected set; }
-    public CalculateMode Mode { get; protected set; }
+    [SerializeField] private float baseValue;
+    [SerializeField] CalculateMode mode;
+
+    public float BaseValue => baseValue;
+    public CalculateMode Mode => mode;
     public float Value { get; protected set; }
 
     private Dictionary<int, float> _modifiers;
 
-    public ModifierSet(float baseValue, CalculateMode mode)
+    public ModifierSet(float _baseValue, CalculateMode _mode)
     {
-        BaseValue = baseValue;
-        Mode = mode;
+        baseValue = _baseValue;
+        mode = _mode;
         Value = BaseValue;
         _modifiers = new Dictionary<int, float>();
     }
@@ -31,14 +36,14 @@ public class ModifierSet
     public void SetBaseValue(float newBaseValue)
     {
         if (BaseValue == newBaseValue) return;
-        BaseValue = newBaseValue;
+        baseValue = newBaseValue;
         RecalculateAll();
     }
 
     public void SetMode(CalculateMode newMode)
     {
         if (Mode == newMode) return;
-        Mode = newMode;
+        mode = newMode;
         RecalculateAll();
     }
 
@@ -64,6 +69,15 @@ public class ModifierSet
         if(_modifiers.ContainsKey(id))
         {
             _modifiers.Remove(id);
+            RecalculateAll();
+        }
+    }
+
+    public void ClearModifiers()
+    {
+        if(_modifiers.Count > 0)
+        {
+            _modifiers.Clear();
             RecalculateAll();
         }
     }

@@ -72,7 +72,7 @@ public class CylinderTriggerVolume : BaseTriggerVolume
             Vector3 pos = transform.InverseTransformPoint(MainCamera.RootTransform.position);
             DrawCylinderGizmo(
                 Util.GetXZPosition(pos).magnitude,
-                Mathf.Abs(pos.y),
+                Mathf.Abs(pos.y) * 2f,
                 Color.Lerp(Color.yellow, Color.green, BlendValue)
                 );
         }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
@@ -28,10 +29,12 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
     [SerializeField] private AudioCue.CueSettings lampActiveSFXSettings = AudioCue.CueSettings.Default;
     [SerializeField] private float lampActiveSFXFadeOutDuration = 0.7f;
     [SerializeField] private ADSRCurve alignmentSFXADSR;
-    [Header("Audio - Connection Broken")]
+    [Header("Connection Broken")]
     [SerializeField] private AudioClip onConnectionBrokenSFX;
     [SerializeField] private AudioCue.CueSettings onConnectionBrokenSFXSettings = AudioCue.CueSettings.Default;
     [SerializeField] private ParticleSystem onConnectionBrokenParticles;
+    [SerializeField] private UnityEvent onTetherBreak;
+    [SerializeField] private AnimationCurve cameraNoiseBreakAnim;
 
     private Vector2 _lookInput;
     private float _swivelSmoothVelocity = 0.0f;
@@ -96,26 +99,7 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
         // Check lamp's connection to target
         if(_isConnectedToTarget && dot < alignmentCutoff)
         {
-            // Break connection
-
-            _isConnectedToTarget = false;
-            target.RemoveConnectedLamp(this);
-            AudioManager.PlaySound(onConnectionBrokenSFX, lookTransform.transform.position, onConnectionBrokenSFXSettings);
-            _lampActiveCue.FadeOut(lampActiveSFXFadeOutDuration);
-            _lampActiveDistortCue.FadeOut(lampActiveSFXFadeOutDuration);
-            _lampActiveCue = null;
-            _lampActiveDistortCue = null;
-            passiveParticles.Stop();
-
-            tether.BreakChain();
-            tether.AddTetherDissolveCompleteListener(ReturnControl);
-
-            interactable.IsInteractable = false;
-
-            MainCamera.Effects.ApplyImpulse(lookTransform.position + Vector3.up, 0.25f);
-            MainCamera.Effects.ApplyScreenShake(0.1f, 7f, 1f);
-
-            onConnectionBrokenParticles.Play();
+            BreakTether();
         }
     }
     #endregion
@@ -175,6 +159,41 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
         Vector3 localRotation = lookTransform.localEulerAngles;
         localRotation.z = 0f;
         lookTransform.localRotation = Quaternion.Euler(localRotation);
+    }
+
+    private void BreakTether()
+    {
+        _isConnectedToTarget = false;
+        target.RemoveConnectedLamp(this);
+        AudioManager.PlaySound(onConnectionBrokenSFX, lookTransform.transform.position, onConnectionBrokenSFXSettings);
+        _lampActiveCue.FadeOut(lampActiveSFXFadeOutDuration);
+        _lampActiveDistortCue.FadeOut(lampActiveSFXFadeOutDuration);
+        _lampActiveCue = null;
+        _lampActiveDistortCue = null;
+        passiveParticles.Stop();
+
+        tether.BreakChain();
+        tether.AddTetherDissolveCompleteListener(ReturnControl);
+
+        onTetherBreak.Invoke();
+
+        interactable.IsInteractable = false;
+
+        MainCamera.Effects.ApplyImpulse(lookTransform.position + Vector3.up, 0.25f);
+        MainCamera.Effects.ApplyScreenShake(0.1f, 7f, 1f);
+        StartCoroutine(CameraNoiseBurst());
+
+        onConnectionBrokenParticles.Play();
+    }
+
+    private IEnumerator CameraNoiseBurst()
+    {
+        for(float timer = 0.0f; timer <= Util.AnimationCurveLengthTime(cameraNoiseBreakAnim); timer += Time.deltaTime)
+        {
+            MainCamera.Effects.ApplyCameraNoise(GetInstanceID(), cameraNoiseBreakAnim.Evaluate(timer));
+            yield return null;
+        }
+        MainCamera.Effects.RemoveCameraNoise(GetInstanceID());
     }
 
 #if UNITY_EDITOR

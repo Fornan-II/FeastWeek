@@ -8,26 +8,26 @@ public class GhostTetherAudio : AmbiencePlayer
     [SerializeField] private GhostTether tether;
     [SerializeField] private AudioClip distantAmbienceSFX;
     [SerializeField] private AnimationCurve distanceMix;
+    [SerializeField] private AnimationCurve dissolveResonanceFactor;
 
     private AudioCue _activeDistantAmbienceSFX;
     private AudioLowPassFilter _distantLowPassFilter;
-    private bool _audioActive = false;
+    private float _tetherDissolveFactor = -1f;
 
     protected override IEnumerator Start()
     {
         _activeDistantAmbienceSFX = AudioManager.PlaySound(distantAmbienceSFX, transform, ambienceSFXSettings);
         _distantLowPassFilter = _activeDistantAmbienceSFX.gameObject.AddComponent<AudioLowPassFilter>();
 
+        tether.AddTetherDissolveCompleteListener(OnTetherDissolveComplete);
+        tether.SetAmbientAudio(this);
+
         return base.Start();
     }
 
     private void Update()
     {
-        // Make work for an arbitrary number of tethers, as opposed to one.
-        // There are two tethers!
-
         if (!MainCamera.IsValid()) return;
-
         Chain.Node tetherNode = tether.GetNearestChainNode(MainCamera.RootTransform.position);
         transform.position = tetherNode.Position;
     }
@@ -36,9 +36,19 @@ public class GhostTetherAudio : AmbiencePlayer
     {
         base.OnOverlap();
 
+        if (_tetherDissolveFactor >= 0f)
+        {
+            // Tether is dissolving, audio has special behavior.
+            _lowPassFilter.cutoffFrequency = _lowPassFilter.cutoffFrequency * _tetherDissolveFactor;
+
+            float value = dissolveResonanceFactor.Evaluate(_tetherDissolveFactor);
+            _lowPassFilter.lowpassResonanceQ = value;
+            _distantLowPassFilter.lowpassResonanceQ = value;
+        }
+
         _activeDistantAmbienceSFX.SetVolume(_activeAmbienceSFX.Settings.Volume);
         _distantLowPassFilter.cutoffFrequency = _lowPassFilter.cutoffFrequency;
-
+        
         AudioCueEffects.Mix(_activeDistantAmbienceSFX, _activeAmbienceSFX, distanceMix.Evaluate(triggerVolume.BlendValue));
     }
 
@@ -54,11 +64,6 @@ public class GhostTetherAudio : AmbiencePlayer
         _activeDistantAmbienceSFX.Pause();
     }
 
-#if UNITY_EDITOR
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = _audioActive ? Color.green : Color.yellow;
-        Gizmos.matrix = transform.localToWorldMatrix;
-    }
-#endif
+    public void SetTetherDissolveAudio(float value) => _tetherDissolveFactor = value;
+    private void OnTetherDissolveComplete() => gameObject.SetActive(false);
 }

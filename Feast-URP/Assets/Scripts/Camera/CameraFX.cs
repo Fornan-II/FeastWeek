@@ -41,6 +41,7 @@ public class CameraFX
     {
         _mainCameraRef = mainCameraInstance;
         ResetFadeColorToDefault();
+        Shader.SetGlobalFloat("_NoiseStrength", cameraNoise.Value);
     }
 
     public void Update(float deltaTime)

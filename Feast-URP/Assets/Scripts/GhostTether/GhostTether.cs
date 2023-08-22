@@ -29,6 +29,7 @@ public class GhostTether : MonoBehaviour
     [SerializeField] private float breakLengthScaler = 1f;
     [SerializeField] private AnimationCurve breakDissolve = AnimationCurve.Linear(0, 0, 1, 1);
     [SerializeField] private AnimationCurve treeDissolve = AnimationCurve.Linear(0, -0.01f, 1, 0.95f);
+    [SerializeField] private AnimationCurve audioDissolve = AnimationCurve.Linear(1f, 1f, 0f, 0f);
     [SerializeField] private float tetherBreakCompleteValue = 1.0f;
     [Header("Visuals")]
     [SerializeField] private Transform[] tetherBones;
@@ -38,6 +39,7 @@ public class GhostTether : MonoBehaviour
     [SerializeField] private AudioCue.CueSettings tetherCueSettings;
     [SerializeField] private Vector2Int getNearestValidIndexRange;
 
+    private GhostTetherAudio _ambientAudio;
     private bool _isBroken = false;
     private Chain _secondaryChain;
     private event System.Action _OnTetherDissolveComplete;
@@ -89,10 +91,10 @@ public class GhostTether : MonoBehaviour
 
             if(mainIsSearchable && secondaryIsSearchable)
             {
-                float mainStartSqrDistance = (mainChain.GetNode(mainSearchRange.x).Position).sqrMagnitude;
-                float mainEndSqrDistance = (mainChain.GetNode(mainSearchRange.y).Position).sqrMagnitude;
-                float secondaryStartSqrDistance = (_secondaryChain.GetNode(secondarySearchRange.x).Position).sqrMagnitude;
-                float secondaryEndSqrDistance = (_secondaryChain.GetNode(secondarySearchRange.y).Position).sqrMagnitude;
+                float mainStartSqrDistance = (mainChain.GetNode(mainSearchRange.x).Position - position).sqrMagnitude;
+                float mainEndSqrDistance = (mainChain.GetNode(mainSearchRange.y).Position - position).sqrMagnitude;
+                float secondaryStartSqrDistance = (_secondaryChain.GetNode(secondarySearchRange.x).Position - position).sqrMagnitude;
+                float secondaryEndSqrDistance = (_secondaryChain.GetNode(secondarySearchRange.y).Position - position).sqrMagnitude;
 
                 // Gotta find the least of these four distances
                 // That decides which chain is closer
@@ -128,21 +130,7 @@ public class GhostTether : MonoBehaviour
         }
     }
 
-    // Unused, not even sure if it works
-    private int GuessNearestChainNode(Vector3 position, Chain chain, int startingIndex, int lastIndex)
-    {
-        // SDF based on sdCapsule from https://iquilezles.org/articles/distfunctions/
-        // Thanks Inigo!
-        Vector3 pa = position - chain.GetNode(startingIndex).Position;
-        Vector3 ba = chain.GetNode(lastIndex).Position - chain.GetNode(startingIndex).Position;
-        float h = Mathf.Clamp01(Vector3.Dot(pa, ba) / Vector3.Dot(ba, ba));
-
-        Vector3 nearestPoint = chain.GetNode(startingIndex).Position + ba * h;
-        Debug.DrawLine(chain.GetNode(startingIndex).Position, chain.GetNode(lastIndex).Position, Color.blue);
-        Util.DebugDrawPoint(nearestPoint, Color.yellow);
-
-        return Mathf.FloorToInt(h * (lastIndex - startingIndex));
-    }
+    public void SetAmbientAudio(GhostTetherAudio audio) => _ambientAudio = audio;
 
     #region Unity Methods
     private void Start()
@@ -258,6 +246,7 @@ public class GhostTether : MonoBehaviour
         int treeEdgeID = Shader.PropertyToID("_TreeStepEdge");
         bool hasBreakNotified = false;
 
+        // Ambient audio is assumed to be shorter or same length as breakDissolve, as audio is turned off when OnTetherDissolveComplete is called
         float duration = Mathf.Max(Util.AnimationCurveLengthTime(breakDissolve), Util.AnimationCurveLengthTime(treeDissolve));
 
         for(float timer = 0.0f; timer < duration; timer += Time.deltaTime)
@@ -265,10 +254,11 @@ public class GhostTether : MonoBehaviour
             float tBreak = breakDissolve.Evaluate(timer);
             tetherMat.SetFloat(tetherBreakID, tBreak);
             treeMat.SetFloat(treeEdgeID, treeDissolve.Evaluate(timer));
+            _ambientAudio?.SetTetherDissolveAudio(audioDissolve.Evaluate(timer));
 
             if(!hasBreakNotified && tBreak >= tetherBreakCompleteValue)
             {
-                // Some discrepency over timing of this events usage with changing design needs.
+                // Some discrepency over timing of this event's usage with changing design needs.
                 _OnTetherDissolveComplete?.Invoke();
                 hasBreakNotified = true;
             }

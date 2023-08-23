@@ -130,6 +130,19 @@ public class GhostTether : MonoBehaviour
         }
     }
 
+    public Vector3[] GetTetherNodePositions()
+    {
+        if(!_isBroken)
+        {
+            return mainChain.GetNodePositions();
+        }
+
+        Vector3[] positions = new Vector3[mainChain.PointCount + _secondaryChain.PointCount];
+        System.Array.Copy(mainChain.GetNodePositions(), 0, positions, 0, mainChain.PointCount);
+        System.Array.Copy(_secondaryChain.GetNodePositions(), 0, positions, mainChain.PointCount, _secondaryChain.PointCount);
+        return positions;
+    }
+
     public void SetAmbientAudio(GhostTetherAudio audio) => _ambientAudio = audio;
 
     #region Unity Methods

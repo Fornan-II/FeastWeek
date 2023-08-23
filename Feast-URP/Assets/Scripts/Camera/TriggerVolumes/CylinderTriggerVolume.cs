@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class CylinderTriggerVolume : BaseTriggerVolume
 {
+    public float Radius => radius;
+    public float Height => height;
+    public float InnerRadius => innerRadius;
+    public float InnerHeight => innerHeight;
+
     [SerializeField, Min(0f)] private float radius = 1f;
     [SerializeField, Min(0f)] private float height = 1f;
     [SerializeField, Min(0f)] private float innerRadius = 0.5f;

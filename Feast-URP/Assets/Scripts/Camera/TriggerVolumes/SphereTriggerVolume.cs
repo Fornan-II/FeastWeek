@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class SphereTriggerVolume : BaseTriggerVolume
 {
+    public float Radius => radius;
+    public float InnerRadius => innerRadius;
+
     [SerializeField] private float radius = 1.0f;
     [SerializeField] private float innerRadius = 1.0f;
 

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class CubeTriggerVolume : BaseTriggerVolume
 {
+    public Vector3 HalfExtents => halfExtents;
+    public Vector3 InnerHalfExtents => innerHalfExtents;
+
     [SerializeField] protected Vector3 halfExtents = Vector3.one * 0.5f;
     [SerializeField] protected Vector3 innerHalfExtents = Vector3.one * 0.5f;
     
@@ -44,19 +47,16 @@ public class CubeTriggerVolume : BaseTriggerVolume
 #if UNITY_EDITOR
     protected virtual void OnValidate()
     {
-        if (!isActiveAndEnabled) return;
-
-        halfExtents.x = Mathf.Max(halfExtents.x, 0f);
-        halfExtents.y = Mathf.Max(halfExtents.y, 0f);
-        halfExtents.z = Mathf.Max(halfExtents.z, 0f);
-        innerHalfExtents.x = Mathf.Max(innerHalfExtents.x, 0f);
-        innerHalfExtents.y = Mathf.Max(innerHalfExtents.y, 0f);
-        innerHalfExtents.z = Mathf.Max(innerHalfExtents.z, 0f);
+        halfExtents = Vector3.Max(halfExtents, Vector3.zero);
+        innerHalfExtents = Vector3.Max(innerHalfExtents, Vector3.zero);
+        innerHalfExtents = Vector3.Min(halfExtents, Vector3.zero);
     }
 
     [SerializeField, Min(0)] private int Editor_BlendGizmoCount = 3;
     protected virtual void OnDrawGizmosSelected()
     {
+        if (!isActiveAndEnabled) return;
+
         Gizmos.matrix = transform.localToWorldMatrix;
         
         if(IsOverlapping)

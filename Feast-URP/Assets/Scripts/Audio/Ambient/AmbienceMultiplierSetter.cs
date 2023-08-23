@@ -5,23 +5,23 @@ using UnityEngine;
 public class AmbienceMultiplierSetter : MonoBehaviour, ITriggerListener
 {
 #pragma warning disable 0649
-    [SerializeReference] private BaseTriggerVolume triggerVolume;
-    [SerializeField] private AmbiencePlayer[] targetAmbience;
-    [SerializeField] private Vector2 blendRemap = new Vector2(0f, 1f);
+    [SerializeReference] protected BaseTriggerVolume triggerVolume;
+    [SerializeField] protected AmbiencePlayer[] targetAmbience;
+    [SerializeField] protected Vector2 blendRemap = new Vector2(0f, 1f);
 
-    private int _cachedInstanceID;
+    protected int _cachedInstanceID;
 
-    private void Start()
+    protected virtual void Start()
     {
         _cachedInstanceID = GetInstanceID();
     }
 
-    private void OnEnable() => triggerVolume.AddListener(this);
-    private void OnDisable() => triggerVolume.RemoveListener(this);
+    protected virtual void OnEnable() => triggerVolume.AddListener(this);
+    protected virtual void OnDisable() => triggerVolume.RemoveListener(this);
 
-    public void OnOverlapStart() { }
+    public virtual void OnOverlapStart() { }
 
-    public void OnOverlap()
+    public virtual void OnOverlap()
     {
         foreach(var ambience in targetAmbience)
         {
@@ -29,7 +29,7 @@ public class AmbienceMultiplierSetter : MonoBehaviour, ITriggerListener
         }
     }
 
-    public void OnOverlapExit()
+    public virtual void OnOverlapExit()
     {
         foreach (var ambience in targetAmbience)
         {

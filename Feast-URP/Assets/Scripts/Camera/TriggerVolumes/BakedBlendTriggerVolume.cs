@@ -69,18 +69,20 @@ public class BakedBlendTriggerVolume : BaseTriggerVolume
         float hlh = _probeField.GetValue(xHigh, yLow, zHigh);
         float lhh = _probeField.GetValue(xLow, yHigh, zHigh);
         float hhh = _probeField.GetValue(xHigh, yHigh, zHigh);
-
+        
         // Start blending using repeated linear interpolation
         // z
         float ll = Mathf.Lerp(lll, llh, zBlend);
         float hl = Mathf.Lerp(hll, hlh, zBlend);
         float lh = Mathf.Lerp(lhl, lhh, zBlend);
         float hh = Mathf.Lerp(hhl, hhh, zBlend);
+        
         // y
         float l = Mathf.Lerp(ll, lh, yBlend);
         float h = Mathf.Lerp(hl, hh, yBlend);
+        
         // x
-        return Mathf.Lerp(l, h, zBlend);
+        return Mathf.Lerp(l, h, xBlend);
     }
 
     private Vector3 GetLocalPositionFromIndex(int x, int y, int z)
@@ -124,6 +126,30 @@ public class BakedBlendTriggerVolume : BaseTriggerVolume
                 {
                     Vector3 position = transform.TransformPoint(GetLocalPositionFromIndex(x, y, z));
                     _probeField.SetValue(x, y, z, bakingFunction(position));
+                }
+            }
+        }
+    }
+
+    // For bakingFunction:
+    // Expects a Vector3 global position of the node,
+    // Expects the current value of the probe at that position
+    // Returns the value to bake at that position
+    public void EDITOR_ModifyProbeField(System.Func<Vector3, float, float> bakingFunction)
+    {
+        if (bakingFunction == null || _probeField == null || _probeField.FieldSize == Vector3Int.zero)
+        {
+            return;
+        }
+
+        for (int x = 0; x < probeCount.x; ++x)
+        {
+            for (int y = 0; y < probeCount.y; ++y)
+            {
+                for (int z = 0; z < probeCount.z; ++z)
+                {
+                    Vector3 position = transform.TransformPoint(GetLocalPositionFromIndex(x, y, z));
+                    _probeField.SetValue(x, y, z, bakingFunction(position, _probeField.GetValue(x, y, z)));
                 }
             }
         }

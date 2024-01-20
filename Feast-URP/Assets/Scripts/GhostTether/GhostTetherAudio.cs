@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GhostTetherAudio : AmbiencePlayer
 {
+    private const string k_Mixer_LPFMix = "AmbientLPFMix";
+
 #pragma warning disable 0649
     [SerializeField] private GhostTether tether;
     [SerializeField] private AudioClip distantAmbienceSFX;
@@ -11,18 +13,16 @@ public class GhostTetherAudio : AmbiencePlayer
     [SerializeField] private AnimationCurve dissolveResonanceFactor;
 
     private AudioCue _activeDistantAmbienceSFX;
-    private AudioLowPassFilter _distantLowPassFilter;
     private float _tetherDissolveFactor = -1f;
 
     protected override IEnumerator Start()
     {
         _activeDistantAmbienceSFX = AudioManager.PlaySound(distantAmbienceSFX, transform, ambienceSFXSettings);
-        _distantLowPassFilter = _activeDistantAmbienceSFX.gameObject.AddComponent<AudioLowPassFilter>();
 
         tether.AddTetherDissolveCompleteListener(OnTetherDissolveComplete);
         tether.SetAmbientAudio(this);
 
-        return base.Start();
+        yield return base.Start();
     }
 
     private void Update()
@@ -34,21 +34,26 @@ public class GhostTetherAudio : AmbiencePlayer
 
     public override void OnOverlap()
     {
-        base.OnOverlap();
-
-        if (_tetherDissolveFactor >= 0f)
-        {
-            // Tether is dissolving, audio has special behavior.
-            _lowPassFilter.cutoffFrequency = _lowPassFilter.cutoffFrequency * _tetherDissolveFactor;
-
-            float value = dissolveResonanceFactor.Evaluate(_tetherDissolveFactor);
-            _lowPassFilter.lowpassResonanceQ = value;
-            _distantLowPassFilter.lowpassResonanceQ = value;
-        }
-
+        //_lowPassFilter.cutoffFrequency = lowPassBlend.Evaluate(BlendFactor.Value);
+        _activeAmbienceSFX.SetVolume(ambienceSFXSettings.Volume * volumeBlend.Evaluate(triggerVolume.BlendValue * BlendFactor.Value));
         _activeDistantAmbienceSFX.SetVolume(_activeAmbienceSFX.Settings.Volume);
-        _distantLowPassFilter.cutoffFrequency = _lowPassFilter.cutoffFrequency;
-        
+
+        // k_MixerLPFMix expects a value -80 to 0
+        AudioManager.Data.Mixer.SetFloat(k_Mixer_LPFMix, lowPassBlend.Evaluate(BlendFactor.Value));
+
+        //base.OnOverlap();
+
+        //if (_tetherDissolveFactor >= 0f)
+        //{
+        //    // LPF moved to mixer, this won't really work atm!!
+        //
+        //    // Tether is dissolving, audio has special behavior.
+        //    _lowPassFilter.cutoffFrequency = _lowPassFilter.cutoffFrequency * _tetherDissolveFactor;
+        //
+        //    float value = dissolveResonanceFactor.Evaluate(_tetherDissolveFactor);
+        //    _lowPassFilter.lowpassResonanceQ = value;
+        //}
+
         AudioCueEffects.Mix(_activeDistantAmbienceSFX, _activeAmbienceSFX, distanceMix.Evaluate(triggerVolume.BlendValue));
     }
 

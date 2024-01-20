@@ -37,7 +37,8 @@ public class AmbiencePlayer : MonoBehaviour, ITriggerListener
         // Fade-in audio
         if (fadeInTime <= 0)
         {
-            OnOverlap(); // This has to be called at least once, in case triggerVolume is not overlapping by default
+            // OnOverlap has to be called at least once to init volume
+            OnOverlap();
             yield break;
         }
         

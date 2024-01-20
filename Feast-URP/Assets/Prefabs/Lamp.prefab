@@ -14930,9 +14930,9 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  onConnectionBrokenSFX: {fileID: 8300000, guid: 017da89a49f5898469a92f70f69092f1, type: 3}
+  onConnectionBrokenSFX: {fileID: 8300000, guid: 49d14317b249b4f4e8f088f7160f1919, type: 3}
   onConnectionBrokenSFXSettings:
-    Group: 1
+    Group: 5
     Loop: 0
     Volume: 1
     PitchRange: {x: 1, y: 1}

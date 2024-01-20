@@ -4,6 +4,7 @@ using UnityEngine.Audio;
 
 public static class AudioManager
 {
+    // Searches in folders named "Resources"
     private const string k_MixerFilePath = "AudioManager Data";
 
     public enum MixerGroup
@@ -12,6 +13,7 @@ public static class AudioManager
         SFX = 1,
         SFX_Ducking = 5,
         Ambient = 2,
+        Ambient_LPF = 4,
         Music = 3
     }
     public static AudioManagerData Data { private set; get; }
@@ -31,10 +33,13 @@ public static class AudioManager
         {
             {MixerGroup.Master, Data.Mixer.FindMatchingGroups("Master")[0]},
             {MixerGroup.SFX, Data.Mixer.FindMatchingGroups("SFX")[0]},
-            {MixerGroup.SFX_Ducking, Data.Mixer.FindMatchingGroups("Ducking")[0]},
+            {MixerGroup.SFX_Ducking, Data.Mixer.FindMatchingGroups("SFX-Ducking")[0]},
             {MixerGroup.Ambient, Data.Mixer.FindMatchingGroups("Ambient")[0]},
+            {MixerGroup.Ambient_LPF, Data.Mixer.FindMatchingGroups("Ambient-LPF")[0] },
             {MixerGroup.Music, Data.Mixer.FindMatchingGroups("Music")[0]}
         };
+
+        
     }
     
     public static AudioCue PlaySound(AudioClip clip, Vector3 location, AudioCue.CueSettings settings)

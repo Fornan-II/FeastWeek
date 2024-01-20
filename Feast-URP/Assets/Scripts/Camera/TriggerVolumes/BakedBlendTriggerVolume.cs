@@ -7,9 +7,14 @@ public class BakedBlendTriggerVolume : BaseTriggerVolume
     public Vector3 HalfExtents => halfExtents;
 
     [SerializeField] protected Vector3 halfExtents = Vector3.one * 0.5f;
-    [SerializeField] private Vector3Int probeCount = new Vector3Int(2, 2, 2);
+    [SerializeField] protected Vector3Int probeCount = new Vector3Int(2, 2, 2);
 
-    [SerializeField, HideInInspector] private FloatField3D _probeField;
+    [SerializeField, HideInInspector] protected FloatField3D _probeField;
+
+#if UNITY_EDITOR
+    [Header("DEBUG")]
+    [SerializeField] private float gizmoRenderRadius = -1f;
+#endif
 
     protected override bool IsMainCameraWithin()
     {
@@ -24,68 +29,93 @@ public class BakedBlendTriggerVolume : BaseTriggerVolume
         return isWithin;
     }
 
-    private float GetValueAtLocalPosition(Vector3 position)
+    #region Converting between index and local position
+    private void GetNearestIndices(Vector3 localPosition, out Vector3Int low, out Vector3Int high, out Vector3 blend)
     {
+        low = -Vector3Int.one;
+        high = -Vector3Int.one;
+        blend = -Vector3.one;
+
         // Put position in space relative to minimum corner of Cube bounds.
-        // After division, should be scaled so that 0 to 1 spans the Cube bounds.
-        Vector3 interpolatedIndex = (position + halfExtents);
+        // After division, scaled so that 0 to 1 spans the Cube bounds.
+        Vector3 interpolatedIndex = (localPosition + halfExtents);
         interpolatedIndex.x /= 2f * halfExtents.x;
         interpolatedIndex.y /= 2f * halfExtents.y;
         interpolatedIndex.z /= 2f * halfExtents.z;
 
         interpolatedIndex.x *= probeCount.x - 1;
-        int xLow = Mathf.Clamp(Mathf.FloorToInt(interpolatedIndex.x), 0, probeCount.x - 1);
-        int xHigh = Mathf.Clamp(Mathf.CeilToInt(interpolatedIndex.x), 0, probeCount.x - 1);
-        float xBlend = interpolatedIndex.x % 1;
+        low.x = Mathf.Clamp(Mathf.FloorToInt(interpolatedIndex.x), 0, probeCount.x - 1);
+        high.x = Mathf.Clamp(Mathf.CeilToInt(interpolatedIndex.x), 0, probeCount.x - 1);
+        blend.x = interpolatedIndex.x % 1;
 
         interpolatedIndex.y *= probeCount.y - 1;
-        int yLow = Mathf.Clamp(Mathf.FloorToInt(interpolatedIndex.y), 0, probeCount.y - 1);
-        int yHigh = Mathf.Clamp(Mathf.CeilToInt(interpolatedIndex.y), 0, probeCount.y - 1);
-        float yBlend = interpolatedIndex.y % 1;
+        low.y = Mathf.Clamp(Mathf.FloorToInt(interpolatedIndex.y), 0, probeCount.y - 1);
+        high.y = Mathf.Clamp(Mathf.CeilToInt(interpolatedIndex.y), 0, probeCount.y - 1);
+        blend.y = interpolatedIndex.y % 1;
 
         interpolatedIndex.z *= probeCount.z - 1;
-        int zLow = Mathf.Clamp(Mathf.FloorToInt(interpolatedIndex.z), 0, probeCount.z - 1);
-        int zHigh = Mathf.Clamp(Mathf.CeilToInt(interpolatedIndex.z), 0, probeCount.z - 1);
-        float zBlend = interpolatedIndex.z % 1;
+        low.z = Mathf.Clamp(Mathf.FloorToInt(interpolatedIndex.z), 0, probeCount.z - 1);
+        high.z = Mathf.Clamp(Mathf.CeilToInt(interpolatedIndex.z), 0, probeCount.z - 1);
+        blend.z = interpolatedIndex.z % 1;
+    }
+
+    protected float GetValueAtLocalPosition(Vector3 localPosition)
+    {
+        GetNearestIndices(localPosition, out Vector3Int low, out Vector3Int high, out Vector3 blend);
 
 #if UNITY_EDITOR
-        Vector3 globalPosition = transform.TransformPoint(position);
-        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(xLow, yLow, zLow)));
-        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(xHigh, yLow, zLow)));
-        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(xLow, yHigh, zLow)));
-        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(xHigh, yHigh, zLow)));
-        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(xLow, yLow, zHigh)));
-        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(xHigh, yLow, zHigh)));
-        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(xLow, yHigh, zHigh)));
-        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(xHigh, yHigh, zHigh)));
+        Vector3 globalPosition = transform.TransformPoint(localPosition);
+        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(low.x, low.y, low.z)));
+        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(high.x, low.y, low.z)));
+        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(low.x, high.y, low.z)));
+        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(high.x, high.y, low.z)));
+        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(low.x, low.y, high.z)));
+        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(high.x, low.y, high.z)));
+        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(low.x, high.y, high.z)));
+        Debug.DrawLine(globalPosition, transform.TransformPoint(GetLocalPositionFromIndex(high.x, high.y, high.z)));
 #endif
 
         // Get initial values from field
-        float lll = _probeField.GetValue(xLow, yLow, zLow);
-        float hll = _probeField.GetValue(xHigh, yLow, zLow);
-        float lhl = _probeField.GetValue(xLow, yHigh, zLow);
-        float hhl = _probeField.GetValue(xHigh, yHigh, zLow);
-        float llh = _probeField.GetValue(xLow, yLow, zHigh);
-        float hlh = _probeField.GetValue(xHigh, yLow, zHigh);
-        float lhh = _probeField.GetValue(xLow, yHigh, zHigh);
-        float hhh = _probeField.GetValue(xHigh, yHigh, zHigh);
+        float lll = _probeField.GetValue(low.x, low.y, low.z);
+        float hll = _probeField.GetValue(high.x, low.y, low.z);
+        float lhl = _probeField.GetValue(low.x, high.y, low.z);
+        float hhl = _probeField.GetValue(high.x, high.y, low.z);
+        float llh = _probeField.GetValue(low.x, low.y, high.z);
+        float hlh = _probeField.GetValue(high.x, low.y, high.z);
+        float lhh = _probeField.GetValue(low.x, high.y, high.z);
+        float hhh = _probeField.GetValue(high.x, high.y, high.z);
         
         // Start blending using repeated linear interpolation
         // z
-        float ll = Mathf.Lerp(lll, llh, zBlend);
-        float hl = Mathf.Lerp(hll, hlh, zBlend);
-        float lh = Mathf.Lerp(lhl, lhh, zBlend);
-        float hh = Mathf.Lerp(hhl, hhh, zBlend);
+        float ll = Mathf.Lerp(lll, llh, blend.z);
+        float hl = Mathf.Lerp(hll, hlh, blend.z);
+        float lh = Mathf.Lerp(lhl, lhh, blend.z);
+        float hh = Mathf.Lerp(hhl, hhh, blend.z);
         
         // y
-        float l = Mathf.Lerp(ll, lh, yBlend);
-        float h = Mathf.Lerp(hl, hh, yBlend);
+        float l = Mathf.Lerp(ll, lh, blend.y);
+        float h = Mathf.Lerp(hl, hh, blend.y);
         
         // x
-        return Mathf.Lerp(l, h, xBlend);
+        return Mathf.Lerp(l, h, blend.x);
     }
 
-    private Vector3 GetLocalPositionFromIndex(int x, int y, int z)
+    protected Vector3Int GetNearestIndexFromLocalPosition(Vector3 localPosition)
+    {
+        GetNearestIndices(localPosition, out Vector3Int low, out Vector3Int high, out Vector3 blend);
+
+        Vector3Int index = new Vector3Int(
+            blend.x < 0.5 ? low.x : high.x,
+            blend.y < 0.5 ? low.y : high.y,
+            blend.z < 0.5 ? low.z : high.z
+            );
+
+        return index;
+    }
+
+    protected Vector3 GetLocalPositionFromIndex(Vector3Int index) => GetLocalPositionFromIndex(index.x, index.y, index.z);
+
+    protected Vector3 GetLocalPositionFromIndex(int x, int y, int z)
     {
         Vector3 pos = Vector3.zero;
         
@@ -104,6 +134,7 @@ public class BakedBlendTriggerVolume : BaseTriggerVolume
 
         return pos;
     }
+    #endregion
 
 #if UNITY_EDITOR
     // For bakingFunction:
@@ -156,7 +187,7 @@ public class BakedBlendTriggerVolume : BaseTriggerVolume
     }
 
     [ContextMenu("Generate test probe field")]
-    private void EDITOR_GenerateTestProbeField()
+    protected virtual void EDITOR_GenerateTestProbeField()
     {
         UnityEditor.Undo.RecordObject(this, "Generate test probe field");
         
@@ -174,14 +205,16 @@ public class BakedBlendTriggerVolume : BaseTriggerVolume
             );
     }
 
-    private void OnValidate()
+    protected virtual void OnValidate()
     {
         probeCount = Vector3Int.Max(probeCount, Vector3Int.one);
         halfExtents = Vector3.Max(halfExtents, Vector3.zero);
     }
 
-    private void OnDrawGizmosSelected()
+    protected virtual void OnDrawGizmosSelected()
     {
+        if (!isActiveAndEnabled || UnityEditor.Selection.activeGameObject != gameObject) return;
+
         Gizmos.matrix = transform.localToWorldMatrix;
         Gizmos.color = IsOverlapping ? Color.green : Color.yellow;
         Gizmos.DrawWireCube(Vector3.zero, halfExtents * 2f);
@@ -192,8 +225,15 @@ public class BakedBlendTriggerVolume : BaseTriggerVolume
             {
                 for (int z = 0; z < probeCount.z; ++z)
                 {
-                    Gizmos.color = Color.Lerp(Color.black, Color.white, _probeField.GetValue(x, y, z));
-                    Gizmos.DrawSphere(GetLocalPositionFromIndex(x, y, z), 0.1f);
+                    Vector3 localPosition = GetLocalPositionFromIndex(x, y, z);
+                    Vector3 editorCameraPos = UnityEditor.SceneView.lastActiveSceneView.camera.transform.position;
+                    float sqrDist = (transform.TransformPoint(localPosition) - editorCameraPos).sqrMagnitude;
+                    if (gizmoRenderRadius < 0f || sqrDist <= gizmoRenderRadius * gizmoRenderRadius)
+                    {
+                        Gizmos.color = Color.Lerp(Color.black, Color.white, _probeField.GetValue(x, y, z));
+                        //Gizmos.color = Color.HSVToRGB(_probeField.GetValue(x, y, z) * 0.9f, 1f, 0.5f);
+                        Gizmos.DrawSphere(localPosition, 0.1f);
+                    }
                 }
             }
         }

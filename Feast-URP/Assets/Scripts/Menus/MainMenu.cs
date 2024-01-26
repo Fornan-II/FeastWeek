@@ -129,6 +129,13 @@ public class MainMenu : StateMachine
     public void SetMenuOptions() => _activeMenu = options;
     public void SetMenuControls() => _activeMenu = controls;
     public void QuitGame() => Application.Quit();
+    public void OpenItchPage()
+    {
+        Application.OpenURL("https://fornan-ii.itch.io/");
+        // Have to reset button "pressed" state; OnControlSchemeChanged happens to serve that functionality.
+        // Ripe for bugs but the project is almost over (for real this time)
+        OnControlSchemeChanged();
+    }
 
     public void StartGame()
     {

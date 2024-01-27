@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BakedAmbience : BakedBlendTriggerVolume
 {
+#pragma warning disable 0649
     #region Classes and Structs
     // These classes only relevant to the baking process. Before being used in game,
     // they are being converted down to a simpler struct type.

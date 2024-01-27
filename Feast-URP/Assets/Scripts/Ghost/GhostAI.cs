@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
 public class GhostAI : StateMachine
 {
@@ -35,7 +36,9 @@ public class GhostAI : StateMachine
     [SerializeField] private float grabRange = 0.3f;
     [Header("Quest")]
     [SerializeField] private GhostQuest activeQuest;
-    
+
+    private UnityAction OnReset;
+
     private int _questProgress = 0;
     private float _questDuration = 0.0f;
 
@@ -185,6 +188,14 @@ public class GhostAI : StateMachine
         _activeInterruptWatcher = null;
     }
     #endregion
+
+    public void PoolReset()
+    {
+        OnReset?.Invoke();
+    }
+
+    public void AddResetListener(UnityAction listener) => OnReset += listener;
+    public void RemoveResetListener(UnityAction listener) => OnReset -= listener;
 
     public void SetQuest(GhostQuest newQuest)
     {

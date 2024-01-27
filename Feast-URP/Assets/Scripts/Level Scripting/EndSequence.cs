@@ -134,7 +134,9 @@ public class EndSequence : MonoBehaviour
             yield return null;
         }
 
-        Destroy(filter);
+        // We're loading into a new scene, so no need to clean this up.
+        // Plus, a bug can occur where audio can continue playing as normal before scene unloads.
+        //Destroy(filter);
     }
 
 #if UNITY_EDITOR

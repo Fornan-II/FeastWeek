@@ -64,6 +64,7 @@ public class GhostManager : MonoBehaviour
     {
         ghost.GhostVFX.BecomeInvisible();
         yield return new WaitUntil(() => !ghost.GhostVFX.IsVisible);
+        ghost.PoolReset();
         ghost.gameObject.SetActive(false);
         ghost.transform.parent = transform;
         _inactiveGhostPool.Push(ghost);

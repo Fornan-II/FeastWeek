@@ -7642,6 +7642,7 @@ MonoBehaviour:
   OnInteract:
     m_PersistentCalls:
       m_Calls: []
+  ghostAI: {fileID: 3977093805931101369}
 --- !u!1 &9054163622411363504
 GameObject:
   m_ObjectHideFlags: 0

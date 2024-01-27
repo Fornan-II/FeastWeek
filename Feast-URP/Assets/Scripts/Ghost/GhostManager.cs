@@ -11,6 +11,9 @@ public class GhostManager : MonoBehaviour
     public bool GhostsAggroToPlayer;
 
     [SerializeField] private GhostAI ghostPrefab;
+    [Header("Height randomization")]
+    [SerializeField] private bool randomizeGhostSize;
+    [SerializeField] private Vector2 randomSizeRange = Vector2.one;
 
     private Stack<GhostAI> _inactiveGhostPool = new Stack<GhostAI>();
 
@@ -44,6 +47,12 @@ public class GhostManager : MonoBehaviour
         else
         {
             spawnedGhost = Instantiate(ghostPrefab, position, rotation, parent);
+        }
+
+        // Randomize ghost size for variation
+        if(randomizeGhostSize)
+        {
+            spawnedGhost.transform.localScale = Vector3.one * Util.RandomInRange(randomSizeRange);
         }
 
         return spawnedGhost;

@@ -49,7 +49,7 @@ public class CubeTriggerVolume : BaseTriggerVolume
     {
         halfExtents = Vector3.Max(halfExtents, Vector3.zero);
         innerHalfExtents = Vector3.Max(innerHalfExtents, Vector3.zero);
-        innerHalfExtents = Vector3.Min(halfExtents, Vector3.zero);
+        innerHalfExtents = Vector3.Min(innerHalfExtents, halfExtents);
     }
 
     [SerializeField, Min(0)] private int Editor_BlendGizmoCount = 3;

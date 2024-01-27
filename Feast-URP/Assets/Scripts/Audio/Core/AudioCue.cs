@@ -97,6 +97,7 @@ public class AudioCue : MonoBehaviour
     public bool IsPaused { get; protected set; } = false;
     public bool IsFading => _activeFadeRoutine != null;
 
+    public event UnityAction OnFinishedPlaying;
 
     protected CueSettings _settings = CueSettings.Default;
     public CueSettings Settings
@@ -108,7 +109,6 @@ public class AudioCue : MonoBehaviour
         }
         get => _settings;
     }
-    public event UnityAction OnFinishedPlaying;
     #endregion
 
     #region Unity Methods
@@ -130,7 +130,6 @@ public class AudioCue : MonoBehaviour
         if (!IsPlaying && !IsPaused)
         {
             OnFinishedPlaying?.Invoke();
-            OnFinishedPlaying = null;
 
             SetInactive();
         }
@@ -157,7 +156,7 @@ public class AudioCue : MonoBehaviour
         {
             _activeAudioCues.Remove(this);
             _inactiveAudioCues.Add(this);
-            ResetClip();
+            ResetCue();
             gameObject.SetActive(false);
             transform.parent = _audioCuePoolParent;
         }
@@ -193,7 +192,18 @@ public class AudioCue : MonoBehaviour
     }
 
     public void SetClip(AudioClip clip) => Source.clip = clip;
-    public void ResetClip() => Source.clip = null;
+
+    public void ResetCue()
+    {
+        Source.clip = null;
+        OnFinishedPlaying = null;
+        _settings = CueSettings.Default;
+        if(_activeFadeRoutine != null)
+        {
+            StopCoroutine(_activeFadeRoutine);
+            _activeFadeRoutine = null;
+        }
+    }
 
     public void SetVolume(float value, bool saveToSettings = true)
     {

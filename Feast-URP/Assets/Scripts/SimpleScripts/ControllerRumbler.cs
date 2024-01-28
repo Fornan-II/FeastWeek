@@ -27,7 +27,7 @@ public class ControllerRumbler : MonoBehaviour
             Gamepad.current.SetMotorSpeeds(LowFrequencyRumble, HighFrequencyRumble);
             motorsReset = false;
         }
-        else if(!motorsReset)
+        else if(!motorsReset && Gamepad.current != null)
         {
             Gamepad.current.SetMotorSpeeds(0f, 0f);
             motorsReset = true;

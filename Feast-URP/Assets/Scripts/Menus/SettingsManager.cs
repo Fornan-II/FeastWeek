@@ -174,7 +174,7 @@ public class SettingsManager : MonoBehaviour
         if (PlayerPrefs.HasKey(k_Resolution_Int))
         {
             _resolutionIndex = PlayerPrefs.GetInt(k_Resolution_Int);
-            validResolution = 0 <= _resolutionIndex && _resolutionIndex < Screen.resolutions.Length;
+            validResolution = Util.IndexIsInRange(_resolutionIndex, Screen.resolutions.Length);
         }
         
         if(!validResolution)
@@ -279,6 +279,19 @@ public class SettingsManager : MonoBehaviour
         volumeSFXSlider.value = _volumeSFX;
         volumeAmbientSlider.value = _volumeAmbient;
         volumeMusicSlider.value = _volumeMusic;
+    }
+
+    public static void DeleteSavedSettings()
+    {
+        PlayerPrefs.DeleteKey(k_LookSensitivity_Float);
+        PlayerPrefs.DeleteKey(k_Brightness_Float);
+        PlayerPrefs.DeleteKey(k_FullScreen_Int);
+        PlayerPrefs.DeleteKey(k_Resolution_Int);
+
+        PlayerPrefs.DeleteKey(k_VolumeMaster_Float);
+        PlayerPrefs.DeleteKey(k_VolumeSFX_Float);
+        PlayerPrefs.DeleteKey(k_VolumeAmbient_Float);
+        PlayerPrefs.DeleteKey(k_VolumeMusic_Float);
     }
     #endregion
 

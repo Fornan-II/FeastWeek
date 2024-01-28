@@ -75,7 +75,9 @@ public class DebugMenu : MonoBehaviour
 
         if (SceneManager.GetActiveScene().buildIndex == 0)
         {
-            if (GUI.Button(rect, "Load completed game menu")) LoadCompletedGameMenu();
+            if (GUI.Button(rect, "Toggle completed game menu")) ToggleCompletedGameMenu();
+            rect.y += height;
+            if (GUI.Button(rect, "Delete settings and quit")) DeleteSettings();
         }
         else
         {
@@ -98,10 +100,20 @@ public class DebugMenu : MonoBehaviour
     private void OnSceneLoad(Scene loadedScene, LoadSceneMode mode) => _checkpoints = FindObjectsOfType<Checkpoint>();
     private void OnSceneUnloaded(Scene unloadedScene) => _checkpoints = FindObjectsOfType<Checkpoint>();
 
-    private void LoadCompletedGameMenu()
+    private void ToggleCompletedGameMenu()
     {
-        GlobalData.HasCompletedGame = true;
+        GlobalData.HasCompletedGame = !GlobalData.HasCompletedGame;
         SceneManager.LoadScene(0);
+    }
+
+    private void DeleteSettings()
+    {
+        SettingsManager.DeleteSavedSettings();
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 
     private void ToggleNoClip()

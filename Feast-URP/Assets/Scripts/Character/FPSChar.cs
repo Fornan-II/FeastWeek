@@ -26,6 +26,7 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
     [SerializeField] private LayerMask groundCheckMask = Physics.AllLayers;
     [Header("Sound")]
     [SerializeField] private Vector2 footstepStrideDistance = new Vector2(0.0203f, 0.0392f);
+    [SerializeField] private float minFootstepTime = 0.1f;
     [SerializeField] private float jumpVolumeMultiplier = 2f;
     [Header("Visual Flare")]
     [SerializeField] private AnimationCurve landingForceCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
@@ -43,6 +44,7 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
 
     private float _currentYVelocityMax = 0.0f;
     private float _distanceToNextFootstep = 0f;
+    private float _lastFootstepTime = -1f;
 
     #region Input
     protected override void ActivateInput()
@@ -152,8 +154,12 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
             _distanceToNextFootstep -= moveCalc.magnitude * Time.deltaTime;
             if (_distanceToNextFootstep <= 0f && _isGrounded)
             {
-                _distanceToNextFootstep = Util.RandomInRange(footstepStrideDistance);
-                footstepPlayer.PlayFootstep(_groundSurfaceType);
+                if(Time.time >= _lastFootstepTime + minFootstepTime)
+                {
+                    _distanceToNextFootstep = Util.RandomInRange(footstepStrideDistance);
+                    _lastFootstepTime = Time.time;
+                    footstepPlayer.PlayFootstep(_groundSurfaceType);
+                }
             }
 
             // Keep the player moving at their current vertical speed.

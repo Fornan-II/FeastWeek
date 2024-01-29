@@ -24,7 +24,7 @@ public class NoClipPawn : VehiclePawn, DefaultControls.INoClipCharacterActions
         GameManager.Instance.Controls.NoClipCharacter.Disable();
     }
 
-    public void OnLook(InputAction.CallbackContext context) => _lookInput = context.ReadValue<Vector2>() * SettingsManager.LookSensitivity;
+    public void OnLook(InputAction.CallbackContext context) => _lookInput = Util.ScaleInputToScreen(context.ReadValue<Vector2>()) * SettingsManager.LookSensitivity;
     public void OnMoveHorizontal(InputAction.CallbackContext context) => _horizontalMovement = context.ReadValue<Vector2>();
     public void OnMoveVertical(InputAction.CallbackContext context) => _verticalMovement = context.ReadValue<float>();
     #endregion

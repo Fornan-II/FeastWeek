@@ -110,7 +110,7 @@ public class PauseManager : MonoBehaviour, DefaultControls.IGlobalActions
         }
         else
         {
-            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current?.SetSelectedGameObject(null);
         }
     }
 

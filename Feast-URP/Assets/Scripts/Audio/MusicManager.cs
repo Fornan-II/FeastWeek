@@ -12,9 +12,10 @@ public class MusicManager : MonoBehaviour
 
     public void StopImmediately()
     {
-        foreach(var song in ActiveSongs)
+        while(ActiveSongs.Count > 0)
         {
-            song.SongCue.Stop();
+            ActiveSongs[0].SongCue.Stop();
+            ActiveSongs.RemoveAt(0);
         }
     }
 

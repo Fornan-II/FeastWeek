@@ -17,6 +17,21 @@ public static class Util
         value.y * Mathf.Sqrt(1f - value.x * value.x / 2f)
         );
 
+    public static Vector2 ScaleInputToScreen(Vector2 input)
+    {
+        // Scale to 1920x1080
+        // Only affects gamepad(?)
+        if(GameManager.Instance.UsingGamepadControls())
+        {
+            return new Vector2(
+                input.x / Screen.width * 1920f,
+                input.y / Screen.height * 1080f
+                );
+        }
+
+        return input;
+    }
+
     public static Vector3 LimitVector3(Vector3 value, float limit) => value.sqrMagnitude > limit * limit ? value.normalized * limit : value;
     
     public static float RandomInRange(Vector2 range) => Random.Range(range.x, range.y);

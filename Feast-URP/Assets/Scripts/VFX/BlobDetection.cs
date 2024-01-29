@@ -13,21 +13,28 @@ public class BlobDetection : MonoBehaviour
     [SerializeField] private UniversalAdditionalCameraData renderCamData;
     [SerializeField] private LayerMask cullingMask = Physics.AllLayers;
     [SerializeField] private UnityEvent OnBlobDetected = null;
-    [SerializeField,Range(0,1)] private float renderTextureScalar = 1f;
+    [SerializeField] private Vector2Int renderTextureSize = new Vector2Int(128, 128);
+    [SerializeField] private int minDetectedPixels = 128;
 
     private RenderTexture _renderTexture;
+    private Texture2D _readTexture;
     private bool _detectionActive = false;
     private Vector2 _cachedScreenSize;
-    [SerializeField] private Vector2 rtWL;
-    private bool _lastFrameWasInside = false;
+
+    private void OnDestroy()
+    {
+        _renderTexture.Release();
+    }
 
     public void StartDetection()
     {
         if(!_renderTexture)
         {
             _cachedScreenSize = new Vector2(Screen.width, Screen.height);
-            _renderTexture = new RenderTexture(Mathf.FloorToInt(Screen.width * renderTextureScalar), Mathf.FloorToInt(Screen.height * renderTextureScalar), 8, RenderTextureFormat.R8);
+            _renderTexture = new RenderTexture(renderTextureSize.x, renderTextureSize.y, 8, RenderTextureFormat.R8);
             _renderTexture.Create();
+
+            _readTexture = new Texture2D(renderTextureSize.x, renderTextureSize.y, TextureFormat.R8, false);
         }
 
         Util.MoveTransformToTarget(renderCam.transform, MainCamera.Camera.transform, true);
@@ -37,6 +44,8 @@ public class BlobDetection : MonoBehaviour
         renderCam.backgroundColor = Color.black;
         renderCam.clearFlags = CameraClearFlags.Color;
         // Set renderer if needed
+
+        Debug.Log("Blob detection starting...");
 
         _detectionActive = true;
     }
@@ -50,44 +59,35 @@ public class BlobDetection : MonoBehaviour
         if (deactiveGameObjectOnDetection)
             gameObject.SetActive(false);
     }
-
+    
     private void LateUpdate()
     {
         if (!_detectionActive) return;
-        if (_renderTexture) rtWL = new Vector2(_renderTexture.width, _renderTexture.height);
         if (CheckRenderTexture)
         {
             // https://answers.unity.com/questions/27968/getpixels-of-rendertexture.html
+            // https://forum.unity.com/threads/rendertexture-readpixels-getpixel-shortcut.1103338/
             RenderTexture.active = _renderTexture;
-            Rect textureRect = new Rect(0, 0, _renderTexture.width, _renderTexture.height);
-            Texture2D readTexture = new Texture2D(_renderTexture.width, _renderTexture.height, TextureFormat.R8, false);
-            readTexture.ReadPixels(textureRect, 0, 0);
+            Rect textureRect = new Rect(0, 0, _readTexture.width, _readTexture.height);
+            _readTexture.ReadPixels(textureRect, 0, 0);
 
-            for (int x = 0; x < _renderTexture.width; ++x)
+            // GetPixelData should be the most efficient way to read pixel data
+            // Doesn't copy any memory, gets entire array
+            // Using byte because of R8 TextureFormat of RenderTexture
+            Unity.Collections.NativeArray<byte> data = _readTexture.GetPixelData<byte>(0);
+            int detectedPixelCount = 0;
+            for(int i = 0; i < data.Length; ++i)
             {
-                for (int y = 0; y < _renderTexture.height; ++y)
+                if (data[i] > 127)
                 {
-                    if (readTexture.GetPixel(x, y).r > 0.5f)
+                    ++detectedPixelCount;
+                    if (detectedPixelCount >= minDetectedPixels)
                     {
-                        if (_lastFrameWasInside)
-                            BlobDetected();
-                        else
-                            _lastFrameWasInside = true;
+                        BlobDetected();
                         return;
                     }
                 }
             }
-        }
-
-        _lastFrameWasInside = false;
-
-        if(_renderTexture && (_cachedScreenSize.x != Screen.width || _cachedScreenSize.y != Screen.height))
-        {
-            _cachedScreenSize = new Vector2(Screen.width, Screen.height);
-            _renderTexture.Release();
-            _renderTexture.width = Mathf.FloorToInt(Screen.width * renderTextureScalar);
-            _renderTexture.height = Mathf.FloorToInt(Screen.height * renderTextureScalar);
-            _renderTexture.Create();
         }
     }
 

@@ -13,7 +13,7 @@ public class ControllerRumbler : MonoBehaviour
 
     private void OnDisable()
     {
-        if (!motorsReset)
+        if (!motorsReset && Gamepad.current != null)
         {
             Gamepad.current.SetMotorSpeeds(0f, 0f);
             motorsReset = true;

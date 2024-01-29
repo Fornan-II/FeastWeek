@@ -60,7 +60,7 @@ public class FPSChar : Pawn, ICheckpointUser, DefaultControls.IFPSCharacterActio
     }
 
     public void OnWalk(InputAction.CallbackContext context) => _moveInput = Util.RemapSquareToCircle(context.ReadValue<Vector2>());
-    public void OnLook(InputAction.CallbackContext context) => _lookInput = context.ReadValue<Vector2>() * SettingsManager.LookSensitivity;
+    public void OnLook(InputAction.CallbackContext context) => _lookInput = Util.ScaleInputToScreen(context.ReadValue<Vector2>()) * SettingsManager.LookSensitivity;
     public void OnJump(InputAction.CallbackContext context) => _jumpInput = true;
     public void OnSprint(InputAction.CallbackContext context) => _sprintInput = !context.canceled;
 

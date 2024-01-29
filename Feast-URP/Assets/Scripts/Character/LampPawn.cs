@@ -123,7 +123,7 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
             ReturnControl();
     }
 
-    public void OnLook(InputAction.CallbackContext context) => _lookInput = context.ReadValue<Vector2>() * SettingsManager.LookSensitivity;
+    public void OnLook(InputAction.CallbackContext context) => _lookInput = Util.ScaleInputToScreen(context.ReadValue<Vector2>()) * SettingsManager.LookSensitivity;
     public void OnJump(InputAction.CallbackContext context) { if (!PauseManager.Instance.IsPaused) ReturnControl(); }
     public void OnSprint(InputAction.CallbackContext context) { /* Do nothing */ }
     public void OnInteract(InputAction.CallbackContext context) { if (!PauseManager.Instance.IsPaused) ReturnControl(); }

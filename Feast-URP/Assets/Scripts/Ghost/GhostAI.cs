@@ -237,8 +237,8 @@ public class GhostAI : StateMachine
 
         while (agent.pathPending)
             yield return null;
-
-        while ( agent.remainingDistance > agent.stoppingDistance)
+        
+        while (!Util.IsAgentNearEndOfPath(agent, agent.stoppingDistance))
             yield return null;
 
         agent.isStopped = true;

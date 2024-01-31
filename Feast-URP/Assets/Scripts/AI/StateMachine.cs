@@ -14,6 +14,12 @@ public class StateMachine : MonoBehaviour
     {
         if((recalculateIfNoState && _activeState == null) || recalculateWhenReady)
         {
+            if (_activeState != null)
+            {
+                StopCoroutine(_activeState);
+                _activeState = null;  
+            }
+
             recalculateWhenReady = false;
             RecalculateState();
         }

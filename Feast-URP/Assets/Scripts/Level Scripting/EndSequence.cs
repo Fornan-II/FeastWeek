@@ -82,6 +82,8 @@ public class EndSequence : MonoBehaviour
             {
                 deathBlob.SetActive(true);
                 director.Play();
+                directorStarted = true;
+
                 blobDetection.gameObject.SetActive(true);
                 blobDetection.StartDetection();
             }

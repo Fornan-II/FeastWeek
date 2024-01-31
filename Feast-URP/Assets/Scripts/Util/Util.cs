@@ -63,6 +63,25 @@ public static class Util
         }
     }
 
+    public static bool IsAgentNearEndOfPath(UnityEngine.AI.NavMeshAgent agent, float nearDistance)
+    {
+        // Based on https://stackoverflow.com/questions/61421172/why-does-navmeshagent-remainingdistance-return-values-of-infinity-and-then-a-flo
+        // Needed a more optimized way to check this than using agent.remainingDistance
+        if (agent.pathPending
+            || agent.pathStatus == UnityEngine.AI.NavMeshPathStatus.PathInvalid)
+        {
+            // Removed corner argument from stackoverflow post as that is even more expensive than remainingDistance
+            return false;
+        }
+        
+        if((agent.transform.position - agent.pathEndPosition).sqrMagnitude <= nearDistance * nearDistance)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public static void UndoDontDestroyOnLoad(GameObject gameObject) => SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetActiveScene());
 
     [System.Serializable]

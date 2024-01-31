@@ -77,6 +77,7 @@ public class GhostWorld : MonoBehaviour
     private IEnumerator EndAnimation()
     {
         // End sequence part 1
+        // Player control is relinquished, character staring at and walking towards forest god.
         forestGodAI.TriggerPlayerAggro();
 
         if (PauseManager.Instance)
@@ -117,6 +118,7 @@ public class GhostWorld : MonoBehaviour
         }
 
         // End sequence part 2
+        // Close-up of forest god's face
         endSequence2View.RequestView();
         godLookAtTarget.Target = endSequence2View.transform;
         godBlink.enabled = false;
@@ -144,6 +146,7 @@ public class GhostWorld : MonoBehaviour
         }
 
         // End sequence part 3
+        // Camera beginning to dolly back, revealing castle interior
         forestGeometry.SetActive(false);
         hallGeometry.SetActive(true);
 
@@ -170,6 +173,7 @@ public class GhostWorld : MonoBehaviour
         }
 
         // End sequence part 4
+        // Final fade to black
         MainCamera.Effects.SetFadeColor(fadeColor);
         MainCamera.Effects.CrossFade(finalFadeOutDuration, true);
         for(timer = 0.0f; timer < finalFadeOutDuration + blackOutLingerTime; timer += Time.deltaTime)

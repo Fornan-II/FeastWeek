@@ -24,6 +24,9 @@ public class GhostDialogue : Interactable
         IsInteractable = false;
     }
 
+
+    public void DisableInteraction() => IsInteractable = false;
+
 #if UNITY_EDITOR
     private void OnValidate()
     {

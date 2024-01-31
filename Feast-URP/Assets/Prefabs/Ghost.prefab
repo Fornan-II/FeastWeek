@@ -7396,11 +7396,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MovingTurnSpeed: 360
   m_StationaryTurnSpeed: 180
-  m_JumpPower: 12
   m_RunCycleLegOffset: 0.2
   m_MoveSpeedMultiplier: 1
   m_AnimSpeedMultiplier: 1
-  m_GroundCheckDistance: 0.1
   randomOffsetRange: {x: -0.5, y: 0.5}
   randomSpeedRange: {x: 0.9, y: 1.1}
 --- !u!114 &3950819587280752810
@@ -7444,6 +7442,21 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  OnBecomeInvisible:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5573899007097397895}
+        m_TargetAssemblyTypeName: GhostDialogue, Assembly-CSharp
+        m_MethodName: DisableInteraction
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &8501177358148748041
 MonoBehaviour:
   m_ObjectHideFlags: 0

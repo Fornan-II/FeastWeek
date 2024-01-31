@@ -17,6 +17,8 @@ public class GhostVFX : MonoBehaviour
     [Header("Properties")]
     [SerializeField] private float visibilityTransitionTime = 1.0f;
     [SerializeField] private AnimationCurve whisperVolumeCurve;
+    [Tooltip("Event for detecting when ghost just becomes invisible, before particles disappear however.")]
+    [SerializeField] private UnityEngine.Events.UnityEvent OnBecomeInvisible;
 
     private bool _isVisible = false;
     private bool _shouldBeVisible = false;
@@ -67,7 +69,7 @@ public class GhostVFX : MonoBehaviour
                 particles.Play();
                 particlesActive = true;
             }
-
+            
             yield return null;
 
             visibilityTimer += Time.deltaTime * (_shouldBeVisible ? 1 : -1);
@@ -90,6 +92,7 @@ public class GhostVFX : MonoBehaviour
             blink.SetOpenness(0f);
             if (particles.isPlaying) particles.Stop();
             whisperAudio.Stop();
+            OnBecomeInvisible.Invoke();
         }
 
         _isVisible = _shouldBeVisible;

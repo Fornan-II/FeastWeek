@@ -86,7 +86,6 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
 
             if (_isConnectedToTarget)
             {
-                //lookCalc *= sensitivityCurve.Evaluate(dot);
                 float dotFactor = sensitivityCurve.Evaluate(dot);
                 lookCalc *= dotFactor;
                 AudioCueEffects.Mix(_lampActiveCue, _lampActiveDistortCue, dotFactor);

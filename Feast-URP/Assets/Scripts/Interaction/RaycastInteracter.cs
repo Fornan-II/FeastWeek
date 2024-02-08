@@ -28,7 +28,7 @@ public class RaycastInteracter : MonoBehaviour
         bool _hadInteractable = _targetedInteractable;
 
         _targetedInteractable = null;
-        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hitInfo, interactRange, interactMask, QueryTriggerInteraction.Ignore))
+        if (!MainCamera.IsBlending && Physics.Raycast(transform.position, transform.forward, out RaycastHit hitInfo, interactRange, interactMask, QueryTriggerInteraction.Ignore))
         {
             if(hitInfo.transform.TryGetComponent(out _targetedInteractable))
             {

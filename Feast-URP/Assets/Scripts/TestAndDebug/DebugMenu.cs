@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR || DEVELOPMENT_BUILD
+﻿//#if UNITY_EDITOR || DEVELOPMENT_BUILD
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,6 +46,12 @@ public class DebugMenu : MonoBehaviour
 
     private void Update()
     {
+#if !(UNITY_EDITOR || DEVELOPMENT_BUILD)
+        if (!DebugITem.Allow)
+        {
+            return;
+        }
+#endif
         bool isPressed = Keyboard.current.backquoteKey.isPressed;
 
         if(isPressed && !_wasPressed)
@@ -241,4 +247,4 @@ public class DebugMenu : MonoBehaviour
         intro.gameObject.SetActive(false);
     }
 }
-#endif
+//#endif

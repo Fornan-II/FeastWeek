@@ -118,14 +118,14 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
 
     public void OnWalk(InputAction.CallbackContext context)
     {
-        if (context.ReadValue<Vector2>().sqrMagnitude > Mathf.Epsilon)
+        if (AllowReturnControl() && context.ReadValue<Vector2>().sqrMagnitude > Mathf.Epsilon)
             ReturnControl();
     }
 
     public void OnLook(InputAction.CallbackContext context) => _lookInput = Util.ScaleInputToScreen(context.ReadValue<Vector2>()) * SettingsManager.LookSensitivity;
-    public void OnJump(InputAction.CallbackContext context) { if (!PauseManager.Instance.IsPaused) ReturnControl(); }
+    public void OnJump(InputAction.CallbackContext context) { if (AllowReturnControl()) ReturnControl(); }
     public void OnSprint(InputAction.CallbackContext context) { /* Do nothing */ }
-    public void OnInteract(InputAction.CallbackContext context) { if (!PauseManager.Instance.IsPaused) ReturnControl(); }
+    public void OnInteract(InputAction.CallbackContext context) { if (AllowReturnControl()) ReturnControl(); }
     #endregion
 
     #region Pawn/Controller control
@@ -144,6 +144,8 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
         _lookInput = Vector2.zero;
     }
     #endregion
+
+    private bool AllowReturnControl() => !PauseManager.Instance.IsPaused && !MainCamera.IsBlending;
 
     private void ConstrainLampRotation()
     {

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -37,14 +36,14 @@ public class ModifierSet
     {
         if (BaseValue == newBaseValue) return;
         baseValue = newBaseValue;
-        RecalculateAll();
+        Recalculate();
     }
 
     public void SetMode(CalculateMode newMode)
     {
         if (Mode == newMode) return;
         mode = newMode;
-        RecalculateAll();
+        Recalculate();
     }
 
     public void SetModifier(int id, float modifierValue)
@@ -54,7 +53,7 @@ public class ModifierSet
             if(_modifiers[id] != modifierValue)
             {
                 _modifiers[id] = modifierValue;
-                RecalculateAll();
+                Recalculate();
             }
         }
         else
@@ -69,7 +68,7 @@ public class ModifierSet
         if(_modifiers.ContainsKey(id))
         {
             _modifiers.Remove(id);
-            RecalculateAll();
+            Recalculate();
         }
     }
 
@@ -78,11 +77,11 @@ public class ModifierSet
         if(_modifiers.Count > 0)
         {
             _modifiers.Clear();
-            RecalculateAll();
+            Recalculate();
         }
     }
 
-    private void RecalculateAll()
+    public void Recalculate()
     {
         Value = BaseValue;
         foreach(float value in _modifiers.Values)

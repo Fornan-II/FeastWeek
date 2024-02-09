@@ -86,17 +86,28 @@ public class CameraFX
         cameraNoise.SetModifier(sourceID, value);
         Shader.SetGlobalFloat("_NoiseStrength", cameraNoise.Value);
     }
+
     public void RemoveCameraNoise(int sourceID)
     {
         cameraNoise.RemoveModifier(sourceID);
         Shader.SetGlobalFloat("_NoiseStrength", cameraNoise.Value);
     }
+
     public void ResetCameraNoiseModifiers()
     {
         cameraNoise.ClearModifiers();
         Shader.SetGlobalFloat("_NoiseStrength", cameraNoise.Value);
     }
 
+    public void RecalculateCameraNoise()
+    {
+        cameraNoise.Recalculate();
+        noisePulseStrength.Recalculate();
+        noisePulseSpeed.Recalculate();
+        noisePulseExponent.Recalculate();
+
+        Shader.SetGlobalFloat("_NoiseStrength", cameraNoise.Value);
+    }
 
     public void ApplyCameraNoisePulse(int sourceID, float strength, float speed, float exponent)
     {

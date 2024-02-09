@@ -76,6 +76,7 @@ public class MainCamera : MonoBehaviour
             _instance = this;
             _cameraRoot = new GameObject("MainCameraRoot").transform;
             Util.MoveTransformToTarget(_cameraRoot, transform);
+            _cameraRoot.SetParent(transform.parent);
             transform.SetParent(_cameraRoot);
             cameraEffects.Init(this);
             blendOverrides.Initialize();
@@ -129,6 +130,8 @@ public class MainCamera : MonoBehaviour
         {
             basePostProcessing = camVolume.profile;
         }
+
+        cameraEffects.RecalculateCameraNoise();
     }
 #endif
 }

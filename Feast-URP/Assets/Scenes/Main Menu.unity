@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.99999905, g: 0, b: 0.99999905, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -155,26 +155,6 @@ Camera:
   m_CorrespondingSourceObject: {fileID: 7698335246697107486, guid: a4dad13bd4264bc4cb4c6c03bb0a8f5c, type: 3}
   m_PrefabInstance: {fileID: 1163982337}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &220557566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7fd9488000d3734a9e00ee676215985, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  components:
-  - {fileID: 281314093}
-  - {fileID: 820670698}
-  - {fileID: 1349039858}
-  - {fileID: 681194478}
-  - {fileID: 798427845}
-  - {fileID: 997545815}
-  - {fileID: 1620760229}
 --- !u!1001 &229491790
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -276,7 +256,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -416,7 +396,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &281314093
+--- !u!114 &266056689
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5290,7 +5270,7 @@ RectTransform:
   - {fileID: 1430230376}
   - {fileID: 1536072319}
   m_Father: {fileID: 1882185776}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -5378,6 +5358,101 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 467729053}
+  m_CullTransparentMesh: 0
+--- !u!114 &475149770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7fd9488000d3734a9e00ee676215985, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  components:
+  - {fileID: 266056689}
+  - {fileID: 1174945696}
+  - {fileID: 956439316}
+  - {fileID: 720939385}
+  - {fileID: 733226712}
+  - {fileID: 2086325068}
+  - {fileID: 1089726648}
+--- !u!1 &527325847
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 527325848}
+  - component: {fileID: 527325850}
+  - component: {fileID: 527325849}
+  m_Layer: 5
+  m_Name: Title (image)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &527325848
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527325847}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_Children: []
+  m_Father: {fileID: 1882185776}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.6}
+  m_AnchorMax: {x: 0.5, y: 0.6}
+  m_AnchoredPosition: {x: -30.8, y: 22.59}
+  m_SizeDelta: {x: 750, y: 79.6}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &527325849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527325847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 9f3ce083dfeb4c84e8f5a8170a9b3872, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &527325850
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527325847}
   m_CullTransparentMesh: 0
 --- !u!1 &546453946
 GameObject:
@@ -5584,7 +5659,7 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4459866554005581971, guid: 86a55ca10937842429cde83bc31e4d7c, type: 3}
   m_PrefabInstance: {fileID: 577496566}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &681194478
+--- !u!114 &720939385
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5607,7 +5682,7 @@ MonoBehaviour:
   gain:
     m_OverrideState: 0
     m_Value: {x: 1, y: 1, z: 1, w: -0.2330508}
---- !u!114 &798427845
+--- !u!114 &733226712
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5643,12 +5718,12 @@ GameObject:
   - component: {fileID: 809554283}
   - component: {fileID: 809554282}
   m_Layer: 5
-  m_Name: Title
+  m_Name: Title (text)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &809554281
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5765,53 +5840,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 809554280}
   m_CullTransparentMesh: 0
---- !u!114 &820670698
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b2db86121404754db890f4c8dfe81b2, type: 3}
-  m_Name: Bloom(Clone)
-  m_EditorClassIdentifier: 
-  active: 0
-  m_AdvancedMode: 0
-  threshold:
-    m_OverrideState: 1
-    m_Value: 1
-    min: 0
-  intensity:
-    m_OverrideState: 1
-    m_Value: 1
-    min: 0
-  scatter:
-    m_OverrideState: 0
-    m_Value: 0.7
-    min: 0
-    max: 1
-  clamp:
-    m_OverrideState: 0
-    m_Value: 65472
-    min: 0
-  tint:
-    m_OverrideState: 0
-    m_Value: {r: 1, g: 1, b: 1, a: 1}
-    hdr: 0
-    showAlpha: 0
-    showEyeDropper: 1
-  highQualityFiltering:
-    m_OverrideState: 0
-    m_Value: 1
-  dirtTexture:
-    m_OverrideState: 0
-    m_Value: {fileID: 0}
-  dirtIntensity:
-    m_OverrideState: 0
-    m_Value: 0
-    min: 0
 --- !u!1 &822110257
 GameObject:
   m_ObjectHideFlags: 0
@@ -5999,7 +6027,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -6139,7 +6167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &997545815
+--- !u!114 &956439316
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6148,35 +6176,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66f335fb1ffd8684294ad653bf1c7564, type: 3}
-  m_Name: ColorAdjustments(Clone)
+  m_Script: {fileID: 11500000, guid: fb60a22f311433c4c962b888d1393f88, type: 3}
+  m_Name: PaniniProjection(Clone)
   m_EditorClassIdentifier: 
   active: 1
   m_AdvancedMode: 0
-  postExposure:
+  distance:
     m_OverrideState: 1
-    m_Value: -0.01568818
-  contrast:
+    m_Value: 0.11
+    min: 0
+    max: 1
+  cropToFit:
     m_OverrideState: 0
-    m_Value: 0
-    min: -100
-    max: 100
-  colorFilter:
-    m_OverrideState: 0
-    m_Value: {r: 1, g: 1, b: 1, a: 1}
-    hdr: 1
-    showAlpha: 0
-    showEyeDropper: 1
-  hueShift:
-    m_OverrideState: 0
-    m_Value: 0
-    min: -180
-    max: 180
-  saturation:
-    m_OverrideState: 0
-    m_Value: 0
-    min: -100
-    max: 100
+    m_Value: 1
+    min: 0
+    max: 1
 --- !u!1 &1042000894
 GameObject:
   m_ObjectHideFlags: 0
@@ -6252,6 +6266,68 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1042000894}
   m_CullTransparentMesh: 0
+--- !u!114 &1089726648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c01700fd266d6914ababb731e09af2eb, type: 3}
+  m_Name: DepthOfField(Clone)
+  m_EditorClassIdentifier: 
+  active: 0
+  m_AdvancedMode: 0
+  mode:
+    m_OverrideState: 1
+    m_Value: 1
+  gaussianStart:
+    m_OverrideState: 1
+    m_Value: 30
+    min: 0
+  gaussianEnd:
+    m_OverrideState: 1
+    m_Value: 60
+    min: 0
+  gaussianMaxRadius:
+    m_OverrideState: 1
+    m_Value: 1
+    min: 0.5
+    max: 1.5
+  highQualitySampling:
+    m_OverrideState: 0
+    m_Value: 0
+  focusDistance:
+    m_OverrideState: 0
+    m_Value: 10
+    min: 0.1
+  aperture:
+    m_OverrideState: 0
+    m_Value: 5.6
+    min: 1
+    max: 32
+  focalLength:
+    m_OverrideState: 0
+    m_Value: 50
+    min: 1
+    max: 300
+  bladeCount:
+    m_OverrideState: 0
+    m_Value: 5
+    min: 3
+    max: 9
+  bladeCurvature:
+    m_OverrideState: 0
+    m_Value: 1
+    min: 0
+    max: 1
+  bladeRotation:
+    m_OverrideState: 0
+    m_Value: 0
+    min: -180
+    max: 180
 --- !u!1001 &1163982337
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6313,7 +6389,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a4dad13bd4264bc4cb4c6c03bb0a8f5c, type: 3}
---- !u!114 &1349039858
+--- !u!114 &1174945696
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6322,21 +6398,44 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb60a22f311433c4c962b888d1393f88, type: 3}
-  m_Name: PaniniProjection(Clone)
+  m_Script: {fileID: 11500000, guid: 0b2db86121404754db890f4c8dfe81b2, type: 3}
+  m_Name: Bloom(Clone)
   m_EditorClassIdentifier: 
   active: 1
   m_AdvancedMode: 0
-  distance:
+  threshold:
     m_OverrideState: 1
-    m_Value: 0.11
-    min: 0
-    max: 1
-  cropToFit:
-    m_OverrideState: 0
     m_Value: 1
     min: 0
+  intensity:
+    m_OverrideState: 1
+    m_Value: 1
+    min: 0
+  scatter:
+    m_OverrideState: 0
+    m_Value: 0.7
+    min: 0
     max: 1
+  clamp:
+    m_OverrideState: 0
+    m_Value: 65472
+    min: 0
+  tint:
+    m_OverrideState: 0
+    m_Value: {r: 1, g: 1, b: 1, a: 1}
+    hdr: 0
+    showAlpha: 0
+    showEyeDropper: 1
+  highQualityFiltering:
+    m_OverrideState: 0
+    m_Value: 1
+  dirtTexture:
+    m_OverrideState: 0
+    m_Value: {fileID: 0}
+  dirtIntensity:
+    m_OverrideState: 0
+    m_Value: 0
+    min: 0
 --- !u!1 &1392198656
 GameObject:
   m_ObjectHideFlags: 0
@@ -6606,7 +6705,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -7015,68 +7114,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1536072318}
   m_CullTransparentMesh: 0
---- !u!114 &1620760229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c01700fd266d6914ababb731e09af2eb, type: 3}
-  m_Name: DepthOfField(Clone)
-  m_EditorClassIdentifier: 
-  active: 0
-  m_AdvancedMode: 0
-  mode:
-    m_OverrideState: 1
-    m_Value: 1
-  gaussianStart:
-    m_OverrideState: 1
-    m_Value: 30
-    min: 0
-  gaussianEnd:
-    m_OverrideState: 1
-    m_Value: 60
-    min: 0
-  gaussianMaxRadius:
-    m_OverrideState: 1
-    m_Value: 1
-    min: 0.5
-    max: 1.5
-  highQualitySampling:
-    m_OverrideState: 0
-    m_Value: 0
-  focusDistance:
-    m_OverrideState: 0
-    m_Value: 10
-    min: 0.1
-  aperture:
-    m_OverrideState: 0
-    m_Value: 5.6
-    min: 1
-    max: 32
-  focalLength:
-    m_OverrideState: 0
-    m_Value: 50
-    min: 1
-    max: 300
-  bladeCount:
-    m_OverrideState: 0
-    m_Value: 5
-    min: 3
-    max: 9
-  bladeCurvature:
-    m_OverrideState: 0
-    m_Value: 1
-    min: 0
-    max: 1
-  bladeRotation:
-    m_OverrideState: 0
-    m_Value: 0
-    min: -180
-    max: 180
 --- !u!1 &1718966740
 GameObject:
   m_ObjectHideFlags: 0
@@ -7305,7 +7342,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1882185776
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7318,6 +7355,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 809554281}
+  - {fileID: 527325848}
   - {fileID: 1974384170}
   - {fileID: 922317693}
   - {fileID: 229491791}
@@ -7459,7 +7497,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 267727726321040622, guid: 3552f492d555e0341845bae400b14040, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -7667,6 +7705,44 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1987101797}
   m_CullTransparentMesh: 0
+--- !u!114 &2086325068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66f335fb1ffd8684294ad653bf1c7564, type: 3}
+  m_Name: ColorAdjustments(Clone)
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  postExposure:
+    m_OverrideState: 1
+    m_Value: 0
+  contrast:
+    m_OverrideState: 0
+    m_Value: 0
+    min: -100
+    max: 100
+  colorFilter:
+    m_OverrideState: 0
+    m_Value: {r: 1, g: 1, b: 1, a: 1}
+    hdr: 1
+    showAlpha: 0
+    showEyeDropper: 1
+  hueShift:
+    m_OverrideState: 0
+    m_Value: 0
+    min: -180
+    max: 180
+  saturation:
+    m_OverrideState: 0
+    m_Value: 0
+    min: -100
+    max: 100
 --- !u!1 &2108725384
 GameObject:
   m_ObjectHideFlags: 0
@@ -7700,7 +7776,7 @@ RectTransform:
   - {fileID: 1042000895}
   - {fileID: 1987101798}
   m_Father: {fileID: 1882185776}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

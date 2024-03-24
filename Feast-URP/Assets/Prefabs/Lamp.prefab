@@ -14850,6 +14850,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  accelerationFactor: 0.005
   swivelVolumeCurve:
     serializedVersion: 2
     m_Curve:

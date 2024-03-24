@@ -24,12 +24,12 @@ public class ControllerRumbler : MonoBehaviour
     {
         if(GameManager.Instance.UsingGamepadControls() || ignoreGamepadOnly)
         {
-            Gamepad.current.SetMotorSpeeds(LowFrequencyRumble, HighFrequencyRumble);
+            Gamepad.current?.SetMotorSpeeds(LowFrequencyRumble, HighFrequencyRumble);
             motorsReset = false;
         }
         else if(!motorsReset && Gamepad.current != null)
         {
-            Gamepad.current.SetMotorSpeeds(0f, 0f);
+            Gamepad.current?.SetMotorSpeeds(0f, 0f);
             motorsReset = true;
         }
     }

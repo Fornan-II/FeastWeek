@@ -19,6 +19,8 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
     [Header("Alignment Settings")]
     [SerializeField] private float alignmentCutoff = 0.85f;
     [SerializeField] private AnimationCurve sensitivityCurve = AnimationCurve.Linear(1f, 1f, 0.85f, 0.2f);
+    [SerializeField] private float accelerationThreshhold = 1f;
+    [SerializeField] private float sensitivityMinWhenAcclerating = 0.2f;
     [Header("Audio - Swiveling")]
     [SerializeField] private AnimationCurve swivelVolumeCurve;
     [SerializeField] private float swivelSmoothing = 0.3f;
@@ -36,6 +38,7 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
     [SerializeField] private UnityEvent onTetherBreak;
     [SerializeField] private AnimationCurve cameraNoiseBreakAnim;
 
+    private Vector2 _prevousLookInput;
     private Vector2 _lookInput;
     private float _swivelSmoothVelocity = 0.0f;
     private bool _isConnectedToTarget = true;
@@ -53,53 +56,18 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
 
     private void Update()
     {
-        // Handle swivel audio
         if (IsBeingControlled || rotationAudioSource.volume > 0)
         {
-            float newSwivelVolume = Mathf.SmoothDamp(rotationAudioSource.volume, swivelVolumeCurve.Evaluate(_lookInput.sqrMagnitude), ref _swivelSmoothVelocity, swivelSmoothing);
-
-            // SmoothDamp doesn't seem to converge to 0 so let's help it out
-            if (newSwivelVolume < minSwivelVolume)
-                newSwivelVolume = 0f;
-
-            if (newSwivelVolume > 0 && rotationAudioSource.volume <= 0f)
-            {
-                rotationAudioSource.Play();
-            }
-            else if (newSwivelVolume <= 0 && rotationAudioSource.volume > 0f)
-            {
-                rotationAudioSource.Pause();
-            }
-
-            rotationAudioSource.volume = newSwivelVolume;
+            HandleSwivelAudio();
         }
 
         // Check that this is being controlled and that the game is not paused
-        if (!IsBeingControlled || Time.timeScale <= 0f) return;
-
-        Vector3 vecToTarget = (target.GetTargetPosition() - lookTransform.position).normalized;
-        float dot = Vector3.Dot(lookTransform.forward, vecToTarget);
-
-        // Rotate lamp based on input
+        if (IsBeingControlled && !(Time.timeScale <= 0f))
         {
-            Vector2 lookCalc = _lookInput * lookSpeed;
-
-            if (_isConnectedToTarget)
-            {
-                float dotFactor = sensitivityCurve.Evaluate(dot);
-                lookCalc *= dotFactor;
-                AudioCueEffects.Mix(_lampActiveCue, _lampActiveDistortCue, dotFactor);
-            }
-
-            lookTransform.rotation *= Quaternion.Euler(-lookCalc.y, lookCalc.x, 0);
-            ConstrainLampRotation();
+            HandleLookRotation();
         }
 
-        // Check lamp's connection to target
-        if(_isConnectedToTarget && dot < alignmentCutoff)
-        {
-            BreakTether();
-        }
+        _prevousLookInput = _lookInput;
     }
     #endregion
 
@@ -146,6 +114,62 @@ public class LampPawn : VehiclePawn, DefaultControls.IFPSCharacterActions
     #endregion
 
     private bool AllowReturnControl() => !PauseManager.Instance.IsPaused && !MainCamera.IsBlending;
+
+    private void HandleSwivelAudio()
+    {
+        float newSwivelVolume = Mathf.SmoothDamp(rotationAudioSource.volume, swivelVolumeCurve.Evaluate(_lookInput.sqrMagnitude), ref _swivelSmoothVelocity, swivelSmoothing);
+
+        // SmoothDamp doesn't seem to converge to 0 so let's help it out
+        if (newSwivelVolume < minSwivelVolume)
+            newSwivelVolume = 0f;
+
+        if (newSwivelVolume > 0 && rotationAudioSource.volume <= 0f)
+        {
+            rotationAudioSource.Play();
+        }
+        else if (newSwivelVolume <= 0 && rotationAudioSource.volume > 0f)
+        {
+            rotationAudioSource.Pause();
+        }
+
+        rotationAudioSource.volume = newSwivelVolume;
+    }
+
+    private void HandleLookRotation()
+    {
+        Vector3 vecToTarget = (target.GetTargetPosition() - lookTransform.position).normalized;
+        float dot = Vector3.Dot(lookTransform.forward, vecToTarget);
+        
+        // Rotate lamp based on input
+        Vector2 lookCalc = _lookInput * lookSpeed;
+
+        if (_isConnectedToTarget)
+        {
+            float dotFactor = sensitivityCurve.Evaluate(dot);
+            
+            if(GameManager.Instance.UsingGamepadControls() && (_lookInput - _prevousLookInput).sqrMagnitude >= accelerationThreshhold * accelerationThreshhold)
+            {
+                // Allow "wiggling" of joystick to influence the sensitivity curve
+                // Improves gamefeel of gamepad
+                lookCalc *= Mathf.Max(dotFactor, sensitivityMinWhenAcclerating);
+            }
+            else
+            {
+                lookCalc *= dotFactor;
+            }
+            
+            AudioCueEffects.Mix(_lampActiveCue, _lampActiveDistortCue, dotFactor);
+        }
+
+        lookTransform.rotation *= Quaternion.Euler(-lookCalc.y, lookCalc.x, 0);
+        ConstrainLampRotation();
+
+        // Check lamp's connection to target
+        if (_isConnectedToTarget && dot < alignmentCutoff)
+        {
+            BreakTether();
+        }
+    }
 
     private void ConstrainLampRotation()
     {

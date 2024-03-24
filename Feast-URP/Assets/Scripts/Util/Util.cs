@@ -21,7 +21,7 @@ public static class Util
     {
         // Scale to 1920x1080
         // Only affects gamepad(?)
-        if(GameManager.Instance.UsingGamepadControls())
+        if (GameManager.Instance.UsingGamepadControls())
         {
             return new Vector2(
                 input.x / Screen.width * 1920f,
@@ -31,6 +31,18 @@ public static class Util
 
         return input;
     }
+
+    //public static float GetScreenInputAcceleration(Vector2 previousInput, Vector2 currentInput)
+    //{
+    //    // When using Gamepad controls, input gets normalized to a 1920x1080 resolution
+    //    // See Util.ScaleInputToScreen()
+    //    Vector2 screenSize = GameManager.Instance.UsingGamepadControls()
+    //        ? new Vector2(1920f, 1080f)
+    //        : new Vector2(Screen.width, Screen.height);
+    //
+    //    Vector2 acceleration2D = (currentInput - previousInput) / (screenSize * Time.deltaTime);
+    //    return acceleration2D.magnitude;
+    //}
 
     public static Vector3 LimitVector3(Vector3 value, float limit) => value.sqrMagnitude > limit * limit ? value.normalized * limit : value;
     

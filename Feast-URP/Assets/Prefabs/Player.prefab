@@ -354,7 +354,7 @@ MonoBehaviour:
   interactMask:
     serializedVersion: 2
     m_Bits: 1843
-  interactRange: 1.5
+  interactRange: 2
   interactIcon: {fileID: 0}
   interactSprite: {fileID: 21300000, guid: 96c7d99db2fd49398ed1209e4a96357d, type: 3}
   listenSprite: {fileID: 21300000, guid: e2eb8d50c3fc47e4c8dc4c97a4fc463f, type: 3}

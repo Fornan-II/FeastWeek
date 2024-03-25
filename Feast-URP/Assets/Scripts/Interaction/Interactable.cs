@@ -14,4 +14,6 @@ public class Interactable : MonoBehaviour
         if(IsInteractable)
             OnInteract?.Invoke(interacter);
     }
+
+    public void SetIsInteractable(bool value) => IsInteractable = value;
 }

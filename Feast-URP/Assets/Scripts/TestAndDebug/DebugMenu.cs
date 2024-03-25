@@ -98,6 +98,8 @@ public class DebugMenu : MonoBehaviour
                 if (GUI.Button(rect, "Warp to previous Checkpoint")) PreviousCheckpoint();
                 rect.y += height;
             }
+            if (GUI.Button(rect, "Toggle screen invert")) Shader.SetGlobalFloat("_InvertValue", 1 - Shader.GetGlobalFloat("_InvertValue"));
+            rect.y += height;
             if (GUI.Button(rect, "Skip intro sequence")) SkipIntroSequence();
             rect.y += height;
         }

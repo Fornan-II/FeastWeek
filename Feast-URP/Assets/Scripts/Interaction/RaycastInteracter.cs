@@ -41,7 +41,7 @@ public class RaycastInteracter : MonoBehaviour
             _toolTipInstance.HideMessage();
 
             if(interactIcon)
-                interactIcon.enabled = false;
+                interactIcon.gameObject.SetActive(false);
         }
         else if (!_hadInteractable && _targetedInteractable)
         {
@@ -69,7 +69,7 @@ public class RaycastInteracter : MonoBehaviour
             }
             
             if(interactIcon)
-                interactIcon.enabled = true;
+                interactIcon.gameObject.SetActive(true);
         }
     }
 
@@ -79,7 +79,7 @@ public class RaycastInteracter : MonoBehaviour
         {
             _toolTipInstance.HideMessage();
             if(interactIcon)
-                interactIcon.enabled = false;
+                interactIcon.gameObject.SetActive(false);
             _targetedInteractable = null;
         }
     }

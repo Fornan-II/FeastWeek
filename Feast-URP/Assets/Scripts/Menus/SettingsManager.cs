@@ -169,26 +169,26 @@ public class SettingsManager : MonoBehaviour
             _fullscreen = Screen.fullScreenMode;
 
         // Resolution
-        //bool validResolution = false;
-        //
-        //if (PlayerPrefs.HasKey(k_Resolution_Int))
-        //{
-        //    _resolutionIndex = PlayerPrefs.GetInt(k_Resolution_Int);
-        //    validResolution = Util.IndexIsInRange(_resolutionIndex, Screen.resolutions.Length);
-        //}
-        //
-        //if(!validResolution)
-        //{
-        //    bool searchingForIndex = true;
-        //    for (int i = 0; i < Screen.resolutions.Length && searchingForIndex; ++i)
-        //    {
-        //        if (Screen.resolutions[i].Equals(Screen.currentResolution))
-        //        {
-        //            searchingForIndex = false;
-        //            _resolutionIndex = i;
-        //        }
-        //    }
-        //}
+        bool validResolution = false;
+        
+        if (PlayerPrefs.HasKey(k_Resolution_Int))
+        {
+            _resolutionIndex = PlayerPrefs.GetInt(k_Resolution_Int);
+            validResolution = Util.IndexIsInRange(_resolutionIndex, Screen.resolutions.Length);
+        }
+        
+        if(!validResolution)
+        {
+            bool searchingForIndex = true;
+            for (int i = 0; i < Screen.resolutions.Length && searchingForIndex; ++i)
+            {
+                if (Screen.resolutions[i].Equals(Screen.currentResolution))
+                {
+                    searchingForIndex = false;
+                    _resolutionIndex = i;
+                }
+            }
+        }
 
         // Volume Master
         if (PlayerPrefs.HasKey(k_VolumeMaster_Float))
@@ -234,11 +234,11 @@ public class SettingsManager : MonoBehaviour
         // _lookSensitivity automatically handled because it's a public var
         adjustmentsEffect.postExposure.value = _brightness;
 
-        //Screen.SetResolution(
-        //    Screen.resolutions[_resolutionIndex].width,
-        //    Screen.resolutions[_resolutionIndex].height,
-        //    _fullscreen,
-        //    Screen.resolutions[_resolutionIndex].refreshRate);
+        Screen.SetResolution(
+            Screen.resolutions[_resolutionIndex].width,
+            Screen.resolutions[_resolutionIndex].height,
+            _fullscreen,
+            Screen.resolutions[_resolutionIndex].refreshRate);
 
         ApplyAudioVolumes();
     }
@@ -265,15 +265,15 @@ public class SettingsManager : MonoBehaviour
         fullScreenDropdown.value = (int)_fullscreen;
         fullScreenDropdown.RefreshShownValue();
 
-        //resolutionDropdown.ClearOptions();
-        //foreach (var resolution in Screen.resolutions)
-        //{
-        //    optionData.Add(string.Format("{0}x{1} {2}hz", resolution.width, resolution.height, resolution.refreshRate));
-        //}
-        //resolutionDropdown.AddOptions(optionData);
-        //optionData.Clear();
-        //resolutionDropdown.value = _resolutionIndex;
-        //resolutionDropdown.RefreshShownValue();
+        resolutionDropdown.ClearOptions();
+        foreach (var resolution in Screen.resolutions)
+        {
+            optionData.Add(string.Format("{0}x{1} {2}hz", resolution.width, resolution.height, resolution.refreshRate));
+        }
+        resolutionDropdown.AddOptions(optionData);
+        optionData.Clear();
+        resolutionDropdown.value = _resolutionIndex;
+        resolutionDropdown.RefreshShownValue();
 
         volumeMasterSlider.value = _volumeMaster;
         volumeSFXSlider.value = _volumeSFX;
